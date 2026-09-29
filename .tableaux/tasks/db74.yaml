@@ -1,0 +1,15 @@
+title: Progressive disclosure
+description: >
+  The role-specific entry points and levels: the owner opens the root collapsed
+  and expands down the hierarchy; a contributor opens at the parents of their
+  tasks in a gate window around their next gates, with the columns outside
+  folded to a count. The viewer hides or shows any column and the browser
+  keeps the choice; the server computes the default window and holds no
+  column policy. Every state of expansion and every choice of columns has a
+  link, so a shared page opens as its sender saw it.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "097c", from: implementation, to: design, text: The templates that disclose }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "8608", order: 4 }

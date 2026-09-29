@@ -1,0 +1,10 @@
+title: Accessibility and theming
+description: >
+  Keyboard navigation, text alternatives for every symbol, a light and a dark
+  theme that follow the system, and layouts that read at phone width.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "097c", from: implementation, to: design, text: The templates the rules apply to }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "8608", order: 6 }

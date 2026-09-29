@@ -1,0 +1,12 @@
+title: Server
+description: >
+  The tableaud serve command run from a checked-out repository: one route per
+  view with query parameters for the person, the ref and the focus, a watcher
+  that invalidates on HEAD or .tableaux changes, and a binding to localhost by
+  default.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "7425", from: implementation, to: implementation, text: The module }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "8608", order: 2 }

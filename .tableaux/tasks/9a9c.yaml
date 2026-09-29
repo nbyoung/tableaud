@@ -1,0 +1,9 @@
+title: Temporal templates
+description: >
+  The history and audit views.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "097c", order: 4 }

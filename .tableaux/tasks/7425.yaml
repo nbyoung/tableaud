@@ -1,0 +1,16 @@
+title: Bootstrap
+description: >
+  The Go module github.com/nbyoung/tableaud on the standard library's HTTP
+  server and templates, with HTMX vendored and embedded, depending on tablo
+  through a declared version range, with licence, README and continuous
+  integration.
+  A release workflow cross-compiles one static binary for Linux, macOS and
+  Windows on amd64 and arm64 and publishes them, so no user installs Go.
+assignee: noreply@anthropic.com
+junctions:
+  mockup:         { applies: false }
+  function:       { applies: false }
+  unit:           { applies: false }
+  integrate:      { applies: false }
+  validate:       { applies: false }
+parent: { id: "8608", order: 1 }

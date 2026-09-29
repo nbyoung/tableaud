@@ -1,0 +1,9 @@
+title: Legend and task templates
+description: >
+  The gate definition and task definition views.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "097c", order: 1 }

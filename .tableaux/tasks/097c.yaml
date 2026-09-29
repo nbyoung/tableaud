@@ -1,0 +1,8 @@
+title: HTML views
+description: >
+  One template per view that reproduces the HTML mockups in the tableaux
+  repository, rendered on the server from tablo's view data, with HTMX fetching
+  fragments for expansion so that pages stay small. Each child tests its views
+  against the corpus.
+assignee: noreply@anthropic.com
+parent: { id: "8608", order: 3 }

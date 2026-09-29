@@ -1,0 +1,9 @@
+title: Structural templates
+description: >
+  The authority delegation and task assignment views.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "097c", order: 2 }

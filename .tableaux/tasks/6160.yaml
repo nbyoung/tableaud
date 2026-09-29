@@ -1,0 +1,11 @@
+title: Static export
+description: >
+  The tableaud export command that writes every view at every disclosure level
+  as a self-contained HTML bundle, for continuous integration to publish where
+  no daemon runs.
+assignee: noreply@anthropic.com
+requires:
+  - { id: "097c", from: implementation, to: implementation, text: The templates the export renders }
+junctions:
+  mockup:         { applies: false }
+parent: { id: "8608", order: 5 }
