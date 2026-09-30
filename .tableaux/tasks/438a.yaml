@@ -2,6 +2,10 @@ title: Legend and task templates
 description: >
   The gate definition and task definition views.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/e9c6.yaml, text: "The abstract views and their focusing parameters" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/a6f7.yaml, text: "The gate definition view as HTML" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/7dff.yaml, text: "The task definition view as HTML" }
 requires:
   - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
 junctions:

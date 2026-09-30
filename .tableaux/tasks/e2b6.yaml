@@ -2,6 +2,10 @@ title: Structural templates
 description: >
   The authority delegation and task assignment views.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/e9c6.yaml, text: "The abstract views and their focusing parameters" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/b1b7.yaml, text: "The authority delegation view as HTML" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/ea51.yaml, text: "The task assignment view as HTML" }
 requires:
   - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
 junctions:

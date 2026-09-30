@@ -3,6 +3,10 @@ description: >
   Keyboard navigation, text alternatives for every symbol, a light and a dark
   theme that follow the system, and layouts that read at phone width.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/5fe3.yaml, text: "The HTML mockups the rules apply to" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/PLAN.md#views, text: "HTML as the interactive medium" }
+  - { url: README.md#vendored-assets, text: "The assets the pages ship" }
 requires:
   - { id: "097c", from: implementation, to: design, text: The templates the rules apply to }
 junctions:

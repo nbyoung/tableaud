@@ -2,6 +2,10 @@ title: Temporal templates
 description: >
   The history and audit views.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/e9c6.yaml, text: "The abstract views and their focusing parameters" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/3194.yaml, text: "The history view as HTML" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/a8b4.yaml, text: "The audit view as HTML" }
 requires:
   - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
 junctions:
