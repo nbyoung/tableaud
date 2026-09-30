@@ -1,0 +1,4 @@
+gate: defined
+state: nominal
+reason: review
+note: The module skeleton design on branch task/7425 awaits the owner's design review; CI verification waits for implementation because no Go toolchain runs here

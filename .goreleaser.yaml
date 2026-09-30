@@ -1,0 +1,35 @@
+# GoReleaser builds one static binary per target from a Linux runner and
+# publishes the archives and their checksums to the GitHub release for the tag.
+version: 2
+
+builds:
+  - id: tableaud
+    main: ./cmd/tableaud
+    binary: tableaud
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.CommitDate}}
+    mod_timestamp: '{{ .CommitTimestamp }}'
+
+archives:
+  - id: tableaud
+    formats: [tar.gz]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+
+release:
+  github:
+    owner: nbyoung
+    name: tableaud

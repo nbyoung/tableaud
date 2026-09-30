@@ -1,0 +1,12 @@
+# The binary and the release output
+/tableaud
+/tableaud.exe
+/dist/
+
+# Test output
+*.test
+*.out
+
+# A personal Go workspace stays outside the repository (see README.md)
+go.work
+go.work.sum
