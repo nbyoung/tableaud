@@ -29,8 +29,8 @@ func main() {
 // run dispatches one invocation so that a test can drive it.
 func run(args []string, stdout io.Writer) error {
 	if len(args) == 1 && args[0] == "version" {
-		fmt.Fprintln(stdout, versionString())
-		return nil
+		_, err := fmt.Fprintln(stdout, versionString())
+		return err
 	}
 	return errors.New("usage: tableaud version")
 }
