@@ -3,6 +3,9 @@ description: >
   The global tableau, contextual tableau, work-blockage tree and work queue
   views.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/e9c6.yaml, text: "The abstract views and their focusing parameters" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/5fe3.yaml, text: "The HTML mockups of the status views" }
 requires:
   - { id: "49ce", from: implementation, to: implementation, text: The server the templates run in }
 junctions:

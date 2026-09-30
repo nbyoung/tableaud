@@ -4,6 +4,11 @@ description: >
   as a self-contained HTML bundle, for continuous integration to publish where
   no daemon runs.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/PLAN.md#views, text: "The same pages exported as a static bundle" }
+  - { url: README.md#what-it-does, text: "The export command" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/e9c6.yaml, text: "The abstract views and their focusing parameters" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/5fe3.yaml, text: "The HTML mockups the export renders" }
 requires:
   - { id: "097c", from: implementation, to: implementation, text: The templates the export renders }
 junctions:

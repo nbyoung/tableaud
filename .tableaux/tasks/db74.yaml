@@ -8,6 +8,11 @@ description: >
   column policy. Every state of expansion and every choice of columns has a
   link, so a shared page opens as its sender saw it.
 assignee: noreply@anthropic.com
+references:
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/e9c6.yaml, text: "The abstract views and their focusing parameters" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/32e7.yaml, text: "The global tableau in HTML, the owner disclosure" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/.tableaux/tasks/69eb.yaml, text: "The contextual tableau in HTML, the contributor disclosure" }
+  - { url: https://github.com/nbyoung/tableaux/blob/main/PLAN.md#views, text: "The gate window and the linked column choice" }
 requires:
   - { id: "097c", from: implementation, to: design, text: The templates that disclose }
 junctions:
