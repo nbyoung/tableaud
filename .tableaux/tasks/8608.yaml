@@ -4,19 +4,20 @@ description: >
   The Tableaux graphical front end: a local daemon that serves every view as HTML with role-specific progressive disclosure, and a static export.
   This project is one subproject of the Tableaux tooling plan in the tableaux
   repository, whose task for it delegates every gate after defined here. It
-  inherits that plan's review policy: agents contribute at every gate and the
-  owner reviews mockups, designs, validation and releases.
+  inherits that plan's review policy: agents contribute at every gate, each on
+  the model family the junction names, and the owner reviews mockups, designs,
+  validation and releases.
 assignee: nbyoung@nbyoung.com
 references:
   - { url: README.md, text: The charter }
   - { url: https://github.com/nbyoung/tableaux/blob/main/PLAN.md, text: The Tableaux tooling plan }
 junctions:
-  defined:        { contributor: noreply@anthropic.com, model: claude-fable-5-1 }
-  mockup:         { contributor: noreply@anthropic.com, model: claude-fable-5-1, reviewer: nbyoung@nbyoung.com }
-  function:       { contributor: noreply@anthropic.com, model: claude-fable-5-1 }
-  design:         { contributor: noreply@anthropic.com, model: claude-fable-5-1, reviewer: nbyoung@nbyoung.com }
-  implementation: { contributor: noreply@anthropic.com, model: claude-fable-5-1 }
-  unit:           { contributor: noreply@anthropic.com, model: claude-fable-5-1 }
-  integrate:      { contributor: noreply@anthropic.com, model: claude-fable-5-1 }
-  validate:       { contributor: noreply@anthropic.com, model: claude-fable-5-1, reviewer: nbyoung@nbyoung.com }
+  defined:        { contributor: noreply@anthropic.com, model: claude-haiku }
+  mockup:         { contributor: noreply@anthropic.com, model: claude-opus, reviewer: nbyoung@nbyoung.com }
+  function:       { contributor: noreply@anthropic.com, model: claude-sonnet }
+  design:         { contributor: noreply@anthropic.com, model: claude-opus, reviewer: nbyoung@nbyoung.com }
+  implementation: { contributor: noreply@anthropic.com, model: claude-sonnet }
+  unit:           { contributor: noreply@anthropic.com, model: claude-sonnet }
+  integrate:      { contributor: noreply@anthropic.com, model: claude-sonnet }
+  validate:       { contributor: noreply@anthropic.com, model: claude-sonnet, reviewer: nbyoung@nbyoung.com }
   release:        { contributor: nbyoung@nbyoung.com }
