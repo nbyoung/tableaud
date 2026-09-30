@@ -1,3 +1,3 @@
-gate: design
+gate: implementation
 state: nominal
-note: The lint fix is on the branch; the implementation record awaits a green CI run after the push
+note: The skeleton is on the trunk and passes vet and test locally and in CI run 36714734449 on 406c061; formatting, lint and the release workflow are in place; the tablo require line waits for the server task, as the README states
