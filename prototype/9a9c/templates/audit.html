@@ -1,0 +1,47 @@
+{{define "title"}}Audit{{end}}
+{{define "content"}}
+<style>
+body{font-family:sans-serif;max-width:52rem;margin:1rem auto;padding:0 1rem}
+h2{font-size:1.05rem;margin:1.4rem 0 .3rem}
+ul{padding-left:1.2rem}
+li{margin:.3rem 0}
+.tag{font-size:.8em;border:1px solid #8886;border-radius:3px;padding:0 .25em}
+code{font-size:.9em}
+</style>
+<h1>Audit</h1>
+<p>Source: {{.Sources}}.{{if .Range}} Range {{.Range}}{{if .Stale}}, stale after {{.Stale}} days{{end}}.{{end}}{{if .Range}} <a href="/history?range={{.Range}}">History of this range</a>.{{end}}</p>
+<main id="groups">
+{{template "groups" .}}
+</main>
+{{end}}
+
+{{define "groups"}}
+{{- if .Empty}}<p class="empty">{{.Empty}}</p>{{else}}
+<p class="count">{{.Open}} finding{{if ne .Open 1}}s{{end}} to resolve{{if .Range}}, {{.Introduced}} introduced by the range{{end}}{{if .Resolved}}; {{len .Resolved}} resolved by the range{{end}}.</p>
+{{- range .Groups}}
+<section class="group" id="{{.Key}}">
+<h2><a href="{{.URL}}" hx-get="{{.URL}}" hx-target="closest section" hx-swap="outerHTML">{{.Kind}}</a>: {{if .Who}}{{.Who}}{{else}}no resolver named{{end}} <span class="tag">{{len .Findings}}</span></h2>
+<ul>
+{{- range .Findings}}
+<li data-range="{{.Range}}"><strong>{{.Rule}}</strong>{{if .Severity}} {{.Severity}}{{end}}
+{{if .Task}}<a href="{{.TaskURL}}">{{.Task}}</a>{{if .Title}} {{.Title}}{{end}}{{end}}
+{{if .Gate}}{{.GateSym}} {{.Gate}}{{end}}
+{{if .Commit}}<a href="{{.CommitURL}}"><code>{{.Commit}}</code></a>{{if .CommitLabel}} {{.CommitLabel}}{{end}}{{end}}
+{{if .Range}}<span class="tag">{{.Range}}</span>{{else if $.Range}}<span class="tag">not in the range data</span>{{end}}
+<br>{{.Action}}</li>
+{{- end}}
+</ul>
+</section>
+{{- end}}
+{{- if .Resolved}}
+<section class="resolved">
+<h2>Resolved by the range</h2>
+<ul>
+{{- range .Resolved}}
+<li data-range="resolved"><strong>{{.Rule}}</strong> <a href="{{.TaskURL}}">{{.Task}}</a>{{if .Title}} {{.Title}}{{end}} <a href="{{.CommitURL}}"><code>{{.Commit}}</code></a> <span class="tag">resolved</span><br>{{.Message}}</li>
+{{- end}}
+</ul>
+</section>
+{{- end}}
+{{- end}}
+{{end}}
