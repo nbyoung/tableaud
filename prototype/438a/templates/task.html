@@ -1,0 +1,22 @@
+{{define "title"}}{{.T.Glance.ID}} {{.T.Glance.Title}}{{end}}
+{{define "content"}}{{template "style"}}
+{{with .T}}{{$g := .Glance}}
+<p><a href="/gate">Legend</a></p>
+<h1><code>{{$g.ID}}</code> {{$g.Title}}</h1>
+{{if eq .Detail.Authorisation.State "proposed"}}<p class="proposed" role="note"><strong>Proposed.</strong> This task is not authorised. {{if .Detail.Authorities}}An authority accepts it: {{range $i, $a := .Detail.Authorities}}{{if $i}}, {{end}}{{template "person" $a}}{{end}}.{{end}}</p>{{end}}
+<dl>
+<dt>Assignee</dt><dd>{{with $g.Assignee}}{{template "person" .}}{{else}}none{{end}}</dd>
+<dt>Parent</dt><dd>{{with $g.Parent}}{{template "taskref" .}}, order {{.Order}}{{else}}none: this is the root{{end}}</dd>
+{{with .Detail.Children}}<dt>Children</dt><dd>{{range .}}{{template "taskref" (tref .)}} {{end}}</dd>{{end}}
+<dt>Next gate</dt><dd>{{template "gateref" (gate $g.NextGate)}}</dd>
+<dt>Status</dt><dd>{{with $g.Status}}{{template "gateref" (gate .Gate)}}
+ <a href="{{stateURL .State}}">{{stateSym .State}} {{.State}}</a>
+ {{with .Reason}}<a href="{{reasonURL .}}">{{reasonSym .}} {{.}}</a>{{end}}
+ {{.Date}}{{with .Recorder}}, {{template "person" .}}{{end}}{{with .Note}}: {{.}}{{end}}
+ {{if .Derived}}<br>Rolled up from the child {{template "taskref" (tref .From)}}.{{end}}
+ {{with .Snapshot}}<br>Read from the subproject <code>{{.URL}}</code>, task {{template "subtask" .}}, at pin {{template "commit" .Pin}}, gate {{template "gateref" (gate .Gate)}}.{{end}}{{end}}</dd>
+</dl>
+{{end}}
+{{range .Folds}}{{template "fold" .}}
+{{end}}
+{{end}}

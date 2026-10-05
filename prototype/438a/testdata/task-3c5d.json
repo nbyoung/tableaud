@@ -1,0 +1,355 @@
+{
+  "detail": {
+    "authorisation": {
+      "state": "proposed"
+    },
+    "authorities": [
+      "ada@example.org"
+    ],
+    "children": null,
+    "dependents": null,
+    "description": "A web page on the gateway that charts the last week of readings and the current values, with the battery state alongside.",
+    "junctions": [
+      {
+        "contributor": "dan@example.org",
+        "gate": "undefined",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "❔"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "defined",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📝"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "mockup",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📌"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "function",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚙️"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "performance",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚡"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "reliability",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚓"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "design",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📐"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "implementation",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🛠️"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "unit",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🧩"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "integrate",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🖼️"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "validate",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🌍"
+      },
+      {
+        "contributor": "dan@example.org",
+        "gate": "release",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🚀"
+      }
+    ],
+    "references": [
+      {
+        "text": "Dashboard overview",
+        "url": "docs/overview.md#dashboard"
+      }
+    ],
+    "requires": [
+      {
+        "id": "7b2e",
+        "title": "Gateway",
+        "from": "function",
+        "to": "integrate",
+        "text": "Readings API",
+        "met": false,
+        "due": false,
+        "condition": "pending"
+      }
+    ]
+  },
+  "glance": {
+    "assignee": "dan@example.org",
+    "id": "3c5d",
+    "next_gate": "mockup",
+    "parent": {
+      "id": "a1c0",
+      "order": 0,
+      "title": "Weather station"
+    },
+    "status": {
+      "gate": "defined",
+      "state": "nominal",
+      "date": "2026-09-22",
+      "recorder": "dan@example.org",
+      "commit": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9"
+    },
+    "title": "Dashboard"
+  },
+  "on_trunk": true,
+  "params": {
+    "task": "3c5d",
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "authorisation": {
+      "state": "proposed",
+      "commit": {
+        "hash": "1b8cfb16a248f50eeefb76e0994234693ff4f4a6",
+        "author": "dan@example.org",
+        "committer": "dan@example.org",
+        "date": "2026-09-27",
+        "subject": "Revise the dashboard scope"
+      },
+      "way": "commit"
+    },
+    "command": "git log --format='%h %as %ae %s' -- .tableaux/tasks/3c5d.yaml .tableaux/status/3c5d.yaml",
+    "events": [
+      {
+        "date": "2026-09-20",
+        "commit": "06c66797486ffeba2831d49b1b9d65f5f99e1b17",
+        "by": "dan@example.org",
+        "task": "3c5d",
+        "event": "task"
+      },
+      {
+        "date": "2026-09-21",
+        "commit": "74bc0b87ba05bcb97443b8299db14fcf15fe5074",
+        "by": "ada@example.org",
+        "task": "3c5d",
+        "event": "authorised"
+      },
+      {
+        "date": "2026-09-22",
+        "commit": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+        "by": "dan@example.org",
+        "task": "3c5d",
+        "event": "status",
+        "gate": "defined",
+        "state": "nominal"
+      },
+      {
+        "date": "2026-09-27",
+        "commit": "1b8cfb16a248f50eeefb76e0994234693ff4f4a6",
+        "by": "dan@example.org",
+        "task": "3c5d",
+        "event": "task"
+      }
+    ],
+    "junction_sources": [
+      {
+        "gate": "undefined",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "defined",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "mockup",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "function",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "performance",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "reliability",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "design",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "implementation",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "unit",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "integrate",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "validate",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "release",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      }
+    ],
+    "reviews": null,
+    "status_commit": {
+      "hash": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+      "author": "dan@example.org",
+      "committer": "dan@example.org",
+      "date": "2026-09-22",
+      "subject": "Record the dashboard definition"
+    }
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "task"
+}

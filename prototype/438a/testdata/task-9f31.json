@@ -1,0 +1,392 @@
+{
+  "detail": {
+    "authorisation": {
+      "state": "authorised",
+      "way": "merge"
+    },
+    "authorities": [
+      "ben@example.org",
+      "ada@example.org"
+    ],
+    "children": null,
+    "dependents": [
+      {
+        "id": "c07d",
+        "title": "Node firmware",
+        "from": "design",
+        "to": "implementation",
+        "text": "Pin map and sensor bus",
+        "met": false,
+        "due": true,
+        "condition": "unmet"
+      }
+    ],
+    "description": "The PCB that carries the barometer, hygrometer and thermometer and powers them from the solar cell within the power budget.",
+    "junctions": [
+      {
+        "contributor": "ada@example.org",
+        "gate": "undefined",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "❔"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "defined",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📝"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "mockup",
+        "kind": "plain",
+        "marks": [
+          "🧑",
+          "👀"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "ben@example.org",
+        "subproject": null,
+        "symbol": "📌"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "function",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚙️"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "performance",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": [
+          {
+            "text": "Power budget",
+            "url": "docs/sensor-board.md#power-budget"
+          }
+        ],
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚡"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "reliability",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚓"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "design",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📐"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "implementation",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🛠️"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "unit",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🧩"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "integrate",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🖼️"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "validate",
+        "kind": "plain",
+        "marks": [
+          "🧑",
+          "👀"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "ben@example.org",
+        "subproject": null,
+        "symbol": "🌍"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "release",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🚀"
+      }
+    ],
+    "references": [
+      {
+        "url": "docs/sensor-board.md"
+      },
+      {
+        "text": "Barometer datasheet",
+        "url": "https://example.org/datasheets/bmp390.pdf"
+      }
+    ],
+    "requires": null
+  },
+  "glance": {
+    "assignee": "ada@example.org",
+    "id": "9f31",
+    "next_gate": "performance",
+    "parent": {
+      "id": "4e2b",
+      "order": 1,
+      "title": "Sensor node"
+    },
+    "status": {
+      "gate": "function",
+      "state": "stalled",
+      "reason": "blocked",
+      "note": "Barometer ICs on 14-week backorder",
+      "date": "2026-09-28",
+      "recorder": "ada@example.org",
+      "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a"
+    },
+    "title": "Sensor board"
+  },
+  "on_trunk": true,
+  "params": {
+    "task": "9f31",
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "authorisation": {
+      "state": "authorised",
+      "commit": {
+        "hash": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
+        "author": "ben@example.org",
+        "committer": "ben@example.org",
+        "date": "2026-09-19",
+        "subject": "Merge the sensor board task"
+      },
+      "by": "author",
+      "way": "merge"
+    },
+    "command": "git log --format='%h %as %ae %s' -- .tableaux/tasks/9f31.yaml .tableaux/status/9f31.yaml",
+    "events": [
+      {
+        "date": "2026-09-19",
+        "commit": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
+        "by": "ben@example.org",
+        "task": "9f31",
+        "event": "authorised"
+      },
+      {
+        "date": "2026-09-22",
+        "commit": "63a1f88f84354726d5e1b431df5e11a518854cdb",
+        "by": "ada@example.org",
+        "task": "9f31",
+        "event": "status",
+        "gate": "mockup",
+        "state": "nominal"
+      },
+      {
+        "date": "2026-09-24",
+        "commit": "85adb9bd07783927046f987a17471c42eee97b87",
+        "by": "ben@example.org",
+        "task": "9f31",
+        "event": "reviewed",
+        "gate": "mockup"
+      },
+      {
+        "date": "2026-09-25",
+        "commit": "a2393fb3090844dd83d44a39739ad486e1fcecd2",
+        "by": "ada@example.org",
+        "task": "9f31",
+        "event": "status",
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder"
+      },
+      {
+        "date": "2026-09-28",
+        "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+        "by": "ada@example.org",
+        "task": "9f31",
+        "event": "reaffirmed"
+      }
+    ],
+    "junction_sources": [
+      {
+        "gate": "undefined",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "defined",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "mockup",
+        "source": "4e2b",
+        "sources": {
+          "contributor": "default",
+          "reviewer": "4e2b"
+        }
+      },
+      {
+        "gate": "function",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "performance",
+        "source": "9f31",
+        "sources": {
+          "contributor": "default",
+          "references": "9f31"
+        }
+      },
+      {
+        "gate": "reliability",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "design",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "implementation",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "unit",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "integrate",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "validate",
+        "source": "9f31",
+        "sources": {
+          "contributor": "default",
+          "reviewer": "9f31"
+        }
+      },
+      {
+        "gate": "release",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      }
+    ],
+    "reviews": [
+      {
+        "gate": "mockup",
+        "reviewer": "ben@example.org",
+        "commit": "85adb9bd07783927046f987a17471c42eee97b87",
+        "date": "2026-09-24"
+      }
+    ],
+    "status_commit": {
+      "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+      "author": "ada@example.org",
+      "committer": "ada@example.org",
+      "date": "2026-09-28",
+      "subject": "Weekly review: no change"
+    }
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "task"
+}
