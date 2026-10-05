@@ -1,0 +1,52 @@
+{{define "gridscript"}}(function () {
+  var g = document.querySelector('[role=treegrid]');
+  if (!g) return;
+  var cur = null;
+  function rows() { return [].filter.call(g.querySelectorAll('tbody tr'), function (r) { return !r.hidden; }); }
+  function refresh() {
+    var o = [];
+    g.querySelectorAll('tbody tr').forEach(function (r) {
+      var l = +r.getAttribute('aria-level'), v = l === 1 || o[l - 1];
+      r.hidden = !v;
+      o[l] = v && r.getAttribute('aria-expanded') === 'true';
+    });
+  }
+  function toggle(r, open) {
+    if (!r.hasAttribute('aria-expanded')) return;
+    if (open === undefined) open = r.getAttribute('aria-expanded') !== 'true';
+    r.setAttribute('aria-expanded', open);
+    var a = r.querySelector('.toggle');
+    if (a) a.setAttribute('aria-expanded', open);
+    refresh();
+  }
+  function go(r, c) {
+    var cell = r && r.children[c];
+    if (!cell) return;
+    if (cur) cur.tabIndex = -1;
+    cell.tabIndex = 0; cur = cell; cell.focus();
+  }
+  g.querySelectorAll('th, td').forEach(function (c) { c.tabIndex = -1; });
+  cur = g.querySelector('tbody th'); cur.tabIndex = 0;
+  g.addEventListener('focusin', function (e) {
+    var c = e.target.closest('th, td');
+    if (c && g.contains(c) && c !== cur) { if (cur) cur.tabIndex = -1; c.tabIndex = 0; cur = c; }
+  });
+  g.addEventListener('click', function (e) {
+    var a = e.target.closest('.toggle');
+    if (a) { e.preventDefault(); toggle(a.closest('tr')); }
+  });
+  g.addEventListener('keydown', function (e) {
+    var r = cur.parentNode, c = [].indexOf.call(r.children, cur), v = rows(), i = v.indexOf(r), k = e.key, n = r.children.length;
+    if (k === 'ArrowDown') go(v[i + 1], c);
+    else if (k === 'ArrowUp') go(v[i - 1], c);
+    else if (k === 'ArrowRight') {
+      if (c === 0 && r.getAttribute('aria-expanded') === 'false') toggle(r, true); else go(r, Math.min(c + 1, n - 1));
+    } else if (k === 'ArrowLeft') {
+      if (c === 0 && r.getAttribute('aria-expanded') === 'true') toggle(r, false); else go(r, Math.max(c - 1, 0));
+    } else if (k === 'Home') go(e.ctrlKey ? v[0] : r, e.ctrlKey ? c : 0);
+    else if (k === 'End') go(e.ctrlKey ? v[v.length - 1] : r, e.ctrlKey ? c : n - 1);
+    else if (k === 'Enter' && c === 0) toggle(r);
+    else return;
+    e.preventDefault();
+  });
+})();{{end}}

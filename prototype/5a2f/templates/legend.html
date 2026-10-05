@@ -1,0 +1,31 @@
+{{define "legend"}}{{template "head" .}}
+<p>Every symbol in the tableau, with the name it carries for people who do not see it. The data comes from the gate definition.</p>
+<h2>Gates</h2>
+<table>
+<caption>Gates, in order</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col">Criteria</th></tr></thead>
+<tbody>
+{{range $g := .Legend.Glance.Gates}}<tr><th scope="row"><span aria-hidden="true">{{$g.Symbol}}</span> <span>{{$g.Name}}</span></th><td>{{criteria $g.Key}}</td></tr>
+{{end}}</tbody>
+</table>
+<h2>States</h2>
+<table>
+<caption>States of the work at a gate</caption>
+<thead><tr><th scope="col">State</th><th scope="col">Meaning</th></tr></thead>
+<tbody>
+{{range $s := .Legend.Glance.States}}<tr><th scope="row"><span aria-hidden="true">{{$s.Symbol}}</span> <span>{{humanise $s.Key}}</span></th><td>{{synopsis "state" $s.Key}}</td></tr>
+{{end}}</tbody>
+</table>
+<h2>Reasons</h2>
+<table>
+<caption>Reasons a state carries</caption>
+<thead><tr><th scope="col">Reason</th><th scope="col">Meaning</th></tr></thead>
+<tbody>
+{{range $r := .Legend.Glance.Reasons}}<tr><th scope="row"><span aria-hidden="true">{{$r.Symbol}}</span> <span>{{humanise $r.Key}}</span></th><td>{{synopsis "reason" $r.Key}}</td></tr>
+{{end}}</tbody>
+</table>
+<h2>Marks</h2>
+<ul>
+{{range .Legend.Glance.Marks}}<li><span aria-hidden="true">{{.Symbol}}</span> <span>{{.Meaning}}</span></li>
+{{end}}</ul>
+{{template "foot" .}}{{end}}
