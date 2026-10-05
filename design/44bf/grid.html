@@ -1,0 +1,30 @@
+{{define "grid"}}{{$g := .}}{{with .Control}}{{template "columns" .}}{{end}}
+<div class="scroll">
+<table class="tableau" id="{{.ID}}">
+<caption>{{.Caption}}</caption>
+<thead><tr><th scope="col">Id</th><th scope="col">Task</th>{{range .Columns}}<th scope="col" class="gate{{if .Folded}} fold{{end}}">{{if .Last}}<span aria-hidden="true">{{.First.Glyph}} … {{.Last.Glyph}}</span> <span class="gname">{{.First.Name}} to {{.Last.Name}}</span>{{else}}<a href="{{.Href}}"><span aria-hidden="true">{{.First.Glyph}}</span> <span class="gname">{{.First.Name}}</span></a>{{end}}{{if .Folded}} <span class="count">folded ×{{.Count}}<span class="sr"> {{plural .Count "task stands" "tasks stand"}} here</span></span>{{end}}</th>{{end}}{{if .Notes}}<th scope="col">Date and note</th>{{end}}</tr></thead>
+<tbody>
+{{range .Rows}}<tr id="{{$g.ID}}-{{.Task.ID}}"{{if .Parent}} class="parent"{{end}}><td><a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a></td><th scope="row" class="task {{depth .Depth}}"><span class="sr">level {{add .Depth 1}}: </span>{{.Task.Title}}{{if .Sibling}} <span class="fold">· sibling</span>{{end}}{{if .Expand}} <a class="fold" href="{{.Expand.Href}}"{{template "swap" .Expand}}>{{.Beneath}} {{plural .Beneath "row" "rows"}} beneath</a>{{else if .Collapse}} <a class="fold" href="{{.Collapse.Href}}"{{template "swap" .Collapse}}>fold the {{.Beneath}} {{plural .Beneath "row" "rows"}} beneath</a>{{else if .Beneath}} <span class="fold">({{.Beneath}}<span class="sr"> {{plural .Beneath "row" "rows"}} not drawn</span>)</span>{{end}}</th>{{range .Cells}}<td class="cell{{if .Folded}} fold{{end}}{{if and .Hist .Syms}} hist{{end}}{{if .Mine}} mine{{end}}">{{template "syms" .Syms}}{{if .Hist}}<span class="sr">{{if .Syms}}, {{end}}historical</span>{{end}}{{if .Mine}}<span class="sr">, this person acts here</span>{{end}}</td>{{end}}{{if $g.Notes}}<td class="status">{{template "fold" .Fold}}<summary>{{if .Status.Date}}{{.Status.Date}}{{else}}no date{{end}}<span class="sr"> note and provenance of {{.Task.ID}}</span></summary>
+{{if .Status.Note}}<p class="note">{{.Status.Note}}</p>{{end}}{{with .Status.From}}<p class="muted">Rolled up from {{template "task" .}}.</p>{{end}}{{with .Status.Snapshot}}<p class="muted">Snapshot of {{template "task" .Task}} at pin <code>{{.Pin}}</code>, which stands at {{template "sym" .Gate}} there.</p>{{end}}
+{{template "fold" .ProvFold}}<summary>Provenance</summary>{{if .ProvFold.Src}}{{template "lazy" .ProvFold}}{{else}}{{template "part-row" .Prov}}{{end}}</details>
+</details></td>{{end}}</tr>
+{{end}}</tbody>
+</table>
+</div>{{end}}
+
+{{define "part-row"}}<dl class="fields">
+<dt>Status</dt><dd>{{if .Status.Commit}}<code>{{.Status.File}}</code>; recorded in <code>{{.Status.Commit.Hash}}</code> {{.Status.Commit.Subject}}, {{.Status.Commit.Date}}; author {{.Status.Commit.Author}}; committer {{.Status.Commit.Committer}}{{else if .Chain}}Derived, never stored. Rolls up from {{range $i, $t := .Chain}}{{if $i}}, then {{end}}{{template "task" $t}}{{end}}{{else}}No status file; the task stands at undefined{{end}}</dd>
+{{range .Marks}}<dt>{{range .Gates}}<span aria-hidden="true">{{.Glyph}}</span> {{end}}{{(index .Gates 0).Name}}{{if gt (len .Gates) 1}} to {{(index .Gates (add (len .Gates) -1)).Name}}{{end}}: {{template "syms" .Marks}}</dt><dd>{{if .Exempt}}Exempt: {{with .By}}{{template "task" .}} states{{else}}the task's own file states{{end}} that the gate does not apply{{else}}Contributor {{.Contributor}}{{if .Model}} with model <code>{{.Model}}</code>{{end}}; {{if .Reviewer}}reviewer {{.Reviewer}}{{else}}no reviewer{{end}}; {{with .By}}from {{template "task" .}}{{else}}{{if .Own}}from the task's own file{{else}}the plain default{{end}}{{end}}{{end}}</dd>
+{{end}}</dl>
+{{template "commands" .Status.Commands}}{{end}}
+
+{{define "columns"}}{{template "fold" .Fold}}<summary>Columns: {{.Shown}} of {{.Total}} shown</summary>
+<form class="columns" method="get" action="{{.Action}}">
+{{range .Hidden}}<input type="hidden" name="{{.Name}}" value="{{.Content}}">
+{{end}}<fieldset><legend>Gate columns</legend>
+{{range .Gates}}<label><input type="checkbox" name="{{$.Name}}" value="{{.Key}}"{{if .Checked}} checked{{end}}> {{template "sym" .Sym}}</label>
+{{end}}</fieldset>
+<label><input type="checkbox" name="{{.HistName}}" value="on"{{if .Hist}} checked{{end}}> Show the marks of historical junctions</label>
+<button type="submit">Show these columns</button>
+</form>
+</details>{{end}}

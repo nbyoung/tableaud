@@ -1,0 +1,11 @@
+{{define "body"}}{{with .Body}}
+<h2 id="glance">{{.Shown}} of {{.Total}} {{plural .Total "task" "tasks"}}</h2>
+{{if .Grid.Rows}}{{template "grid" .Grid}}
+<p class="key">A row is a task, indented by depth, with a parent in bold. The cell at the gate a task passed last holds its state, and its reason when it has one. Each later cell says who works there. An earlier cell stays empty, since that work is done. A folded column shows the count of tasks that stand in it. <a href="{{$.Legend}}">The gate definition gives every gate and symbol</a>.</p>
+{{else}}<p class="empty">The project holds no task at this ref.</p>
+{{end}}{{if .Branches}}
+<h2 id="detail">Every row</h2>
+{{range .Branches}}{{template "fold" .Fold}}<summary><code class="id">{{.Task.ID}}</code> {{.Task.Title}} and the {{.Beneath}} {{plural .Beneath "task" "tasks"}} beneath it</summary>
+{{template "grid" .Grid}}
+</details>
+{{end}}{{end}}{{end}}{{end}}

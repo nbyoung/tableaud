@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Work-blockage tree · Tableaux tooling</title>
+<link rel="stylesheet" href="S/tableaud.css">
+<script src="S/htmx/htmx.min.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the view</a>
+<header class="site">
+<nav aria-label="Views">
+<ul>
+<li><a href="V/tableau">Tableau</a></li>
+<li><a href="V/contextual">My corner</a></li>
+<li><a href="V/queue">Queue</a></li>
+<li><a href="V/blockage" aria-current="page">Blockage</a></li>
+<li><a href="V/task">Task</a></li>
+<li><a href="V/assignment">Assignment</a></li>
+<li><a href="V/authority">Authority</a></li>
+<li><a href="V/history">History</a></li>
+<li><a href="V/audit">Audit</a></li>
+<li><a href="V/gate">Gates</a></li>
+</ul>
+</nav>
+<p class="context">Tableaux tooling · <code>main</code> at <code>3cdae52</code>, 2026-10-05 · viewer nbyoung@nbyoung.com, owner</p>
+</header>
+<main id="main" class="v-blockage">
+<h1>Work-blockage tree</h1>
+<p class="question">What waits on what?</p>
+
+<h2 id="causes">Causes</h2>
+<ul class="tree">
+<li id="cause-1" class="mine"><details class="detail" id="d-cause-1" open><summary>1. <span class="what"><a class="id" href="T/5471">5471</a> Work-blockage tree view awaits review at <span aria-hidden="true">📌</span> mockup</span> · <span class="who"><strong class="mine">nbyoung@nbyoung.com</strong> resolves</span> · <span class="holds">holds 4</span></summary>
+<p>Action: nbyoung@nbyoung.com accepts the mockup with a commit that carries Reviewed: 5471 mockup.</p>
+<ul>
+<li><details class="detail" id="h-1-5fe3" open><summary><a class="id" href="T/5fe3">5fe3</a> HTML views at <span aria-hidden="true">📌</span> mockup: a parent; its child has not passed</summary>
+<ul>
+<li><a class="id" href="T/c6e8">c6e8</a> tablotui at <span aria-hidden="true">📐</span> design: requires 5fe3 at mockup</li>
+</ul>
+</details></li>
+</ul>
+<details class="prov" id="prov-cause-1" open><summary>Provenance of cause 1</summary><dl class="fields">
+<dt>The status</dt><dd>.tableaux/status/5471.yaml</dd>
+</dl>
+<pre><code>tabloio review 5471 mockup</code></pre></details>
+</details></li>
+<li id="cause-2"><details class="detail" id="d-cause-2"><summary>2. <span class="what"><a class="id" href="T/9f31">9f31</a> Sensor board stands <span aria-hidden="true">🔴</span> stalled <span aria-hidden="true">⛔</span> blocked</span> · <span class="who">ada@example.org resolves</span> · <span class="holds">holds 2</span></summary>
+<p>Action: clear the reason</p>
+
+<details class="prov" id="prov-cause-2" hx-get="P/prov-cause-2" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance of cause 2</summary><div class="fold-body"><a href="A/prov-cause-2">Show this in the page</a></div></details>
+</details></li>
+</ul>
+
+<h2 id="next">Next: requirements not yet due</h2>
+<p>A requirement that is not yet due is no wait. 1 task has such requirements, and 0 of the requirements are not met.</p>
+<ul class="tree">
+<li id="next-77b2"><details class="detail" id="d-next-77b2" open><summary><span class="what"><a class="id" href="T/77b2">77b2</a> tablo</span> stands at <span aria-hidden="true">📝</span> defined · <span aria-hidden="true">🟢</span> nominal; next <span aria-hidden="true">📌</span> mockup</summary>
+<ul class="notes">
+<li>at <span aria-hidden="true">🧱</span> implementation it requires <a class="id" href="T/e3cb">e3cb</a> Schema files at <span aria-hidden="true">🧱</span> implementation, The schema files it embeds: met, not yet due</li>
+</ul>
+<details class="prov" id="prov-next-77b2" hx-get="P/prov-next-77b2" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance of <code class="id">77b2</code> and what it requires</summary><div class="fold-body"><a href="A/prov-next-77b2">Show this in the page</a></div></details>
+</details></li>
+</ul>
+
+</main>
+<footer class="site">
+<p>Work-blockage tree of Tableaux tooling at <code>3cdae52</code>. <a href="V/gate">The gate definition</a> explains every symbol.</p>
+</footer>
+</body>
+</html>
