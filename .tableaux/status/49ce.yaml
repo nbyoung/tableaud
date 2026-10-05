@@ -1,3 +1,4 @@
 gate: function
 state: nominal
-note: prototype/49ce serves the ten views with a stdlib HEAD and .tableaux watcher, ETag 304 polling through htmx, a Source interface and a loopback Host check
+reason: review
+note: design/49ce.md on branch wave/49ce awaits the owner's review at the design gate
