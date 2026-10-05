@@ -1,3 +1,3 @@
-gate: defined
+gate: function
 state: nominal
-note: The functional prototype is next and no requirement gates it
+note: prototype/e2b6 renders the authority and assignment views from tablo data with HTMX fragment expansion, a path-keeping proposed filter and per-email pages
