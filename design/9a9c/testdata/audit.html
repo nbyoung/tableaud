@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audit · Tableaux tooling</title>
+<link rel="stylesheet" href="S/tableaud.css">
+<script src="S/htmx/htmx.min.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the view</a>
+<header class="site">
+<nav aria-label="Views">
+<ul>
+<li><a href="V/tableau">Tableau</a></li>
+<li><a href="V/contextual">My corner</a></li>
+<li><a href="V/queue">Queue</a></li>
+<li><a href="V/blockage">Blockage</a></li>
+<li><a href="V/task">Task</a></li>
+<li><a href="V/assignment">Assignment</a></li>
+<li><a href="V/authority">Authority</a></li>
+<li><a href="V/history">History</a></li>
+<li><a href="V/audit" aria-current="page">Audit</a></li>
+<li><a href="V/gate">Gates</a></li>
+</ul>
+</nav>
+<p class="context">Tableaux tooling · <code>main</code> at <code>3cdae52</code>, 2026-10-05 · viewer nbyoung@nbyoung.com, owner</p>
+</header>
+<main id="main" class="v-audit">
+<h1>Audit</h1>
+<p class="question">Where do files and history disagree?</p>
+
+<section aria-labelledby="glance">
+<h2 id="glance">Counts</h2>
+<p class="counts"><strong>1 error, 0 warnings, 0 items of information</strong>.</p>
+<div class="scroll">
+<table>
+<caption>Findings by kind: errors first, then warnings, then information. Each kind links to its findings below.</caption>
+<thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Kind</th><th scope="col" class="num">Findings</th><th scope="col">Tasks</th><th scope="col">Resolver</th></tr></thead>
+<tbody>
+<tr><td><span class="sev warning">warning</span></td><td>H3</td><th scope="row"><a href="#s11">A Model: trailer outside the junction&#39;s model</a></th><td class="num">0</td><td></td><td class="mine">nbyoung@nbyoung.com</td></tr>
+<tr><td><span class="sev information">information</span></td><td>H4</td><th scope="row"><a href="#s11">A hand-off the history implies</a></th><td class="num">0</td><td></td><td>noreply@anthropic.com</td></tr>
+<tr><td><span class="sev error">error</span></td><td>S11</td><th scope="row"><a href="#s11">A status past a reviewed junction with no review</a></th><td class="num">1</td><td><a class="id" href="T/e3cb">e3cb</a></td><td>noreply@anthropic.com</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Most to resolve:</strong> noreply@anthropic.com, 1.</p>
+<p class="muted">Silent:</p>
+<ul class="notes muted">
+<li>No task is proposed.</li>
+</ul>
+</section>
+<section aria-labelledby="findings">
+<h2 id="findings">Findings, by the action that resolves them</h2>
+<details class="detail" id="s11" open><summary><span class="sev error">error</span> Review · S11 · 1 finding <span class="muted">· noreply@anthropic.com resolves</span></summary>
+<div class="scroll">
+<table>
+<caption>S11: a status past a reviewed junction with no review</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Gate</th><th scope="col">File</th><th scope="col">Message</th><th scope="col">Action</th><th scope="col">Resolver</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a class="id" href="T/e3cb">e3cb</a> Schema files</th><td><span aria-hidden="true">🧱</span> implementation</td><td><code>status/e3cb.yaml</code></td><td>The status passes implementation</td><td>Review</td><td class="mine">nbyoung@nbyoung.com</td></tr>
+</tbody>
+</table>
+</div>
+<details class="prov" id="prov-s11" open><summary>Provenance: the rule, the commits and the commands</summary><dl class="fields">
+<dt>Rule</dt><dd>S11, from README.md, Status: <blockquote>A validator rejects a status whose gate passes a reviewed junction that has no such commit.</blockquote></dd>
+</dl>
+<div class="scroll">
+<table>
+<caption>The commits involved</caption>
+<thead><tr><th scope="col">Commit</th><th scope="col">Date</th><th scope="col">Author</th><th scope="col">Committer</th><th scope="col">Subject</th><th scope="col">Trailers</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>0fed913</code></th><td>2026-10-02</td><td>Claude Opus 5.5 &lt;noreply@anthropic.com&gt;</td><td>Claude Opus 5.5 &lt;noreply@anthropic.com&gt;</td><td>Mark the abstract views design as awaiting review</td><td><code>Model: claude-opus-5-5</code></td></tr>
+</tbody>
+</table>
+</div>
+<pre><code>git log</code></pre></details>
+</details>
+</section>
+
+</main>
+<footer class="site">
+<p>Audit of Tableaux tooling at <code>3cdae52</code>. <a href="V/gate">The gate definition</a> explains every symbol.</p>
+</footer>
+</body>
+</html>
