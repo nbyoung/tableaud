@@ -1,0 +1,51 @@
+{{define "title"}}History {{.Range}}{{end}}
+{{define "content"}}
+<style>
+body{font-family:sans-serif;max-width:48rem;margin:1rem auto;padding:0 1rem}
+h2{font-size:1rem;margin:1.2rem 0 .3rem;border-bottom:1px solid #8886}
+ol{list-style:none;padding:0;margin:0}
+li.event{padding:.35rem 0;border-bottom:1px dotted #8884}
+.after{color:#666;font-size:.9em;display:block}
+code{font-size:.9em}
+</style>
+<h1>History</h1>
+<p><a href="{{.Audit}}">Audit of this range</a></p>
+<form method="get" action="/history">
+<label>Range <input name="range" value="{{.Range}}" placeholder="W2..W6"></label>
+<label>Task <input name="task" value="{{.Task}}" size="5"></label>
+<label>Person <input name="person" value="{{.Person}}"></label>
+<button>Show</button>
+</form>
+{{if .Clear}}<p>Filtered by:{{range .Clear}} <a href="{{.URL}}">{{.Text}} (clear)</a>{{end}}</p>{{end}}
+<main id="timeline">
+{{template "timeline" .}}
+</main>
+{{end}}
+
+{{define "timeline"}}
+{{- if .Empty}}<p class="empty">{{.Empty}}</p>{{end -}}
+{{- range .Days}}
+<section class="day">
+<h2>{{.Date}}{{if .Continued}} (continued){{end}}</h2>
+<ol>
+{{- range .Events}}
+<li class="event" data-seq="{{.Seq}}">
+<a href="{{.CommitURL}}"><code>{{.Commit}}</code></a>
+<a href="{{.ByURL}}">{{.By}}</a>
+<strong>{{.Kind}}</strong>
+<a href="{{.TaskURL}}">{{.Task}}</a>{{if .TaskTitle}} {{.TaskTitle}}{{end}}
+(<a href="{{.TaskHistory}}">history of {{.Task}}</a>)
+{{- if .Change.Known}} {{template "status" .Change}}{{end}}
+{{- if .Note}} <em>{{.Note}}</em>{{end}}
+<span class="after">status after: {{if .After.Known}}{{template "status" .After}}{{else}}no status event yet{{end}}; {{if .After.Authorisation}}authorised event seen{{else}}no authorised event yet{{end}}</span>
+</li>
+{{- end}}
+</ol>
+</section>
+{{- end}}
+{{- if .MoreURL}}
+<p id="more"><a href="{{.MoreURL}}" hx-get="{{.MoreURL}}" hx-target="#more" hx-swap="outerHTML">Older events ({{.Older}} more)</a></p>
+{{- end}}
+{{end}}
+
+{{define "status"}}{{.GateSym}} {{.Gate}} {{if .State}}{{.StateSym}} {{.State}}{{else}}(no state recorded){{end}}{{if .Reason}} {{.ReasonSym}} {{.Reason}}{{end}}{{end}}

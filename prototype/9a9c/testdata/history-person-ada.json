@@ -1,0 +1,64 @@
+[
+  {
+    "date": "2026-09-15",
+    "commit": "68d9021",
+    "by": "ada@example.org",
+    "task": "4e2b",
+    "event": "task"
+  },
+  {
+    "date": "2026-09-15",
+    "commit": "68d9021",
+    "by": "ada@example.org",
+    "task": "7b2e",
+    "event": "task"
+  },
+  {
+    "date": "2026-09-15",
+    "commit": "68d9021",
+    "by": "ada@example.org",
+    "task": "a1c0",
+    "event": "task"
+  },
+  {
+    "date": "2026-09-18",
+    "commit": "91aa774",
+    "by": "ada@example.org",
+    "task": "9f31",
+    "event": "task"
+  },
+  {
+    "date": "2026-09-21",
+    "commit": "74bc0b8",
+    "by": "ada@example.org",
+    "task": "3c5d",
+    "event": "authorised"
+  },
+  {
+    "date": "2026-09-22",
+    "commit": "63a1f88",
+    "by": "ada@example.org",
+    "task": "9f31",
+    "event": "status",
+    "gate": "mockup",
+    "state": "nominal"
+  },
+  {
+    "date": "2026-09-25",
+    "commit": "a2393fb",
+    "by": "ada@example.org",
+    "task": "9f31",
+    "event": "status",
+    "gate": "function",
+    "state": "stalled",
+    "reason": "blocked",
+    "note": "Barometer ICs on 14-week backorder"
+  },
+  {
+    "date": "2026-09-28",
+    "commit": "edb30d2",
+    "by": "ada@example.org",
+    "task": "9f31",
+    "event": "reaffirmed"
+  }
+]
