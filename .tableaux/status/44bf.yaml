@@ -1,3 +1,4 @@
 gate: function
 state: nominal
-note: prototype/44bf renders the four status views from tablo 886d data with HTMX row fragments and link fallbacks
+reason: review
+note: design/44bf.md on branch wave/templates awaits the owner's review at the design gate
