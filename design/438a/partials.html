@@ -1,0 +1,49 @@
+{{/* sym: one symbol beside its visible name. */}}
+{{define "sym"}}<span aria-hidden="true">{{.Glyph}}</span> {{.Name}}{{end}}
+
+{{/* syms: symbols whose names are for a reader who does not see them. */}}
+{{define "syms"}}{{if .}}<span aria-hidden="true">{{range .}}{{.Glyph}}{{end}}</span><span class="sr">{{range $i, $s := .}}{{if $i}}, {{end}}{{$s.Name}}{{end}}</span>{{end}}{{end}}
+
+{{/* task: a task id that links to its definition, with its title when it has one. */}}
+{{define "task"}}<a class="id" href="{{.Href}}">{{.ID}}</a>{{if .Title}} {{.Title}}{{end}}{{end}}
+
+{{/* person: an email, marked where the person parameter names it. */}}
+{{define "person"}}{{if .Mine}}<strong class="mine">{{.Email}}</strong>{{else}}{{.Email}}{{end}}{{end}}
+
+{{/* status: gate, state and reason. */}}
+{{define "status"}}{{template "sym" .Gate}}{{with .State}} · {{template "sym" .}}{{end}}{{with .Reason}} · {{template "sym" .}}{{end}}{{end}}
+
+{{/* fold: the opening tag of a details element; the caller writes summary, body and the closing tag. */}}
+{{define "fold"}}<details class="{{.Class}}" id="{{.ID}}"{{if .Open}} open{{end}}{{if .Src}} hx-get="{{.Src}}" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"{{end}}>{{end}}
+
+{{/* lazy: the body of a fold whose content the page does not hold. */}}
+{{define "lazy"}}<div class="fold-body"><a href="{{.Alt}}">Show this in the page</a></div>{{end}}
+
+{{/* commit: the fields of a commit, inside a dl.fields. */}}
+{{define "commit"}}<dt>Commit</dt><dd><code>{{.Hash}}</code> {{.Subject}}</dd>
+<dt>Date</dt><dd>{{.Date}}</dd>
+<dt>Author</dt><dd>{{.Author}}</dd>
+<dt>Committer</dt><dd>{{.Committer}}</dd>
+{{if .Trailers}}<dt>Trailers</dt><dd>{{range $i, $t := .Trailers}}{{if $i}}, {{end}}<code>{{$t}}</code>{{end}}</dd>
+{{end}}{{end}}
+
+{{/* commands: the commands that reproduce a fact. */}}
+{{define "commands"}}{{if .}}<pre><code>{{range $i, $c := .}}{{if $i}}
+{{end}}{{$c}}{{end}}</code></pre>{{end}}{{end}}
+
+{{/* references: a list of references, each as text. */}}
+{{define "references"}}<ul class="notes">
+{{range .}}<li>{{.Text}}{{if .URL}}, <code>{{.URL}}</code>{{end}}{{with .By}}, stated by {{template "task" .}}{{end}}</li>
+{{end}}</ul>{{end}}
+
+{{/* junction-row: one row of a junction table: gate, marks, contributor, model, reviewer. */}}
+{{define "junction-cells"}}<th scope="row">{{template "sym" .Gate}}</th><td class="cell">{{template "syms" .Marks}}</td>{{if .Subproject}}<td colspan="3">Subproject <code>{{.Subproject.URL}}</code>, task {{template "task" .Subproject.Task}}</td>{{else}}<td>{{with .Contributor}}{{template "person" .}}{{end}}</td><td>{{with .Model}}<code>{{.}}</code>{{end}}</td><td>{{with .Reviewer}}{{if $.ByAssignee}}the assignee, {{end}}{{template "person" .}}{{end}}</td>{{end}}{{end}}
+
+{{/* event-row: one event as a table row of five cells. */}}
+{{define "event-row"}}<tr><td>{{.Date}}</td><th scope="row"><code>{{.Hash}}</code></th><td>{{template "person" .By}}</td><td>{{.Event}}</td><td>{{with .Status}}{{template "status" .}}{{if .Note}}: {{.Note}}{{end}}{{end}}{{with .Gate}}{{template "sym" .}}{{end}}{{with .Pin}}<code>{{.URL}}</code> {{if .Old}}from <code>{{.Old}}</code> {{end}}to <code>{{.New}}</code>{{end}}</td></tr>{{end}}
+
+{{/* swap: the attributes that let HTMX replace main with a Link's answer. */}}
+{{define "swap"}}{{if .Swap}} hx-get="{{.Href}}" hx-target="#main" hx-swap="outerHTML" hx-push-url="true"{{end}}{{end}}
+
+{{/* edge: one requirement as a sentence. */}}
+{{define "edge"}}{{template "task" .Task}}{{if .Project}} in <code>{{.Project}}</code> at <code>{{.ReadAt}}</code>{{end}} from {{.From.Name}} to {{.To.Name}}, {{.Text}}: {{.Condition}}{{end}}

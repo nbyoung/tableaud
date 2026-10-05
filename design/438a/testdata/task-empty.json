@@ -1,0 +1,645 @@
+{
+ "View": "task",
+ "Heading": "Task definition",
+ "Question": "q",
+ "Project": "Tableaux tooling",
+ "Ref": {
+  "Name": "main",
+  "Commit": "3cdae52",
+  "Date": "2026-10-05"
+ },
+ "Viewer": "nbyoung@nbyoung.com",
+ "Role": "owner",
+ "Params": null,
+ "Nav": [
+  {
+   "Label": "Tableau",
+   "Href": "V/tableau",
+   "Current": false
+  },
+  {
+   "Label": "My corner",
+   "Href": "V/contextual",
+   "Current": false
+  },
+  {
+   "Label": "Queue",
+   "Href": "V/queue",
+   "Current": false
+  },
+  {
+   "Label": "Blockage",
+   "Href": "V/blockage",
+   "Current": false
+  },
+  {
+   "Label": "Task",
+   "Href": "V/task",
+   "Current": true
+  },
+  {
+   "Label": "Assignment",
+   "Href": "V/assignment",
+   "Current": false
+  },
+  {
+   "Label": "Authority",
+   "Href": "V/authority",
+   "Current": false
+  },
+  {
+   "Label": "History",
+   "Href": "V/history",
+   "Current": false
+  },
+  {
+   "Label": "Audit",
+   "Href": "V/audit",
+   "Current": false
+  },
+  {
+   "Label": "Gates",
+   "Href": "V/gate",
+   "Current": false
+  }
+ ],
+ "Legend": "V/gate",
+ "CSS": "S/tableaud.css",
+ "Script": "S/htmx/htmx.min.js",
+ "Meta": null,
+ "Live": null,
+ "Body": {
+  "Task": {
+   "ID": "e9c6",
+   "Title": "Abstract views",
+   "Href": "T/e9c6"
+  },
+  "Assignee": {
+   "Email": "noreply@anthropic.com",
+   "Mine": false
+  },
+  "Parent": null,
+  "Order": 1,
+  "Status": {
+   "Gate": {
+    "Glyph": "❔",
+    "Name": "undefined"
+   },
+   "State": {
+    "Glyph": "⚪",
+    "Name": "undefined"
+   },
+   "Reason": null,
+   "Note": "",
+   "Date": "",
+   "Recorder": "",
+   "From": null,
+   "Snapshot": null
+  },
+  "Proposed": true,
+  "StatusProv": {
+   "Fold": {
+    "ID": "prov-status",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "File": "",
+   "Commit": null,
+   "Reaffirmed": false,
+   "Snapshot": {
+    "Mark": {
+     "Glyph": "🪆",
+     "Name": "a subproject does the work"
+    },
+    "URL": "subprojects/tableaud",
+    "Task": {
+     "ID": "8608",
+     "Title": "tableaud",
+     "Href": "T/8608"
+    },
+    "Pin": "e6ec4ec",
+    "Form": "the submodule's pin",
+    "Gate": {
+     "Glyph": "🔧",
+     "Name": "function"
+    }
+   },
+   "Commands": [
+    "git log -1 -- .tableaux/status/e9c6.yaml"
+   ]
+  },
+  "About": {
+   "Fold": {
+    "ID": "d-about",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Description": "VIEWS.md defines each view.",
+   "References": [
+    {
+     "Text": "Proposed views",
+     "URL": "PLAN.md#views",
+     "By": null
+    }
+   ],
+   "File": ".tableaux/tasks/e9c6.yaml",
+   "FileFold": {
+    "ID": "prov-file",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   }
+  },
+  "Place": {
+   "Fold": {
+    "ID": "d-place",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Path": [
+    {
+     "ID": "437e",
+     "Title": "Tableaux tooling",
+     "Href": "T/437e"
+    },
+    {
+     "ID": "2034",
+     "Title": "Views",
+     "Href": "T/2034"
+    },
+    {
+     "ID": "e9c6",
+     "Title": "Abstract views",
+     "Href": "T/e9c6"
+    }
+   ],
+   "Siblings": 3,
+   "Children": null,
+   "Authorities": null,
+   "Authorised": false,
+   "Prov": {
+    "Fold": {
+     "ID": "prov-authorisation",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Commit": null,
+    "Way": "a change on the trunk",
+    "By": "author and committer",
+    "Commands": null
+   }
+  },
+  "Requires": {
+   "Fold": {
+    "ID": "d-requires",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Total": 0,
+   "Rows": {
+    "Shown": [
+     {
+      "Task": {
+       "ID": "c2ad",
+       "Title": "Roles",
+       "Href": "T/c2ad"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "To": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "Text": "The role names",
+      "Status": {
+       "Gate": {
+        "Glyph": "🧱",
+        "Name": "implementation"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": null,
+       "Note": "",
+       "Date": "",
+       "Recorder": "",
+       "From": null,
+       "Snapshot": null
+      },
+      "Condition": "met"
+     }
+    ],
+    "Rest": null,
+    "Fold": {
+     "ID": "",
+     "Class": "",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Alike": ""
+   },
+   "Prov": {
+    "ID": "prov-requires",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "Files": [
+    ".tableaux/tasks/e9c6.yaml"
+   ],
+   "Commands": null
+  },
+  "Dependents": {
+   "Fold": {
+    "ID": "d-dependents",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Total": 0,
+   "Rows": {
+    "Shown": [
+     {
+      "Task": {
+       "ID": "99f0",
+       "Title": "Gate definition view in Markdown",
+       "Href": "T/99f0"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "To": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Text": "The abstract definition of the view",
+      "Status": null,
+      "Condition": "met"
+     },
+     {
+      "Task": {
+       "ID": "05a9",
+       "Title": "x",
+       "Href": "T/05a9"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "To": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Text": "The abstract definition of the view",
+      "Status": null,
+      "Condition": "met"
+     },
+     {
+      "Task": {
+       "ID": "a9ce",
+       "Title": "y",
+       "Href": "T/a9ce"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "To": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Text": "The abstract definition of the view",
+      "Status": null,
+      "Condition": "met"
+     }
+    ],
+    "Rest": [
+     {
+      "Task": {
+       "ID": "bb7c",
+       "Title": "z",
+       "Href": "T/bb7c"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "To": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Text": "The abstract definition of the view",
+      "Status": null,
+      "Condition": "met"
+     },
+     {
+      "Task": {
+       "ID": "c74a",
+       "Title": "w",
+       "Href": "T/c74a"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "To": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Text": "The abstract definition of the view",
+      "Status": null,
+      "Condition": "met"
+     }
+    ],
+    "Fold": {
+     "ID": "fold-dependents",
+     "Class": "fold",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Alike": "with the same edge, text and condition"
+   },
+   "Prov": {
+    "ID": "prov-dependents",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "Files": null,
+   "Commands": null
+  },
+  "Junctions": {
+   "Fold": {
+    "ID": "d-junctions",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Rows": [
+    {
+     "Gate": {
+      "Glyph": "📝",
+      "Name": "defined"
+     },
+     "Marks": [
+      {
+       "Glyph": "🤖",
+       "Name": "an agent contributes"
+      }
+     ],
+     "Exempt": false,
+     "Here": false,
+     "Contributor": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "Model": "claude-haiku",
+     "Reviewer": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "ByAssignee": true,
+     "Subproject": null,
+     "Refs": null,
+     "Stands": "passed"
+    },
+    {
+     "Gate": {
+      "Glyph": "📌",
+      "Name": "mockup"
+     },
+     "Marks": [
+      {
+       "Glyph": "—",
+       "Name": "the gate does not apply"
+      }
+     ],
+     "Exempt": true,
+     "Here": false,
+     "Contributor": null,
+     "Model": "",
+     "Reviewer": null,
+     "ByAssignee": false,
+     "Subproject": null,
+     "Refs": null,
+     "Stands": "does not apply"
+    },
+    {
+     "Gate": {
+      "Glyph": "📐",
+      "Name": "design"
+     },
+     "Marks": [
+      {
+       "Glyph": "🤖",
+       "Name": "an agent contributes"
+      },
+      {
+       "Glyph": "👀",
+       "Name": "a reviewer accepts"
+      }
+     ],
+     "Exempt": false,
+     "Here": true,
+     "Contributor": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "Model": "claude-fable",
+     "Reviewer": {
+      "Email": "nbyoung@nbyoung.com",
+      "Mine": true
+     },
+     "ByAssignee": false,
+     "Subproject": null,
+     "Refs": null,
+     "Stands": "passed, reviewed"
+    },
+    {
+     "Gate": {
+      "Glyph": "🧱",
+      "Name": "implementation"
+     },
+     "Marks": [
+      {
+       "Glyph": "🪆",
+       "Name": "a subproject does the work"
+      }
+     ],
+     "Exempt": false,
+     "Here": false,
+     "Contributor": null,
+     "Model": "",
+     "Reviewer": null,
+     "ByAssignee": false,
+     "Subproject": {
+      "Mark": {
+       "Glyph": "",
+       "Name": ""
+      },
+      "URL": "subprojects/tableaud",
+      "Task": {
+       "ID": "8608",
+       "Title": "tableaud",
+       "Href": "T/8608"
+      },
+      "Pin": "e6ec4ec",
+      "Form": "",
+      "Gate": {
+       "Glyph": "🔧",
+       "Name": "function"
+      }
+     },
+     "Refs": null,
+     "Stands": "next"
+    }
+   ],
+   "Key": [
+    {
+     "Glyph": "🤖",
+     "Name": "an agent contributes"
+    },
+    {
+     "Glyph": "👀",
+     "Name": "a reviewer accepts"
+    },
+    {
+     "Glyph": "—",
+     "Name": "the gate does not apply"
+    }
+   ],
+   "Sources": {
+    "Fold": {
+     "ID": "prov-sources",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Chain": [
+     {
+      "Task": {
+       "ID": "e9c6",
+       "Title": "Abstract views",
+       "Href": "T/e9c6"
+      },
+      "File": ".tableaux/tasks/e9c6.yaml",
+      "States": [
+       {
+        "Glyph": "📌",
+        "Name": "mockup"
+       }
+      ]
+     },
+     {
+      "Task": {
+       "ID": "2034",
+       "Title": "Views",
+       "Href": "T/2034"
+      },
+      "File": ".tableaux/tasks/2034.yaml",
+      "States": null
+     }
+    ],
+    "Rows": [
+     {
+      "Gate": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "Span": 2,
+      "Field": "contributor",
+      "Value": "noreply@anthropic.com",
+      "Mine": false,
+      "By": {
+       "ID": "bc63",
+       "Title": "Method",
+       "Href": "T/bc63"
+      },
+      "Default": ""
+     },
+     {
+      "Gate": {
+       "Glyph": "📐",
+       "Name": "design"
+      },
+      "Span": 0,
+      "Field": "reviewer",
+      "Value": "nbyoung@nbyoung.com",
+      "Mine": true,
+      "By": null,
+      "Default": "an agent with no stated reviewer takes the assignee"
+     }
+    ]
+   },
+   "Reviews": {
+    "Fold": {
+     "ID": "prov-reviews",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": null,
+    "Commands": null
+   },
+   "Models": {
+    "Fold": {
+     "ID": "prov-models",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": null
+   }
+  },
+  "Events": {
+   "Fold": {
+    "ID": "prov-events",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "History": "V/history?task=e9c6",
+   "Total": 7,
+   "Rows": null,
+   "Earlier": 5,
+   "Commands": null
+  }
+ }
+}
