@@ -1,0 +1,136 @@
+{
+  "detail": {
+    "rows": [
+      {
+        "authorities": [],
+        "id": "a1c0"
+      },
+      {
+        "authorities": [
+          "ada@example.org"
+        ],
+        "id": "4e2b",
+        "junction_defaults": {
+          "mockup": {
+            "reviewer": "ben@example.org"
+          }
+        }
+      },
+      {
+        "authorities": [
+          "ben@example.org",
+          "ada@example.org"
+        ],
+        "id": "9f31"
+      },
+      {
+        "authorities": [
+          "ben@example.org",
+          "ada@example.org"
+        ],
+        "id": "c07d"
+      },
+      {
+        "authorities": [
+          "ada@example.org"
+        ],
+        "id": "7b2e"
+      }
+    ]
+  },
+  "glance": {
+    "rows": [
+      {
+        "assignee": "ada@example.org",
+        "authorisation": "proposed",
+        "children": 2,
+        "delegated": false,
+        "depth": 0,
+        "differs_from_trunk": false,
+        "id": "a1c0",
+        "title": "Weather station"
+      },
+      {
+        "assignee": "ben@example.org",
+        "authorisation": "proposed",
+        "children": 2,
+        "delegated": true,
+        "depth": 1,
+        "differs_from_trunk": false,
+        "id": "4e2b",
+        "title": "Sensor node"
+      },
+      {
+        "assignee": "ada@example.org",
+        "authorisation": "proposed",
+        "children": 0,
+        "delegated": true,
+        "depth": 2,
+        "differs_from_trunk": false,
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      {
+        "assignee": "ben@example.org",
+        "authorisation": "proposed",
+        "children": 0,
+        "delegated": false,
+        "depth": 2,
+        "differs_from_trunk": false,
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      {
+        "assignee": "ada@example.org",
+        "authorisation": "proposed",
+        "children": 0,
+        "delegated": false,
+        "depth": 1,
+        "differs_from_trunk": false,
+        "id": "7b2e",
+        "title": "Gateway"
+      }
+    ]
+  },
+  "on_trunk": false,
+  "params": {
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "rows": [
+      {
+        "by": "",
+        "commit": null,
+        "id": "a1c0",
+        "way": ""
+      },
+      {
+        "by": "",
+        "commit": null,
+        "id": "4e2b",
+        "way": ""
+      },
+      {
+        "by": "",
+        "commit": null,
+        "id": "9f31",
+        "way": ""
+      },
+      {
+        "by": "",
+        "commit": null,
+        "id": "c07d",
+        "way": ""
+      },
+      {
+        "by": "",
+        "commit": null,
+        "id": "7b2e",
+        "way": ""
+      }
+    ]
+  },
+  "ref": "91aa7747f22ef4bb66becb6eab5d5f1f9c28836d",
+  "view": "authority"
+}

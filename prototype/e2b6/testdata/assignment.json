@@ -1,0 +1,679 @@
+{
+  "detail": {
+    "people": [
+      {
+        "assigned": [
+          {
+            "id": "a1c0",
+            "status": {
+              "gate": "defined",
+              "reason": "",
+              "state": "nominal"
+            },
+            "title": "Weather station"
+          },
+          {
+            "id": "9f31",
+            "status": {
+              "gate": "function",
+              "reason": "blocked",
+              "state": "stalled"
+            },
+            "title": "Sensor board"
+          },
+          {
+            "id": "7b2e",
+            "status": {
+              "gate": "undefined",
+              "reason": "",
+              "state": "undefined"
+            },
+            "title": "Gateway"
+          }
+        ],
+        "assigned_by_gate": {
+          "defined": 1,
+          "function": 1,
+          "undefined": 1
+        },
+        "authority_over": [
+          {
+            "descendants": 5,
+            "id": "a1c0",
+            "title": "Weather station"
+          }
+        ],
+        "contributes": [
+          {
+            "contributor": "ada@example.org",
+            "gate": "defined",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": false,
+            "reviewer": "ben@example.org",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "function",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "performance",
+            "model": "",
+            "next": true,
+            "reviewer": "",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "reliability",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "design",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "implementation",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "defined",
+            "model": "",
+            "next": true,
+            "reviewer": "",
+            "task": "7b2e"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "7b2e"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "function",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "7b2e"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "performance",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "7b2e"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "reliability",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "7b2e"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "design",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "7b2e"
+          },
+          {
+            "contributor": "ada@example.org",
+            "gate": "implementation",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "7b2e"
+          }
+        ],
+        "email": "ada@example.org",
+        "reviews": null
+      },
+      {
+        "assigned": [
+          {
+            "id": "4e2b",
+            "status": {
+              "gate": "function",
+              "reason": "blocked",
+              "state": "stalled"
+            },
+            "title": "Sensor node"
+          },
+          {
+            "id": "c07d",
+            "status": {
+              "gate": "design",
+              "reason": "",
+              "state": "nominal"
+            },
+            "title": "Node firmware"
+          }
+        ],
+        "assigned_by_gate": {
+          "design": 1,
+          "function": 1
+        },
+        "authority_over": [
+          {
+            "descendants": 2,
+            "id": "4e2b",
+            "title": "Sensor node"
+          }
+        ],
+        "contributes": [
+          {
+            "contributor": "ben@example.org",
+            "gate": "defined",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "c07d"
+          },
+          {
+            "contributor": "ben@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": false,
+            "reviewer": "ben@example.org",
+            "task": "c07d"
+          },
+          {
+            "contributor": "ben@example.org",
+            "gate": "function",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "c07d"
+          },
+          {
+            "contributor": "ben@example.org",
+            "gate": "performance",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "c07d"
+          },
+          {
+            "contributor": "ben@example.org",
+            "gate": "design",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "c07d"
+          }
+        ],
+        "email": "ben@example.org",
+        "reviews": [
+          {
+            "contributor": "ada@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": false,
+            "reviewer": "ben@example.org",
+            "task": "9f31"
+          },
+          {
+            "contributor": "ben@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": false,
+            "reviewer": "ben@example.org",
+            "task": "c07d"
+          }
+        ]
+      },
+      {
+        "assigned": [
+          {
+            "id": "3c5d",
+            "status": {
+              "gate": "defined",
+              "reason": "",
+              "state": "nominal"
+            },
+            "title": "Dashboard"
+          }
+        ],
+        "assigned_by_gate": {
+          "defined": 1
+        },
+        "authority_over": null,
+        "contributes": [
+          {
+            "contributor": "dan@example.org",
+            "gate": "defined",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": true,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "function",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "performance",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "reliability",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "design",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "implementation",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          }
+        ],
+        "email": "dan@example.org",
+        "reviews": null
+      },
+      {
+        "assigned": null,
+        "assigned_by_gate": {},
+        "authority_over": null,
+        "contributes": null,
+        "email": "opus@example.org",
+        "reviews": null
+      }
+    ]
+  },
+  "glance": {
+    "columns": [
+      "defined",
+      "mockup",
+      "function",
+      "performance",
+      "reliability",
+      "design",
+      "implementation"
+    ],
+    "people": [
+      {
+        "assigned": 3,
+        "contributes_next": 2,
+        "email": "ada@example.org",
+        "models": [],
+        "reviews_next": 0
+      },
+      {
+        "assigned": 2,
+        "contributes_next": 0,
+        "email": "ben@example.org",
+        "models": [],
+        "reviews_next": 0
+      },
+      {
+        "assigned": 1,
+        "contributes_next": 1,
+        "email": "dan@example.org",
+        "models": [],
+        "reviews_next": 0
+      },
+      {
+        "assigned": 0,
+        "contributes_next": 0,
+        "email": "opus@example.org",
+        "models": [
+          "claude-opus-5-5"
+        ],
+        "reviews_next": 0
+      }
+    ]
+  },
+  "on_trunk": true,
+  "params": {
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "people": [
+      {
+        "contributes": [
+          {
+            "gate": "defined",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "mockup",
+            "next": false,
+            "source": "4e2b",
+            "sources": {
+              "contributor": "default",
+              "reviewer": "4e2b"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "function",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "performance",
+            "next": true,
+            "source": "9f31",
+            "sources": {
+              "contributor": "default",
+              "references": "9f31"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "reliability",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "design",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "implementation",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "defined",
+            "next": true,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          },
+          {
+            "gate": "mockup",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          },
+          {
+            "gate": "function",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          },
+          {
+            "gate": "performance",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          },
+          {
+            "gate": "reliability",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          },
+          {
+            "gate": "design",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          },
+          {
+            "gate": "implementation",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "7b2e"
+          }
+        ],
+        "email": "ada@example.org",
+        "reviews": null
+      },
+      {
+        "contributes": [
+          {
+            "gate": "defined",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "c07d"
+          },
+          {
+            "gate": "mockup",
+            "next": false,
+            "source": "4e2b",
+            "sources": {
+              "contributor": "default",
+              "reviewer": "4e2b"
+            },
+            "task": "c07d"
+          },
+          {
+            "gate": "function",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "c07d"
+          },
+          {
+            "gate": "performance",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "c07d"
+          },
+          {
+            "gate": "design",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "c07d"
+          }
+        ],
+        "email": "ben@example.org",
+        "reviews": [
+          {
+            "gate": "mockup",
+            "next": false,
+            "source": "4e2b",
+            "sources": {
+              "contributor": "default",
+              "reviewer": "4e2b"
+            },
+            "task": "9f31"
+          },
+          {
+            "gate": "mockup",
+            "next": false,
+            "source": "4e2b",
+            "sources": {
+              "contributor": "default",
+              "reviewer": "4e2b"
+            },
+            "task": "c07d"
+          }
+        ]
+      },
+      {
+        "contributes": [
+          {
+            "gate": "defined",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "mockup",
+            "next": true,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "function",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "performance",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "reliability",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "design",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "implementation",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          }
+        ],
+        "email": "dan@example.org",
+        "reviews": null
+      },
+      {
+        "contributes": null,
+        "email": "opus@example.org",
+        "reviews": null
+      }
+    ]
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "assignment"
+}

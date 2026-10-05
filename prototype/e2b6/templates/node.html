@@ -1,0 +1,24 @@
+{{define "row"}}<span class="id"><a href="{{task .ID}}">{{.ID}}</a></span>
+ <span class="title">{{.Title}}</span>
+ <span class="assignee" title="assignee">{{if .ShowAssignee}}<a href="{{person .Assignee}}">{{.Assignee}}</a>{{else}}·{{end}}</span>
+ <span class="authority" title="who may accept this task: the parent's assignee">{{if .ShowAuthority}}accepted by <a href="{{person .Authority}}">{{.Authority}}</a>{{else if .Authority}}·{{else}}no authority above{{end}}</span>
+ <span class="state {{.Authorisation}}">{{.Authorisation}}</span>{{if .DiffersFromTrunk}} <span class="mark">differs from the trunk</span>{{end}}
+{{if and .Detail .Authorities}}<div class="chain">authority chain: {{range $i, $a := .Authorities}}{{if $i}} then {{end}}<a href="{{person $a}}">{{$a}}</a>{{end}}</div>{{end}}
+{{if and .Detail .JunctionDefaults}}<div class="defaults">junction defaults for the subtree:{{range $gate, $m := .JunctionDefaults}} at {{$gate}}{{range $k, $v := $m}} {{$k}} <a href="{{person $v}}">{{$v}}</a>{{end}}{{end}}</div>{{end}}
+{{if .Provenance}}<div class="prov">{{if .Commit}}deciding commit {{short .Commit.Hash}}, {{.Commit.Date}}, “{{.Commit.Subject}}”; author <a href="{{person .Commit.Author}}">{{.Commit.Author}}</a>, committer <a href="{{person .Commit.Committer}}">{{.Commit.Committer}}</a>; way: {{.Way}}{{if .By}}; the {{.By}} is the authority{{else if .Proposed}}; neither author nor committer is an authority, so the task stays proposed{{end}}{{else}}no deciding commit: off the trunk every task reads proposed{{end}}</div>{{end}}
+{{end}}
+
+{{define "node"}}<li id="n-{{.ID}}" class="node">
+<div class="row">{{if .NKids}}<a class="toggle" href="{{.Href}}" hx-get="{{.Frag}}" hx-target="#n-{{.ID}}" hx-swap="outerHTML" aria-expanded="{{.Open}}" title="{{if .Open}}collapse{{else}}expand{{end}}">{{if .Open}}[−]{{else}}[+]{{end}}</a>{{else}}<span class="leaf">[ ]</span>{{end}}
+{{template "row" .}}{{if and .NKids (not .Open)}} <span class="count">{{.NKids}} {{if eq .NKids 1}}child{{else}}children{{end}}</span>{{end}}</div>
+{{if .KidViews}}<ul>
+{{range .KidViews}}{{template "node" .}}{{end}}</ul>{{end}}
+</li>
+{{end}}
+
+{{define "dnode"}}<li id="n-{{.ID}}" class="node">
+{{if .KidViews}}<details{{if .Open}} open{{end}}><summary>{{template "row" .}}<span class="count">{{.NKids}} {{if eq .NKids 1}}child{{else}}children{{end}}</span></summary>
+<ul>
+{{range .KidViews}}{{template "dnode" .}}{{end}}</ul></details>{{else}}<div class="row">{{template "row" .}}</div>{{end}}
+</li>
+{{end}}
