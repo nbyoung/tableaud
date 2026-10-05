@@ -1,0 +1,184 @@
+{
+  "detail": {
+    "people": [
+      {
+        "assigned": [
+          {
+            "id": "3c5d",
+            "status": {
+              "gate": "defined",
+              "reason": "",
+              "state": "nominal"
+            },
+            "title": "Dashboard"
+          }
+        ],
+        "assigned_by_gate": {
+          "defined": 1
+        },
+        "authority_over": null,
+        "contributes": [
+          {
+            "contributor": "dan@example.org",
+            "gate": "defined",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "mockup",
+            "model": "",
+            "next": true,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "function",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "performance",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "reliability",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "design",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          },
+          {
+            "contributor": "dan@example.org",
+            "gate": "implementation",
+            "model": "",
+            "next": false,
+            "reviewer": "",
+            "task": "3c5d"
+          }
+        ],
+        "email": "dan@example.org",
+        "reviews": null
+      }
+    ]
+  },
+  "glance": {
+    "columns": [
+      "defined",
+      "mockup",
+      "function",
+      "performance",
+      "reliability",
+      "design",
+      "implementation"
+    ],
+    "people": [
+      {
+        "assigned": 1,
+        "contributes_next": 1,
+        "email": "dan@example.org",
+        "models": [],
+        "reviews_next": 0
+      }
+    ]
+  },
+  "on_trunk": true,
+  "params": {
+    "person": "dan@example.org",
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "people": [
+      {
+        "contributes": [
+          {
+            "gate": "defined",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "mockup",
+            "next": true,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "function",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "performance",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "reliability",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "design",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          },
+          {
+            "gate": "implementation",
+            "next": false,
+            "source": "",
+            "sources": {
+              "contributor": "default"
+            },
+            "task": "3c5d"
+          }
+        ],
+        "email": "dan@example.org",
+        "reviews": null
+      }
+    ]
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "assignment"
+}

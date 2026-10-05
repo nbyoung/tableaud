@@ -1,0 +1,45 @@
+{{define "page"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}}</title>
+<style>body{font-family:sans-serif;max-width:60rem;margin:1rem auto;padding:0 1rem}nav a{margin-right:1rem}table{border-collapse:collapse}td,th{border:1px solid #bbb;padding:.1rem .4rem;text-align:left}ul.tree{list-style:none;padding-left:1.2rem}details{margin:.2rem 0 .2rem 1rem}</style>
+{{if .Script}}<script src="{{.Static "htmx/htmx.min.js"}}"></script>
+{{end}}</head>
+<body>
+<nav><a href="{{.Index}}">Index</a><a href="{{.Tableau}}">Global tableau</a><a href="{{.Gate}}">Gate definition</a></nav>
+<main>
+{{.Body}}
+</main>
+</body>
+</html>
+{{end}}
+
+{{define "disclose"}}<section class="glance">
+{{.Glance}}
+</section>
+{{if eq .Mode "details"}}<details class="detail"><summary>Detail</summary>
+{{.Detail}}
+</details>
+<details class="provenance"><summary>Provenance</summary>
+{{.Prov}}
+</details>
+{{else if eq .Mode "fragments"}}<p><button type="button" hx-get="{{.DetailHref}}" hx-swap="outerHTML">Show detail</button>
+<button type="button" hx-get="{{.ProvHref}}" hx-swap="outerHTML">Show provenance</button></p>
+{{else}}{{with .Detail}}<section class="detail">
+{{.}}
+</section>
+{{end}}{{with .Prov}}<section class="provenance">
+{{.}}
+</section>
+{{end}}<p>{{if .HasMore}}<a href="{{.MoreHref}}">{{.MoreLabel}}</a>{{end}} {{if .HasLess}}<a href="{{.LessHref}}">{{.LessLabel}}</a>{{end}}</p>
+{{end}}{{end}}
+
+{{define "index"}}<h1>Tableaux export{{with .Ref}}, ref {{.}}{{end}}</h1>
+<p>The layout is provisional. <a href="{{.Manifest}}">manifest.json</a> lists every file{{if .Script}}; the HTMX licence is in <a href="{{.Static "htmx/LICENSE"}}">static/htmx/LICENSE</a>{{end}}.</p>
+{{range .Groups}}<h2>{{.Name}}</h2>
+<ul>
+{{range .Items}}<li><a href="{{$.Href .Req}}">{{.Title}}</a></li>
+{{end}}</ul>
+{{end}}{{end}}
