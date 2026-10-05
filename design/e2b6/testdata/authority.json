@@ -1,0 +1,342 @@
+{
+ "View": "authority",
+ "Heading": "Authority delegation",
+ "Question": "Who may accept what?",
+ "Project": "Tableaux tooling",
+ "Ref": {
+  "Name": "main",
+  "Commit": "3cdae52",
+  "Date": "2026-10-05"
+ },
+ "Viewer": "nbyoung@nbyoung.com",
+ "Role": "owner",
+ "Params": null,
+ "Nav": [
+  {
+   "Label": "Tableau",
+   "Href": "V/tableau",
+   "Current": false
+  },
+  {
+   "Label": "My corner",
+   "Href": "V/contextual",
+   "Current": false
+  },
+  {
+   "Label": "Queue",
+   "Href": "V/queue",
+   "Current": false
+  },
+  {
+   "Label": "Blockage",
+   "Href": "V/blockage",
+   "Current": false
+  },
+  {
+   "Label": "Task",
+   "Href": "V/task",
+   "Current": false
+  },
+  {
+   "Label": "Assignment",
+   "Href": "V/assignment",
+   "Current": false
+  },
+  {
+   "Label": "Authority",
+   "Href": "V/authority",
+   "Current": true
+  },
+  {
+   "Label": "History",
+   "Href": "V/history",
+   "Current": false
+  },
+  {
+   "Label": "Audit",
+   "Href": "V/audit",
+   "Current": false
+  },
+  {
+   "Label": "Gates",
+   "Href": "V/gate",
+   "Current": false
+  }
+ ],
+ "Legend": "V/gate",
+ "CSS": "S/tableaud.css",
+ "Script": "S/htmx/htmx.min.js",
+ "Meta": null,
+ "Live": null,
+ "Body": {
+  "Total": 37,
+  "Proposed": 1,
+  "Filtered": false,
+  "All": {
+   "Href": "V/authority",
+   "Swap": true
+  },
+  "Only": {
+   "Href": "V/authority?proposed",
+   "Swap": true
+  },
+  "OffTrunk": true,
+  "Root": {
+   "Task": {
+    "ID": "437e",
+    "Title": "Tableaux tooling",
+    "Href": "T/437e"
+   },
+   "Depth": 0,
+   "Assignee": "nbyoung@nbyoung.com",
+   "Relation": "the owner",
+   "Same": false,
+   "Proposed": false,
+   "Differs": false,
+   "Fold": {
+    "ID": "t-437e",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Body": {
+    "Task": {
+     "ID": "437e",
+     "Title": "Tableaux tooling",
+     "Href": "T/437e"
+    },
+    "Assignee": "nbyoung@nbyoung.com",
+    "From": null,
+    "Delegation": false,
+    "Authorities": null,
+    "Authorised": true,
+    "Decided": "8eb0cae",
+    "Date": "2026-09-30",
+    "ChildCount": 1,
+    "Below": [
+     {
+      "Person": {
+       "Email": "nbyoung@nbyoung.com",
+       "Mine": false
+      },
+      "By": [
+       {
+        "ID": "437e",
+        "Title": "",
+        "Href": "T/437e"
+       }
+      ]
+     }
+    ],
+    "Defaults": [
+     {
+      "Gate": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Marks": [
+       {
+        "Glyph": "🤖",
+        "Name": "an agent contributes"
+       },
+       {
+        "Glyph": "👀",
+        "Name": "a reviewer accepts"
+       }
+      ],
+      "Exempt": false,
+      "Here": false,
+      "Contributor": {
+       "Email": "noreply@anthropic.com",
+       "Mine": false
+      },
+      "Model": "claude-opus",
+      "Reviewer": {
+       "Email": "nbyoung@nbyoung.com",
+       "Mine": false
+      },
+      "ByAssignee": false,
+      "Subproject": null,
+      "Refs": null,
+      "Stands": ""
+     }
+    ],
+    "Prov": {
+     "Fold": {
+      "ID": "prov-437e",
+      "Class": "prov",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Commit": {
+      "Hash": "8eb0cae",
+      "Full": "8eb0cae0000",
+      "Subject": "Name a model family per gate",
+      "Date": "2026-10-02",
+      "Author": "Claude Opus 5.5 \u003cnoreply@anthropic.com\u003e",
+      "Committer": "Claude Opus 5.5 \u003cnoreply@anthropic.com\u003e",
+      "Trailers": [
+       "Model: claude-opus-5-5"
+      ]
+     },
+     "Way": "a merge by an authority",
+     "By": "author and committer",
+     "Commands": null
+    },
+    "Others": 1,
+    "CommitsHref": "#deciding"
+   },
+   "Count": 3,
+   "Kids": {
+    "ID": "k-437e",
+    "Class": "kids",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Children": [
+    {
+     "Task": {
+      "ID": "bc63",
+      "Title": "Method",
+      "Href": "T/bc63"
+     },
+     "Depth": 1,
+     "Assignee": "nbyoung@nbyoung.com",
+     "Relation": "as the parent",
+     "Same": true,
+     "Proposed": false,
+     "Differs": false,
+     "Fold": {
+      "ID": "t-bc63",
+      "Class": "detail",
+      "Open": false,
+      "Src": "P/t-bc63",
+      "Alt": "A/t-bc63"
+     },
+     "Body": null,
+     "Count": 0,
+     "Kids": {
+      "ID": "",
+      "Class": "",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Children": null
+    },
+    {
+     "Task": {
+      "ID": "3c5d",
+      "Title": "Dashboard",
+      "Href": "T/3c5d"
+     },
+     "Depth": 1,
+     "Assignee": "dan@example.org",
+     "Relation": "a delegation",
+     "Same": false,
+     "Proposed": true,
+     "Differs": true,
+     "Fold": {
+      "ID": "t-3c5d",
+      "Class": "detail",
+      "Open": false,
+      "Src": "P/t-3c5d",
+      "Alt": "A/t-3c5d"
+     },
+     "Body": null,
+     "Count": 0,
+     "Kids": {
+      "ID": "",
+      "Class": "",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Children": null
+    },
+    {
+     "Task": {
+      "ID": "77b2",
+      "Title": "tablo",
+      "Href": "T/77b2"
+     },
+     "Depth": 1,
+     "Assignee": "nbyoung@nbyoung.com",
+     "Relation": "as the parent",
+     "Same": true,
+     "Proposed": false,
+     "Differs": false,
+     "Fold": {
+      "ID": "t-77b2",
+      "Class": "detail",
+      "Open": false,
+      "Src": "P/t-77b2",
+      "Alt": "A/t-77b2"
+     },
+     "Body": null,
+     "Count": 3,
+     "Kids": {
+      "ID": "k-77b2",
+      "Class": "kids",
+      "Open": false,
+      "Src": "P/k-77b2",
+      "Alt": "A/k-77b2"
+     },
+     "Children": null
+    }
+   ]
+  },
+  "Commits": {
+   "Fold": {
+    "ID": "prov-commits",
+    "Class": "prov",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Rows": [
+    {
+     "Commit": {
+      "Hash": "8eb0cae",
+      "Full": "8eb0cae0000",
+      "Subject": "Name a model family per gate",
+      "Date": "2026-10-02",
+      "Author": "Claude Opus 5.5 \u003cnoreply@anthropic.com\u003e",
+      "Committer": "Claude Opus 5.5 \u003cnoreply@anthropic.com\u003e",
+      "Trailers": [
+       "Model: claude-opus-5-5"
+      ]
+     },
+     "Way": "a merge",
+     "By": "author and committer",
+     "Tasks": [
+      {
+       "ID": "437e",
+       "Title": "",
+       "Href": "T/437e"
+      },
+      {
+       "ID": "bc63",
+       "Title": "",
+       "Href": "T/bc63"
+      }
+     ]
+    }
+   ],
+   "Ways": [
+    {
+     "Way": "a change on the trunk",
+     "Count": 33
+    },
+    {
+     "Way": "a merge",
+     "Count": 4
+    }
+   ],
+   "Commands": null
+  }
+ }
+}

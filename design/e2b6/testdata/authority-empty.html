@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authority delegation · Tableaux tooling</title>
+<link rel="stylesheet" href="S/tableaud.css">
+<script src="S/htmx/htmx.min.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the view</a>
+<header class="site">
+<nav aria-label="Views">
+<ul>
+<li><a href="V/tableau">Tableau</a></li>
+<li><a href="V/contextual">My corner</a></li>
+<li><a href="V/queue">Queue</a></li>
+<li><a href="V/blockage">Blockage</a></li>
+<li><a href="V/task">Task</a></li>
+<li><a href="V/assignment">Assignment</a></li>
+<li><a href="V/authority" aria-current="page">Authority</a></li>
+<li><a href="V/history">History</a></li>
+<li><a href="V/audit">Audit</a></li>
+<li><a href="V/gate">Gates</a></li>
+</ul>
+</nav>
+<p class="context">Tableaux tooling · <code>main</code> at <code>3cdae52</code>, 2026-10-05 · viewer nbyoung@nbyoung.com, owner</p>
+</header>
+<main id="main" class="v-authority">
+<h1>Authority delegation</h1>
+<p class="question">q</p>
+
+<p class="filter">Show: <a href="a">all 37 tasks</a> · <a href="b" aria-current="true">proposed tasks only, 0</a></p>
+<h2 id="tree">The tree of assignees</h2>
+<p class="empty">No task is proposed: all 37 are authorised.</p>
+
+<h2 id="deciding">Deciding commits</h2>
+<details class="prov" id="prov-commits" hx-get="P/prov-commits" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance: 0 deciding commits</summary><div class="fold-body"><a href="A/prov-commits">Show this in the page</a></div></details>
+
+</main>
+<footer class="site">
+<p>Authority delegation of Tableaux tooling at <code>3cdae52</code>. <a href="V/gate">The gate definition</a> explains every symbol.</p>
+</footer>
+</body>
+</html>
