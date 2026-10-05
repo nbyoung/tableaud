@@ -1,0 +1,211 @@
+{
+  "view": "contextual-tableau",
+  "ref": "main",
+  "task": "4e2b",
+  "level": "detail",
+  "window": 1,
+  "cell_rule": "state-at-gate",
+  "next_gates_in_view": [
+    "performance",
+    "implementation"
+  ],
+  "columns": [
+    {
+      "gate": "function",
+      "symbol": "⚙️"
+    },
+    {
+      "gate": "performance",
+      "symbol": "⚡"
+    },
+    {
+      "gate": "reliability",
+      "symbol": "⚓"
+    },
+    {
+      "gate": "design",
+      "symbol": "📐"
+    },
+    {
+      "gate": "implementation",
+      "symbol": "🛠️"
+    },
+    {
+      "gate": "unit",
+      "symbol": "🧩"
+    }
+  ],
+  "folded": [
+    {
+      "side": "before",
+      "from": "undefined",
+      "to": "mockup",
+      "count": 0,
+      "by_gate": {
+        "defined": 0,
+        "mockup": 0,
+        "undefined": 0
+      }
+    },
+    {
+      "side": "after",
+      "from": "integrate",
+      "to": "release",
+      "count": 0,
+      "by_gate": {
+        "integrate": 0,
+        "release": 0,
+        "validate": 0
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "4e2b",
+      "title": "Sensor node",
+      "depth": 1,
+      "parent": true,
+      "authorised": true,
+      "status": {
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "2026-09-17",
+        "rolled_up_from": "9f31",
+        "derived": true
+      },
+      "next_gate": "performance",
+      "cells": [
+        {
+          "gate": "function",
+          "kind": "status",
+          "symbols": "🔴⛔"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    },
+    {
+      "id": "9f31",
+      "title": "Sensor board",
+      "depth": 2,
+      "parent": false,
+      "authorised": true,
+      "status": {
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "2026-09-28",
+        "recorder": "ada@example.org",
+        "commit": "W13"
+      },
+      "next_gate": "performance",
+      "cells": [
+        {
+          "gate": "function",
+          "kind": "status",
+          "symbols": "🔴⛔"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    },
+    {
+      "id": "c07d",
+      "title": "Node firmware",
+      "depth": 2,
+      "parent": false,
+      "authorised": true,
+      "status": {
+        "gate": "design",
+        "state": "nominal",
+        "note": "Sleep scheduler in progress",
+        "date": "2026-09-17",
+        "recorder": "ben@example.org",
+        "commit": "F2",
+        "subproject_snapshot": true
+      },
+      "next_gate": "implementation",
+      "cells": [
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "exempt",
+          "symbols": "—"
+        },
+        {
+          "gate": "design",
+          "kind": "status",
+          "symbols": "🟢"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🪆"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🤖👀"
+        }
+      ]
+    }
+  ]
+}
