@@ -1,0 +1,72 @@
+{
+  "view": "work-blockage-tree",
+  "ref": "main",
+  "causes": [
+    {
+      "kind": "status",
+      "cause": "9f31 Sensor board is stalled at function: Barometer ICs on 14-week backorder",
+      "task": "9f31",
+      "resolver": "ada@example.org",
+      "action": "clear the blocked reason, or record a new status",
+      "holds": 2,
+      "tree": [
+        {
+          "task": "9f31",
+          "title": "Sensor board",
+          "gate": "performance"
+        },
+        {
+          "task": "c07d",
+          "title": "Node firmware",
+          "gate": "implementation"
+        }
+      ]
+    },
+    {
+      "kind": "unmet-requirement",
+      "cause": "9f31 Sensor board has not passed design",
+      "task": "9f31",
+      "resolver": "ada@example.org",
+      "action": "record 9f31 through design",
+      "holds": 1,
+      "tree": [
+        {
+          "task": "c07d",
+          "title": "Node firmware",
+          "gate": "implementation"
+        }
+      ]
+    },
+    {
+      "kind": "authorisation",
+      "cause": "3c5d Dashboard is proposed",
+      "task": "3c5d",
+      "resolver": "ada@example.org",
+      "action": "commit a trailer: Authorised: 3c5d",
+      "holds": 1,
+      "tree": [
+        {
+          "task": "3c5d",
+          "title": "Dashboard",
+          "gate": "mockup"
+        }
+      ]
+    }
+  ],
+  "not_yet_due": [
+    {
+      "task": "3c5d",
+      "requires": "7b2e",
+      "from": "function",
+      "to": "integrate",
+      "text": "Readings API",
+      "met": false,
+      "due": false,
+      "condition": "pending"
+    }
+  ],
+  "not_derived": [
+    "review outstanding",
+    "subproject pin not advanced"
+  ]
+}

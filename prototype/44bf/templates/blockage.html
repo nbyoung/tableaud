@@ -1,0 +1,11 @@
+{{define "title"}}Work-blockage tree{{end}}
+{{define "content"}}{{template "style"}}
+<h1>Work-blockage tree</h1>
+<p>ref {{.Ref}}; causes, largest first</p>
+<ul class="tree">
+{{range .Causes}}{{template "cause" .}}{{end}}</ul>
+{{if .NotYetDue}}<h2>Not yet due</h2>
+<ul>{{range .NotYetDue}}<li class="notdue"><a href="/task/{{.Task}}">{{.Task}}</a> requires {{.Requires}} ({{.From}} to {{.To}}): {{.Text}}</li>
+{{end}}</ul>{{end}}
+{{if .NotDerived}}<p class="more">Not derived by the data: {{range $i, $e := .NotDerived}}{{if $i}}, {{end}}{{$e}}{{end}}</p>{{end}}
+{{end}}

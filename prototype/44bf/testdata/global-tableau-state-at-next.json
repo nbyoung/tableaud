@@ -1,0 +1,444 @@
+{
+  "view": "global-tableau",
+  "ref": "main",
+  "level": "detail",
+  "window": 1,
+  "cell_rule": "state-at-next",
+  "next_gates_in_view": [
+    "defined",
+    "mockup",
+    "performance",
+    "implementation"
+  ],
+  "columns": [
+    {
+      "gate": "undefined",
+      "symbol": "❔"
+    },
+    {
+      "gate": "defined",
+      "symbol": "📝"
+    },
+    {
+      "gate": "mockup",
+      "symbol": "📌"
+    },
+    {
+      "gate": "function",
+      "symbol": "⚙️"
+    },
+    {
+      "gate": "performance",
+      "symbol": "⚡"
+    },
+    {
+      "gate": "reliability",
+      "symbol": "⚓"
+    },
+    {
+      "gate": "design",
+      "symbol": "📐"
+    },
+    {
+      "gate": "implementation",
+      "symbol": "🛠️"
+    },
+    {
+      "gate": "unit",
+      "symbol": "🧩"
+    }
+  ],
+  "folded": [
+    {
+      "side": "after",
+      "from": "integrate",
+      "to": "release",
+      "count": 0,
+      "by_gate": {
+        "integrate": 0,
+        "release": 0,
+        "validate": 0
+      }
+    }
+  ],
+  "rows": [
+    {
+      "id": "a1c0",
+      "title": "Weather station",
+      "depth": 0,
+      "parent": true,
+      "authorised": true,
+      "status": {
+        "gate": "defined",
+        "state": "nominal",
+        "date": "2026-09-17",
+        "rolled_up_from": "3c5d",
+        "derived": true
+      },
+      "next_gate": "mockup",
+      "cells": [
+        {
+          "gate": "undefined",
+          "kind": "blank",
+          "symbols": ""
+        },
+        {
+          "gate": "defined",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "mockup",
+          "kind": "status",
+          "symbols": "🟢"
+        },
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    },
+    {
+      "id": "4e2b",
+      "title": "Sensor node",
+      "depth": 1,
+      "parent": true,
+      "authorised": true,
+      "status": {
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "2026-09-17",
+        "rolled_up_from": "9f31",
+        "derived": true
+      },
+      "next_gate": "performance",
+      "cells": [
+        {
+          "gate": "undefined",
+          "kind": "blank",
+          "symbols": ""
+        },
+        {
+          "gate": "defined",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "mockup",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "status",
+          "symbols": "🔴⛔"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    },
+    {
+      "id": "9f31",
+      "title": "Sensor board",
+      "depth": 2,
+      "parent": false,
+      "authorised": true,
+      "status": {
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "2026-09-28",
+        "recorder": "ada@example.org",
+        "commit": "W13"
+      },
+      "next_gate": "performance",
+      "cells": [
+        {
+          "gate": "undefined",
+          "kind": "blank",
+          "symbols": ""
+        },
+        {
+          "gate": "defined",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "mockup",
+          "kind": "marks",
+          "symbols": "🧑👀"
+        },
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "status",
+          "symbols": "🔴⛔"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    },
+    {
+      "id": "c07d",
+      "title": "Node firmware",
+      "depth": 2,
+      "parent": false,
+      "authorised": true,
+      "status": {
+        "gate": "design",
+        "state": "nominal",
+        "note": "Sleep scheduler in progress",
+        "date": "2026-09-17",
+        "recorder": "ben@example.org",
+        "commit": "F2",
+        "subproject_snapshot": true
+      },
+      "next_gate": "implementation",
+      "cells": [
+        {
+          "gate": "undefined",
+          "kind": "blank",
+          "symbols": ""
+        },
+        {
+          "gate": "defined",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "mockup",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "exempt",
+          "symbols": "—"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "status",
+          "symbols": "🟢"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🤖👀"
+        }
+      ]
+    },
+    {
+      "id": "7b2e",
+      "title": "Gateway",
+      "depth": 1,
+      "parent": false,
+      "authorised": true,
+      "status": {
+        "gate": "undefined",
+        "state": "undefined",
+        "date": "2026-09-15",
+        "recorder": "ada@example.org",
+        "commit": "W1"
+      },
+      "next_gate": "defined",
+      "cells": [
+        {
+          "gate": "undefined",
+          "kind": "blank",
+          "symbols": ""
+        },
+        {
+          "gate": "defined",
+          "kind": "status",
+          "symbols": "⚪"
+        },
+        {
+          "gate": "mockup",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    },
+    {
+      "id": "3c5d",
+      "title": "Dashboard",
+      "depth": 1,
+      "parent": false,
+      "authorised": false,
+      "status": {
+        "gate": "defined",
+        "state": "nominal",
+        "date": "2026-09-22",
+        "recorder": "dan@example.org",
+        "commit": "W8"
+      },
+      "next_gate": "mockup",
+      "cells": [
+        {
+          "gate": "undefined",
+          "kind": "blank",
+          "symbols": ""
+        },
+        {
+          "gate": "defined",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "mockup",
+          "kind": "status",
+          "symbols": "🟢"
+        },
+        {
+          "gate": "function",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "performance",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "reliability",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "design",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "implementation",
+          "kind": "marks",
+          "symbols": "🧑"
+        },
+        {
+          "gate": "unit",
+          "kind": "marks",
+          "symbols": "🧑"
+        }
+      ]
+    }
+  ]
+}
