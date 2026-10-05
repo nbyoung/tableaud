@@ -1,0 +1,16 @@
+{{define "title"}}Authority delegation at {{.P.Ref}}{{end}}
+{{define "content"}}<h1>Authority delegation</h1>
+<p>Ref <strong>{{.P.Ref}}</strong> (commit {{short .View.Ref}}){{if not .View.OnTrunk}}. This commit is off the trunk's first-parent line: every task reads proposed, and a task marked “differs from the trunk” is one of the branch's proposals.{{end}}
+ {{.Tree.Count}} tasks, {{.Tree.Prop}} proposed.</p>
+<nav>
+<p>Ref: {{range .RefLinks}}{{if .Current}}<strong>{{.Text}}</strong>{{else}}<a href="{{.Href}}">{{.Text}}</a>{{end}} {{end}}</p>
+<p>Level: {{range .LevelLinks}}{{if .Current}}<strong>{{.Text}}</strong>{{else}}<a href="{{.Href}}">{{.Text}}</a>{{end}} {{end}}</p>
+<p>Filter: <a id="filter" href="{{.FilterHref}}">{{if .FilterOn}}show every task{{else}}show proposed tasks only{{end}}</a>
+ · Rendering: <a id="mode" href="{{.ModeHref}}">{{if .P.Full}}fetch fragments on expansion{{else}}send the whole tree{{end}}</a></p>
+</nav>
+{{if .FilterOn}}<p>Proposed tasks only, with the path from the root to each: showing {{.Shown}} of {{.Tree.Count}} tasks.</p>{{end}}
+{{if .Roots}}<ul class="tree">
+{{range .Roots}}{{if $.P.Full}}{{template "dnode" .}}{{else}}{{template "node" .}}{{end}}{{end}}</ul>
+{{else}}<p>No task in this view is proposed: every task is authorised.</p>{{end}}
+<p><a href="/people">Task assignment</a></p>
+{{end}}
