@@ -1,0 +1,334 @@
+{
+  "detail": {
+    "authorisation": {
+      "state": "authorised",
+      "way": "commit"
+    },
+    "authorities": [
+      "ada@example.org"
+    ],
+    "children": null,
+    "dependents": [
+      {
+        "id": "3c5d",
+        "title": "Dashboard",
+        "from": "function",
+        "to": "integrate",
+        "text": "Readings API",
+        "met": false,
+        "due": false,
+        "condition": "pending"
+      }
+    ],
+    "description": "A mains-powered box indoors that receives the node's readings over LoRa and stores them in a database the dashboard reads.",
+    "junctions": [
+      {
+        "contributor": "ada@example.org",
+        "gate": "undefined",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "❔"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "defined",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📝"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "mockup",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📌"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "function",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚙️"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "performance",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚡"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "reliability",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "⚓"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "design",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "📐"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "implementation",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🛠️"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "unit",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🧩"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "integrate",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🖼️"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "validate",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🌍"
+      },
+      {
+        "contributor": "ada@example.org",
+        "gate": "release",
+        "kind": "plain",
+        "marks": [
+          "🧑"
+        ],
+        "model": "",
+        "references": null,
+        "reviewer": "",
+        "subproject": null,
+        "symbol": "🚀"
+      }
+    ],
+    "references": [
+      {
+        "text": "Gateway overview",
+        "url": "docs/overview.md#gateway"
+      }
+    ],
+    "requires": null
+  },
+  "glance": {
+    "assignee": "ada@example.org",
+    "id": "7b2e",
+    "next_gate": "defined",
+    "parent": {
+      "id": "a1c0",
+      "order": 2,
+      "title": "Weather station"
+    },
+    "status": {
+      "gate": "undefined",
+      "state": "undefined",
+      "date": "2026-09-15",
+      "recorder": "ada@example.org",
+      "commit": "68d9021206ec627755e2ead99b6be3f2c06ae815"
+    },
+    "title": "Gateway"
+  },
+  "on_trunk": true,
+  "params": {
+    "task": "7b2e",
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "authorisation": {
+      "state": "authorised",
+      "commit": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "author": "ada@example.org",
+        "committer": "ada@example.org",
+        "date": "2026-09-15",
+        "subject": "Plan the weather station"
+      },
+      "by": "author",
+      "way": "commit"
+    },
+    "command": "git log --format='%h %as %ae %s' -- .tableaux/tasks/7b2e.yaml .tableaux/status/7b2e.yaml",
+    "events": [
+      {
+        "date": "2026-09-15",
+        "commit": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "by": "ada@example.org",
+        "task": "7b2e",
+        "event": "task"
+      }
+    ],
+    "junction_sources": [
+      {
+        "gate": "undefined",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "defined",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "mockup",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "function",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "performance",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "reliability",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "design",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "implementation",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "unit",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "integrate",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "validate",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      },
+      {
+        "gate": "release",
+        "source": "",
+        "sources": {
+          "contributor": "default"
+        }
+      }
+    ],
+    "reviews": null,
+    "status_commit": {
+      "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+      "author": "ada@example.org",
+      "committer": "ada@example.org",
+      "date": "2026-09-15",
+      "subject": "Plan the weather station"
+    }
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "task"
+}

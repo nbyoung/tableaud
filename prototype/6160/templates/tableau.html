@@ -1,0 +1,47 @@
+{{define "tableau"}}<h1>Global tableau</h1>
+<p>Ref {{.D.ref}}, window {{.D.window}}, cell rule {{.D.cell_rule}}. Next gates in view:{{range .D.next_gates_in_view}} {{.}}{{end}}.</p>
+<p>Columns:{{range .D.columns}} {{.symbol}} {{.gate}};{{end}}{{range .D.folded}} folded {{.side}}: {{.from}} to {{.to}}, count {{.count}}.{{end}}</p>
+<ul class="tree">
+{{range .Roots}}{{template "tnode" .}}{{end}}</ul>
+{{end}}
+
+{{define "tnode"}}<li id="n-{{.ID}}"><a href="{{.TaskHref}}">{{.ID}}</a> {{.Title}} {{.Status}}
+{{if eq .Mode "details"}}<details><summary>Detail</summary>
+{{.Detail}}
+</details>
+<details><summary>Provenance</summary>
+{{.Prov}}
+</details>
+{{if .Kids}}<details {{if .Open}}open{{end}}><summary>{{.NKids}} children</summary>
+<ul class="tree">
+{{range .Kids}}{{template "tnode" .}}{{end}}</ul>
+</details>
+{{end}}{{else if eq .Mode "fragments"}}<p><button type="button" hx-get="{{.DetailHref}}" hx-swap="outerHTML">Show detail</button>
+<button type="button" hx-get="{{.ProvHref}}" hx-swap="outerHTML">Show provenance</button>
+{{if .Parent}}<button type="button" hx-get="{{.ChildrenHref}}" hx-swap="outerHTML">Show {{.NKids}} children</button>
+{{end}}</p>
+{{else}}{{with .Detail}}{{.}}
+{{end}}{{with .Prov}}{{.}}
+{{end}}<p>{{if .MoreHref}}<a href="{{.MoreHref}}">{{.MoreLabel}}</a>{{end}} {{if .LessHref}}<a href="{{.LessHref}}">{{.LessLabel}}</a>{{end}}
+{{if .Parent}}<a href="{{.ToggleHref}}">{{if .Expanded}}Collapse{{else}}Expand{{end}} {{.NKids}} children</a>{{end}}</p>
+{{if .Expanded}}<ul class="tree">
+{{range .Kids}}{{template "tnode" .}}{{end}}</ul>
+{{end}}{{end}}</li>
+{{end}}
+
+{{define "tchildren"}}<ul class="tree">
+{{range .}}{{template "tnode" .}}{{end}}</ul>
+{{end}}
+
+{{define "tdetail"}}{{with .Row.status}}<p>Status {{.gate}} {{.state}}{{with .reason}} ({{.}}){{end}}{{with .note}}: {{.}}{{end}}{{with .date}}, {{.}}{{end}}.</p>
+{{end}}{{with .Row.next_gate}}<p>Next gate {{.}}.</p>
+{{end}}<p>{{range .Cells}}{{if ne .Kind "blank"}}{{.Symbol}}&nbsp;{{.Symbols}} {{end}}{{end}}</p>
+{{end}}
+
+{{define "tprov"}}{{with .Row.status}}<ul>
+{{with .recorder}}<li>Recorded by {{.}}</li>
+{{end}}{{with .commit}}<li>Commit {{.}}</li>
+{{end}}{{with .rolled_up_from}}<li>Rolled up from {{.}}</li>
+{{end}}{{if .subproject_snapshot}}<li>From a subproject snapshot</li>
+{{end}}</ul>
+{{end}}{{end}}
