@@ -1,3 +1,3 @@
-gate: defined
+gate: function
 state: nominal
-note: The functional prototype is next and no requirement gates it
+note: prototype/438a renders the legend and task pages from 493e data with inline and HTMX-fetched folds, no-script fallbacks and resolved links
