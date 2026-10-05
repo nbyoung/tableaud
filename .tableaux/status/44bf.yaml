@@ -1,3 +1,3 @@
-gate: defined
+gate: function
 state: nominal
-note: The functional prototype is next and no requirement gates it
+note: prototype/44bf renders the four status views from tablo 886d data with HTMX row fragments and link fallbacks

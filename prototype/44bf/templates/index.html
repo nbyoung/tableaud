@@ -1,0 +1,11 @@
+{{define "title"}}Status views{{end}}
+{{define "content"}}{{template "style"}}
+<h1>Status views (provisional layout)</h1>
+<ul>
+<li><a href="/tableau">Global tableau</a></li>
+<li><a href="/tableau?task={{.Task}}">Contextual tableau, task form</a></li>
+{{range .People}}<li><a href="/tableau?person={{.}}">Contextual tableau, person form: {{.}}</a></li>
+{{end}}<li><a href="/blockage">Work-blockage tree</a></li>
+{{range .People}}<li><a href="/queue?person={{.}}">Work queue: {{.}}</a></li>
+{{end}}</ul>
+{{end}}
