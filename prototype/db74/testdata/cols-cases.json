@@ -1,0 +1,10 @@
+[
+  {"name": "no stored choice leaves the page", "search": "?as=ben@example.org", "stored": "", "load": false},
+  {"name": "stored choice joins a URL without one", "search": "?as=ben@example.org", "stored": "hide=reliability", "load": true, "want": "?as=ben@example.org&hide=reliability"},
+  {"name": "stored choice joins an empty search", "search": "", "stored": "hide=design&show=release", "load": true, "want": "?hide=design&show=release"},
+  {"name": "stored choice follows open", "search": "?as=ben@example.org&open=a1c0", "stored": "hide=design", "load": true, "want": "?as=ben@example.org&open=a1c0&hide=design"},
+  {"name": "a shared hide wins", "search": "?as=ben@example.org&hide=function", "stored": "hide=design", "load": false},
+  {"name": "a shared show wins", "search": "?show=release", "stored": "hide=design", "load": false},
+  {"name": "the explicit empty choice wins", "search": "?as=ben@example.org&hide=", "stored": "hide=design", "load": false},
+  {"name": "a parameter that only starts like hide does not count", "search": "?as=ben@example.org&hidden=1", "stored": "hide=design", "load": true, "want": "?as=ben@example.org&hidden=1&hide=design"}
+]
