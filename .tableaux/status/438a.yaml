@@ -1,3 +1,4 @@
 gate: function
 state: nominal
-note: prototype/438a renders the legend and task pages from 493e data with inline and HTMX-fetched folds, no-script fallbacks and resolved links
+reason: review
+note: design/438a.md on branch wave/templates awaits the owner's review at the design gate
