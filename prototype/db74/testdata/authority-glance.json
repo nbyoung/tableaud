@@ -1,0 +1,73 @@
+{
+  "glance": {
+    "rows": [
+      {
+        "assignee": "ada@example.org",
+        "authorisation": "authorised",
+        "children": 3,
+        "delegated": false,
+        "depth": 0,
+        "differs_from_trunk": false,
+        "id": "a1c0",
+        "title": "Weather station"
+      },
+      {
+        "assignee": "ben@example.org",
+        "authorisation": "authorised",
+        "children": 2,
+        "delegated": true,
+        "depth": 1,
+        "differs_from_trunk": false,
+        "id": "4e2b",
+        "title": "Sensor node"
+      },
+      {
+        "assignee": "ada@example.org",
+        "authorisation": "authorised",
+        "children": 0,
+        "delegated": true,
+        "depth": 2,
+        "differs_from_trunk": false,
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      {
+        "assignee": "ben@example.org",
+        "authorisation": "authorised",
+        "children": 0,
+        "delegated": false,
+        "depth": 2,
+        "differs_from_trunk": false,
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      {
+        "assignee": "ada@example.org",
+        "authorisation": "authorised",
+        "children": 0,
+        "delegated": false,
+        "depth": 1,
+        "differs_from_trunk": false,
+        "id": "7b2e",
+        "title": "Gateway"
+      },
+      {
+        "assignee": "dan@example.org",
+        "authorisation": "proposed",
+        "children": 0,
+        "delegated": true,
+        "depth": 1,
+        "differs_from_trunk": false,
+        "id": "3c5d",
+        "title": "Dashboard"
+      }
+    ]
+  },
+  "on_trunk": true,
+  "params": {
+    "level": "glance",
+    "window": -1
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "authority"
+}

@@ -1,0 +1,27 @@
+{{define "content"}}
+{{template "tableau" .}}
+<script>{{.Script}}</script>
+{{end}}
+
+{{define "a"}}href="{{.Href}}" hx-get="{{.Href}}" hx-target="#tableau" hx-swap="outerHTML" hx-push-url="true"{{if .Cols}} data-c="{{.Cols}}"{{end}}{{end}}
+
+{{define "tableau"}}<div id="tableau">
+<p class="who">{{if .Person}}{{.Person}}{{else}}no person{{end}} &middot; role: <b>{{.Role}}</b> &middot; {{.ViewName}} &middot; window {{.Window}}</p>
+<p class="tools">
+{{with .ExpandAll}}<a {{template "a" .}}>expand all</a>{{end}}
+{{with .CollapseAll}}<a {{template "a" .}}>collapse all</a>{{end}}
+{{with .Reset}}<a {{template "a" .}}>default columns</a>{{end}}
+</p>
+<table>
+<thead><tr><th>id</th><th>task</th>
+{{range .Cols}}{{if eq .Kind "shown"}}<th class="shown">{{.Symbol}} {{.Gate}} <a {{template "a" .Hide}} title="hide {{.Gate}}">hide</a></th>
+{{else if eq .Kind "hidden"}}<th class="hidden" title="hidden: {{.Gate}}">{{.Symbol}} <a {{template "a" .Show}}>show {{.Gate}}</a></th>
+{{else}}<th class="folded">folded {{.Count}}: {{range .Fold}}<a {{template "a" .Show}} title="show {{.Gate}}">{{.Symbol}}{{.Gate}} {{.Count}}</a> {{end}}</th>
+{{end}}{{end}}</tr></thead>
+<tbody>
+{{range $r := .Rows}}<tr data-id="{{$r.ID}}"><td>{{$r.ID}}</td><td style="padding-left:{{$r.Indent}}em">{{with $r.Toggle}}<a {{template "a" .}} class="toggle">{{if $r.Open}}collapse{{else}}expand{{end}}</a> {{end}}{{$r.Title}}{{if $r.Outside}} <small>({{$r.Outside}} outside this view)</small>{{end}}</td>
+{{range $r.Cells}}<td class="{{.Kind}}">{{if eq .Kind "folded"}}{{.Count}}{{else}}{{.Symbols}}{{end}}</td>{{end}}</tr>
+{{end}}</tbody>
+</table>
+<p class="link">link: <a href="{{.Canonical}}">{{.Canonical}}</a></p>
+</div>{{end}}

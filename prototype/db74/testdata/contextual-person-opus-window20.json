@@ -1,0 +1,61 @@
+{
+  "view": "contextual-tableau",
+  "ref": "main",
+  "person": "opus@example.org",
+  "level": "detail",
+  "window": 20,
+  "cell_rule": "state-at-gate",
+  "next_gates_in_view": null,
+  "columns": [
+    {
+      "gate": "undefined",
+      "symbol": "❔"
+    },
+    {
+      "gate": "defined",
+      "symbol": "📝"
+    },
+    {
+      "gate": "mockup",
+      "symbol": "📌"
+    },
+    {
+      "gate": "function",
+      "symbol": "⚙️"
+    },
+    {
+      "gate": "performance",
+      "symbol": "⚡"
+    },
+    {
+      "gate": "reliability",
+      "symbol": "⚓"
+    },
+    {
+      "gate": "design",
+      "symbol": "📐"
+    },
+    {
+      "gate": "implementation",
+      "symbol": "🛠️"
+    },
+    {
+      "gate": "unit",
+      "symbol": "🧩"
+    },
+    {
+      "gate": "integrate",
+      "symbol": "🖼️"
+    },
+    {
+      "gate": "validate",
+      "symbol": "🌍"
+    },
+    {
+      "gate": "release",
+      "symbol": "🚀"
+    }
+  ],
+  "folded": null,
+  "rows": null
+}
