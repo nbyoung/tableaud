@@ -1,3 +1,4 @@
 gate: function
 state: nominal
-note: prototype/e2b6 renders the authority and assignment views from tablo data with HTMX fragment expansion, a path-keeping proposed filter and per-email pages
+reason: review
+note: design/e2b6.md on branch wave/templates awaits the owner's review at the design gate
