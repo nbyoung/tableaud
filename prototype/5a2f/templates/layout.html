@@ -1,0 +1,28 @@
+{{define "head"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{.Title}} - tableaud 5a2f</title>
+<link rel="stylesheet" href="/proto/style.css">
+{{if and (eq .Nav "tableau") (not .Grid)}}<script src="/static/htmx/htmx.min.js" defer></script>{{end}}
+</head>
+<body>
+<a class="skip" href="#main">Skip to the main content</a>
+<header>
+<nav aria-label="Pages">
+<ul>
+<li><a href="/tableau"{{if eq .Nav "tableau"}} aria-current="page"{{end}}>Global tableau</a></li>
+<li><a href="/legend"{{if eq .Nav "legend"}} aria-current="page"{{end}}>Legend of symbols</a></li>
+</ul>
+</nav>
+</header>
+<main id="main" tabindex="-1">
+<h1>{{.Title}}</h1>
+{{end}}
+{{define "foot"}}</main>
+<footer><p class="muted">Provisional layout: this page tests function, not look.</p></footer>
+</body>
+</html>
+{{end}}

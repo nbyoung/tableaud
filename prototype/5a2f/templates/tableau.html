@@ -1,0 +1,41 @@
+{{define "tableau"}}{{template "head" .}}
+<nav aria-label="Variants under test">
+<ul>
+{{range .Variant}}<li><a href="{{.URL}}"{{if .Current}} aria-current="page"{{end}}>{{.Text}}</a></li>
+{{end}}</ul>
+</nav>
+<h2>Tableau</h2>
+<div class="layout{{if .Stacked}} stacked{{end}}">
+<div class="scroller" role="region" aria-labelledby="cap" tabindex="0">
+<table class="tableau" {{.Role "table"}}>
+<caption id="cap">Global tableau at {{.Ref}}: one row per task, one column per gate.</caption>
+<thead {{.Role "group"}}>
+<tr {{.Role "row"}}>
+<th scope="col" class="task" {{.Role "colhead"}}>Task</th>
+{{range .Cols}}<th scope="col" {{$.Role "colhead"}}><span aria-hidden="true">{{.Symbol}}</span><span class="vh">{{.Name}}</span></th>
+{{end}}</tr>
+</thead>
+{{template "rows" .}}
+</table>
+</div>
+</div>
+<p id="status" role="status" class="muted">{{.Shown}} of {{.Total}} tasks shown.</p>
+<h2>Work queue for {{.Person}}</h2>
+<ul class="queue">
+{{range .Queue}}<li><a href="{{.URL}}">Show {{.Title}} in the tableau</a>: {{.Kind}}{{if .GateName}} at {{.GateName}}{{end}}{{if .Cause}} ({{.Cause}}){{end}}</li>
+{{end}}</ul>
+{{if .Grid}}<script>
+{{template "gridscript"}}
+</script>{{end}}
+{{template "foot" .}}{{end}}
+
+{{define "rows"}}<tbody id="rows" {{.Role "group"}}>
+{{range .Rows}}<tr id="row-{{.ID}}" class="depth-{{.Depth}}" {{$.Role "row"}}{{if $.Grid}} aria-level="{{.Level}}"{{if .Parent}} aria-expanded="{{.Open}}"{{end}}{{if .Hidden}} hidden{{end}}{{end}}>
+<th scope="row" class="task depth-{{.Depth}}" {{$.Role "rowhead"}}>{{if .Parent}}<a class="toggle" id="tog-{{.ID}}" href="{{.ToggleURL}}" aria-expanded="{{.Open}}"{{if not $.Grid}} aria-controls="rows" hx-get="{{.FragURL}}" hx-target="#rows" hx-swap="outerHTML" hx-push-url="{{.ToggleURL}}"{{end}}><span class="vh">{{if .Open}}Collapse{{else}}Expand{{end}} {{.Title}}</span></a>{{else}}<span class="toggle none"></span>{{end}}<span class="title">{{.Title}}</span> <span class="tid">{{.ID}}</span>{{if not $.Grid}}<span class="vh">, level {{.Level}}</span>{{end}}</th>
+{{range .Cells}}{{if eq .Kind "blank"}}<td class="blank" {{$.Role "cell"}}></td>{{else}}<td data-kind="{{.Kind}}"{{if .State}} data-state="{{.State}}"{{end}} {{$.Role "cell"}}>{{range .Syms}}<span class="sym" aria-hidden="true">{{.Glyph}}</span>{{end}}<span class="label vh"><span class="ctx vh">{{.Ctx}}</span>{{.Label}}</span></td>{{end}}
+{{end}}</tr>
+{{end}}</tbody>
+{{end}}
+
+{{define "rows-fragment"}}{{template "rows" .}}<p id="status" role="status" class="muted" hx-swap-oob="true">{{.Shown}} of {{.Total}} tasks shown.</p>
+{{end}}
