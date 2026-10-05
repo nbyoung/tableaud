@@ -1,3 +1,4 @@
 gate: function
 state: nominal
-note: prototype/9a9c shows the history timeline with replayed status and HTMX paging and the audit grouped by resolving action
+reason: review
+note: design/9a9c.md on branch wave/templates awaits the owner's review at the design gate
