@@ -1,0 +1,70 @@
+{{/* base.html: the frame of every page. The templates cluster owns everything
+     inside <main>; this file owns the rest. A view file defines "view" and
+     "context"; an address comes from .Link or a Page method, never from a
+     literal in a template. */}}
+{{define "document"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}}</title>
+<link rel="stylesheet" href="{{.Link.Static "tableaud.css"}}">
+{{- if .Scripts}}
+<meta name="htmx-config" content='{"allowEval":false,"includeIndicatorStyles":false,"historyCacheSize":0,"responseHandling":[{"code":"204","swap":false},{"code":"304","swap":false},{"code":"...","swap":true}]}'>
+<script src="{{.Link.Static "htmx/htmx.min.js"}}"></script>
+<script src="{{.Link.Static "tableaud.js"}}"></script>
+{{- end}}
+</head>
+<body>
+{{template "page" .}}
+</body>
+</html>
+{{end}}
+
+{{/* "page" is the page fragment: what a request with HX-Request and no part
+     receives, and what the live poll swaps. hx-target and hx-swap sit here so
+     that a control inside needs hx-boost="true" and nothing else. */}}
+{{define "page"}}<div id="page" hx-target="this" hx-swap="outerHTML"
+  {{- with .Live}} hx-get="{{.URL}}" hx-trigger="every {{.Every}}" hx-headers="{{.Headers}}"{{end}}>
+<a class="skip" href="#main">Skip to the view</a>
+<header class="site">
+  <nav aria-label="Views">
+    <ul>
+      {{- range .Nav}}
+      <li><a href="{{.Href}}"{{if .Current}} aria-current="page"{{end}}>{{.Label}}</a></li>
+      {{- end}}
+    </ul>
+  </nav>
+  {{- with .Project}}
+  <p class="context">{{.Title}} · {{if .Worktree}}the working tree on {{end}}<code>{{.Ref}}</code> at <code>{{.Short}}</code>, {{.Date}} · {{template "viewer" $}}{{if not $.Err}}{{template "context" $}}{{end}}</p>
+  {{- end}}
+</header>
+<main id="main" class="{{if .Err}}error{{else}}{{.View.Name}}{{end}}">
+{{- if .Err}}{{template "error" .}}{{else}}{{template "view" .}}{{end}}
+</main>
+<footer class="site">
+  <p>tableaud {{.Version}}{{if not .Err}} · <a href="{{.Self}}">the link to this page</a>{{end}}</p>
+</footer>
+</div>
+{{end}}
+
+{{define "viewer"}}{{with .Viewer}}{{if .Email}}viewer {{.Email}}, {{.Role}}{{else}}viewer: an observer{{end}}{{end}}{{end}}
+
+{{/* An error is a page in the same frame, so the nav still leads somewhere and
+     the live poll heals it when the repository does. */}}
+{{define "error"}}<h1>{{.Err.Status}} {{.Err.Text}}</h1>
+<p class="question">{{.Err.Message}}</p>
+{{- with .Err.Diagnostics}}
+<ul class="diagnostics">
+  {{- range .}}
+  <li><code>{{.Code}}</code> {{.Severity}}{{with .Path}} · <code>{{.}}</code>{{end}}: {{.Message}}</li>
+  {{- end}}
+</ul>
+{{- end}}
+{{- with .Err.Reset}}
+<p><a href="{{.}}" data-columns="">Return to the default window</a></p>
+{{- end}}
+{{end}}
+
+{{/* A view file that adds nothing to the context line still defines "context";
+     the placeholders this task lands do. */}}

@@ -1,0 +1,14 @@
+{
+  "about": "Cases of redirectFor(pathname, search, hash, stored) in tableaud.js. T24 runs them under node where the host has it. redirect null means the page stays.",
+  "cases": [
+    { "pathname": "/tableau", "search": "",                          "hash": "",        "stored": "design,unit", "redirect": "/tableau?columns=design%2Cunit" },
+    { "pathname": "/tableau", "search": "?person=ben%40example.org", "hash": "#main",   "stored": "design",      "redirect": "/tableau?person=ben%40example.org&columns=design#main" },
+    { "pathname": "/context", "search": "?task=4e2b",                "hash": "",        "stored": "unit",        "redirect": "/context?task=4e2b&columns=unit" },
+    { "pathname": "/tableau", "search": "",                          "hash": "",        "stored": null,          "redirect": null },
+    { "pathname": "/tableau", "search": "",                          "hash": "",        "stored": "",            "redirect": null },
+    { "pathname": "/tableau", "search": "?columns=design",           "hash": "",        "stored": "unit",        "redirect": null },
+    { "pathname": "/tableau", "search": "?window=0",                 "hash": "",        "stored": "unit",        "redirect": null },
+    { "pathname": "/queue",   "search": "",                          "hash": "",        "stored": "unit",        "redirect": null },
+    { "pathname": "/task",    "search": "?task=9f31",                "hash": "",        "stored": "unit",        "redirect": null }
+  ]
+}
