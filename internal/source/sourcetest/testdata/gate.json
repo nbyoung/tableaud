@@ -1,0 +1,279 @@
+{
+  "detail": {
+    "gates": [
+      {
+        "applies": true,
+        "criteria": "No one has started work on the definition",
+        "key": "undefined",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "Title, description, assignee and references exist",
+        "key": "defined",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "A non-technical mockup of the outcome exists",
+        "key": "mockup",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "A technical demonstration of function exists",
+        "key": "function",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "Target performance shown in the deliverable's technology",
+        "key": "performance",
+        "references": [
+          {
+            "text": "Power budget",
+            "url": "docs/sensor-board.md#power-budget"
+          }
+        ],
+        "references_from": "9f31"
+      },
+      {
+        "applies": true,
+        "criteria": "Target reliability shown in the fundamental technology",
+        "key": "reliability",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "A model and sufficient tests exist",
+        "key": "design",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "Artifacts suffice for unit, integration and validation tests",
+        "key": "implementation",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "All prescribed tests pass",
+        "key": "unit",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "Assembled with neighbouring components",
+        "key": "integrate",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "Passes user and field tests",
+        "key": "validate",
+        "references": null,
+        "references_from": ""
+      },
+      {
+        "applies": true,
+        "criteria": "All variants documented and approved",
+        "key": "release",
+        "references": null,
+        "references_from": ""
+      }
+    ],
+    "reasons": [
+      {
+        "key": "overloaded",
+        "synopsis": "The assigned resource is overloaded"
+      },
+      {
+        "key": "blocked",
+        "synopsis": "An external resource is unavailable"
+      }
+    ],
+    "states": [
+      {
+        "key": "undefined",
+        "severity": 0,
+        "synopsis": "The work has not yet been defined"
+      },
+      {
+        "key": "nominal",
+        "severity": 1,
+        "synopsis": "The work is proceeding as expected"
+      },
+      {
+        "key": "at_risk",
+        "severity": 2,
+        "synopsis": "The work is at risk of stalling"
+      },
+      {
+        "key": "stalled",
+        "severity": 3,
+        "synopsis": "Practically all progress has stalled"
+      },
+      {
+        "key": "complete",
+        "severity": 0,
+        "synopsis": "All deliverables satisfy their requirements"
+      }
+    ]
+  },
+  "glance": {
+    "folded": 0,
+    "gates": [
+      {
+        "key": "undefined",
+        "name": "Undefined",
+        "symbol": "❔"
+      },
+      {
+        "key": "defined",
+        "name": "Defined",
+        "symbol": "📝"
+      },
+      {
+        "key": "mockup",
+        "name": "Mockup",
+        "symbol": "📌"
+      },
+      {
+        "key": "function",
+        "name": "Functional prototype",
+        "symbol": "⚙️"
+      },
+      {
+        "key": "performance",
+        "name": "Performance prototype",
+        "symbol": "⚡"
+      },
+      {
+        "key": "reliability",
+        "name": "Reliability prototype",
+        "symbol": "⚓"
+      },
+      {
+        "key": "design",
+        "name": "Design",
+        "symbol": "📐"
+      },
+      {
+        "key": "implementation",
+        "name": "Implementation",
+        "symbol": "🛠️"
+      },
+      {
+        "key": "unit",
+        "name": "Unit test",
+        "symbol": "🧩"
+      },
+      {
+        "key": "integrate",
+        "name": "Integration",
+        "symbol": "🖼️"
+      },
+      {
+        "key": "validate",
+        "name": "Validation",
+        "symbol": "🌍"
+      },
+      {
+        "key": "release",
+        "name": "Release",
+        "symbol": "🚀"
+      }
+    ],
+    "marks": [
+      {
+        "meaning": "an agent contributes",
+        "symbol": "🤖"
+      },
+      {
+        "meaning": "a reviewer accepts",
+        "symbol": "👀"
+      },
+      {
+        "meaning": "a subproject does the work",
+        "symbol": "🪆"
+      },
+      {
+        "meaning": "the gate does not apply",
+        "symbol": "—"
+      },
+      {
+        "meaning": "a person contributes",
+        "symbol": "🧑"
+      }
+    ],
+    "reasons": [
+      {
+        "key": "overloaded",
+        "symbol": "🪫"
+      },
+      {
+        "key": "blocked",
+        "symbol": "⛔"
+      }
+    ],
+    "states": [
+      {
+        "key": "undefined",
+        "symbol": "⚪"
+      },
+      {
+        "key": "nominal",
+        "symbol": "🟢"
+      },
+      {
+        "key": "at_risk",
+        "symbol": "🟡"
+      },
+      {
+        "key": "stalled",
+        "symbol": "🔴"
+      },
+      {
+        "key": "complete",
+        "symbol": "✅"
+      }
+    ]
+  },
+  "on_trunk": true,
+  "params": {
+    "task": "9f31",
+    "level": "provenance",
+    "window": -1
+  },
+  "provenance": {
+    "last_changed": {
+      ".tableaux/gates.yaml": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "author": "ada@example.org",
+        "committer": "ada@example.org",
+        "date": "2026-09-15",
+        "subject": "Plan the weather station"
+      },
+      ".tableaux/version.yaml": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "author": "ada@example.org",
+        "committer": "ada@example.org",
+        "date": "2026-09-15",
+        "subject": "Plan the weather station"
+      }
+    },
+    "tableaux": "0.3.1",
+    "trunk": "main"
+  },
+  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+  "view": "gate"
+}
