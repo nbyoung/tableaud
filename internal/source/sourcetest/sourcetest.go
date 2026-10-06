@@ -171,7 +171,7 @@ func (f *Fixture) View(ctx context.Context, r source.Request) (source.Result, er
 			return source.Result{}, &source.NotFoundError{Kind: "gate", Name: r.BriefGate}
 		}
 	}
-	return source.Result{Data: data, Project: proj, Viewer: viewer}, nil
+	return source.Result{Data: data, Legend: f.data["gates"], Project: proj, Viewer: viewer}, nil
 }
 
 // Describe implements source.Source.

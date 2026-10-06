@@ -68,9 +68,10 @@ func (r Request) Key() string {
 		r.Today.Format(time.DateOnly))
 }
 
-// Result is tablo's answer. The server never looks inside Data.
+// Result is tablo's answer. The server never looks inside Data or Legend.
 type Result struct {
-	Data    any
+	Data    any // the view's data, every level in it
+	Legend  any // the gate definition at the same revision, from the same load
 	Project Project
 	Viewer  Viewer
 }

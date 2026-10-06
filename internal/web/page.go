@@ -54,8 +54,9 @@ type Referencer interface {
 
 // To returns the address of another view: the sticky parameters of p, then
 // the name and value pairs given, as in To("task", "task", "9f31"). It returns
-// the empty string when the view is unknown, a pair is malformed, or the pairs
-// name a project other than the one p is in.
+// the empty string when the view is unknown, a pair is malformed, the pairs
+// name a project other than the one p is in, or they name a task and a person
+// for the contextual tableau.
 func (p *Page) To(view string, pairs ...string) string {
 	sticky := NewParams()
 	sticky.Project = p.Params.Project
@@ -88,6 +89,9 @@ func (p *Page) link(view string, base Params, pairs []string) string {
 		if err := q.set(name, value); err != nil {
 			return ""
 		}
+	}
+	if view == "context" && q.Task != "" && q.Person != "" {
+		return "" // the contextual tableau takes a task or a person, and no address has both
 	}
 	return p.Link.Page(Link{View: view, Params: q})
 }

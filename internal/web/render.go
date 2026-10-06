@@ -49,6 +49,12 @@ func jsonIndent(v any) (string, error) {
 	return b.String(), nil
 }
 
+// Overlay holds template text for the tests of the machinery, keyed by view
+// name. Render parses each view's text after the view's file, so that a test
+// can give a view a part of its own. A test sets Overlay and the Parts of the
+// view before the first Render; no task fills it.
+var Overlay = map[string]string{}
+
 var (
 	setsOnce sync.Once
 	sets     map[string]*template.Template
@@ -86,6 +92,12 @@ func frames() (map[string]*template.Template, error) {
 			if clone, err = clone.ParseFS(Templates, "templates/views/"+v.Name+".html"); err != nil {
 				setsErr = err
 				return
+			}
+			if text, ok := Overlay[v.Name]; ok {
+				if clone, err = clone.Parse(text); err != nil {
+					setsErr = err
+					return
+				}
 			}
 			sets[v.Name] = clone
 		}
