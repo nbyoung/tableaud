@@ -1,4 +1,3 @@
-gate: function
+gate: design
 state: nominal
-reason: review
-note: design/e2b6.md on branch wave/templates awaits the owner's review at the design gate
+note: design/e2b6.md is on the trunk with the owner's decisions of 2026-10-06; implementation waits for the server (49ce) at implementation
