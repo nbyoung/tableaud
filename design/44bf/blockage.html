@@ -1,0 +1,36 @@
+{{define "body"}}{{with .Body}}
+<h2 id="causes">Causes</h2>
+{{if .Causes}}<ul class="tree">
+{{range .Causes}}<li id="{{.Anchor}}"{{if .Resolver.Mine}} class="mine"{{end}}>{{template "fold" .Fold}}<summary>{{.Ord}}. <span class="what">{{template "task" .Task}} {{if eq .Kind "requirement"}}has not passed{{else if eq .Kind "review"}}awaits review at{{else if eq .Kind "authorisation"}}is proposed{{else if eq .Kind "pin"}}waits for its subproject at{{else}}stands{{end}}{{with .Gate}} {{template "sym" .}}{{end}}{{with .State}} {{template "sym" .}}{{end}}{{with .Reason}} {{template "sym" .}}{{end}}</span> · <span class="who">{{template "person" .Resolver}} resolves</span> · <span class="holds">holds {{.Holds}}</span></summary>
+<p>Action: {{.Action}}</p>
+{{template "held" .Held}}
+{{template "fold" .Prov}}<summary>Provenance of cause {{.Ord}}</summary>{{if .Prov.Src}}{{template "lazy" .Prov}}{{else}}{{template "part-facts" .}}{{end}}</details>
+</details></li>
+{{end}}</ul>
+{{else}}<p class="empty">No cause holds any task.</p>
+{{end}}
+<h2 id="next">Next: requirements not yet due</h2>
+{{if .Next}}<p>A requirement that is not yet due is no wait. {{len .Next}} {{plural (len .Next) "task has" "tasks have"}} such requirements, and {{.NextUnmet}} of the requirements {{plural .NextUnmet "is" "are"}} not met.</p>
+<ul class="tree">
+{{range .Next}}<li id="next-{{.Task.ID}}">{{template "fold" .Fold}}<summary><span class="what">{{template "task" .Task}}</span> stands at {{template "status" .Status}}; next {{template "sym" .Next}}</summary>
+<ul class="notes">
+{{range .Edges}}<li>at {{template "sym" .To}} it requires {{template "task" .Task}} at {{template "sym" .From}}, {{.Text}}: {{.Condition}}</li>
+{{end}}</ul>
+{{template "fold" .Prov}}<summary>Provenance of <code class="id">{{.Task.ID}}</code> and what it requires</summary>{{if .Prov.Src}}{{template "lazy" .Prov}}{{else}}{{template "part-facts" .}}{{end}}</details>
+</details></li>
+{{end}}</ul>
+{{else}}<p class="empty">Every requirement is due.</p>
+{{end}}{{end}}{{end}}
+
+{{define "held"}}{{if .}}<ul>
+{{range .}}<li>{{if .Held}}{{template "fold" .Fold}}<summary>{{template "held-line" .}}</summary>
+{{template "held" .Held}}
+</details>{{else}}{{template "held-line" .}}{{end}}</li>
+{{end}}</ul>{{end}}{{end}}
+
+{{define "held-line"}}{{template "task" .Task}} at {{template "sym" .Gate}}: {{if .Parent}}a parent; {{end}}{{.Why}}{{end}}
+
+{{define "part-facts"}}<dl class="fields">
+{{range .Facts}}<dt>{{.Label}}</dt><dd>{{.Value}}</dd>
+{{end}}</dl>
+{{template "commands" .Commands}}{{end}}

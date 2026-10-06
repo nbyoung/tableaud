@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task assignment · Tableaux tooling</title>
+<link rel="stylesheet" href="S/tableaud.css">
+<script src="S/htmx/htmx.min.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the view</a>
+<header class="site">
+<nav aria-label="Views">
+<ul>
+<li><a href="V/tableau">Tableau</a></li>
+<li><a href="V/contextual">My corner</a></li>
+<li><a href="V/queue">Queue</a></li>
+<li><a href="V/blockage">Blockage</a></li>
+<li><a href="V/task">Task</a></li>
+<li><a href="V/assignment" aria-current="page">Assignment</a></li>
+<li><a href="V/authority">Authority</a></li>
+<li><a href="V/history">History</a></li>
+<li><a href="V/audit">Audit</a></li>
+<li><a href="V/gate">Gates</a></li>
+</ul>
+</nav>
+<p class="context">Tableaux tooling · <code>main</code> at <code>3cdae52</code>, 2026-10-05 · viewer nbyoung@nbyoung.com, owner</p>
+</header>
+<main id="main" class="v-assignment">
+<h1>Task assignment</h1>
+<p class="question">What does each person carry?</p>
+
+<h2 id="people">People</h2>
+<div class="scroll">
+<table>
+<caption>One row per email in the project; a count covers leaf tasks</caption>
+<thead><tr><th scope="col">Email</th><th scope="col" class="num">Assigned</th><th scope="col" class="num">Contributes next</th><th scope="col" class="num">Reviews next</th><th scope="col">Models</th></tr></thead>
+<tbody>
+<tr class="mine"><th scope="row"><a href="V/assignment?person=nbyoung">nbyoung@nbyoung.com</a> (you)</th><td class="num">10</td><td class="num">0</td><td class="num">26</td><td>none: a person</td></tr>
+<tr><th scope="row"><a href="#p-noreply">noreply@anthropic.com</a></th><td class="num">27</td><td class="num">28</td><td class="num">2</td><td><code>claude-haiku</code>, <code>claude-opus</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="carries">What each carries</h2>
+<p>A junction is <strong>next</strong> when it is the task's next applicable gate, passed when the status stands at or after it, and later otherwise.</p>
+<details class="detail" id="p-noreply" open><summary>noreply@anthropic.com <span class="tally">· agent · 27 tasks assigned · 28 to contribute next · 2 to review next</span></summary>
+<h3>Tasks assigned: 1</h3>
+<div class="scroll">
+<table>
+<caption>Tasks assigned to noreply@anthropic.com, in display order</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Under</th><th scope="col">Status</th><th scope="col">Next junction</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a class="id" href="T/c2ad">c2ad</a></th><td>Roles</td><td><code class="id">bc63</code></td><td><span aria-hidden="true">🧱</span> implementation · <span aria-hidden="true">🟢</span> nominal</td><td><span aria-hidden="true">🌍</span> validate <span aria-hidden="true">🤖👀</span><span class="sr">an agent contributes, a reviewer accepts</span></td></tr>
+</tbody>
+</table>
+</div>
+<details class="prov" id="prov-assigned-noreply"><summary>Provenance: the file behind each assignment</summary><p><code>assignee</code> in each task's own file, <code>.tableaux/tasks/ID.yaml</code>.</p></details>
+<h3>Contributes: 79 junctions, 28 next</h3>
+<details class="group" id="g-noreply-c-mockup" open><summary><span aria-hidden="true">📌</span> mockup <span class="tally">· 4 junctions · 4 next</span></summary><div class="scroll">
+<table>
+<caption>3 junctions where the person contributes</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Model</th><th scope="col">Reviewer</th><th scope="col">When</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a class="id" href="T/99f0">99f0</a></th><td>T 99f0</td><td><code>claude-haiku</code></td><td>none</td><td>next</td></tr>
+<tr><th scope="row"><a class="id" href="T/05a9">05a9</a></th><td>T 05a9</td><td><code>claude-haiku</code></td><td>none</td><td>next</td></tr>
+<tr><th scope="row"><a class="id" href="T/a9ce">a9ce</a></th><td>T a9ce</td><td><code>claude-haiku</code></td><td>none</td><td>next</td></tr>
+</tbody>
+</table>
+</div>
+<details class="fold" id="fold-noreply-c-mockup"><summary>… and 1 more at mockup</summary>
+<div class="scroll">
+<table>
+<caption>1 junction where the person contributes</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Model</th><th scope="col">Reviewer</th><th scope="col">When</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a class="id" href="T/bb7c">bb7c</a></th><td>T bb7c</td><td><code>claude-haiku</code></td><td>none</td><td>next</td></tr>
+</tbody>
+</table>
+</div>
+</details>
+<details class="prov" id="prov-g-noreply-c-mockup"><summary>Provenance: the file and the ancestor behind these positions</summary>
+<div class="scroll">
+<table>
+<caption>The entry that supplies each field</caption>
+<thead><tr><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Supplied by</th></tr></thead>
+<tbody>
+<tr><th scope="row">contributor and model</th><td>noreply@anthropic.com, claude-opus</td><td><a class="id" href="T/437e">437e</a> Tableaux tooling</td></tr>
+<tr><th scope="row">reviewer</th><td>none</td><td>No entry; a person contributes</td></tr>
+</tbody>
+</table>
+</div>
+</details></details>
+<details class="group" id="g-noreply-c-design" hx-get="P/g-noreply-c-design" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary><span aria-hidden="true">📐</span> design <span class="tally">· 9 junctions · 0 next</span></summary><div class="fold-body"><a href="A/g-noreply-c-design">Show this in the page</a></div></details>
+<h3>Reviews: 2 junctions, 2 next</h3>
+<details class="group" id="g-noreply-r-implementation" open><summary><span aria-hidden="true">🧱</span> implementation <span class="tally">· 1 junction · 1 next</span></summary><div class="scroll">
+<table>
+<caption>1 junction where the person reviews</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Contributor</th><th scope="col">Model</th><th scope="col">When</th></tr></thead>
+<tbody>
+<tr><th scope="row"><a class="id" href="T/e9c6">e9c6</a></th><td>T e9c6</td><td>noreply@anthropic.com</td><td><code>claude-haiku</code></td><td>next</td></tr>
+</tbody>
+</table>
+</div>
+<details class="prov" id="prov-g-noreply-r-implementation"><summary>Provenance: the file and the ancestor behind these positions</summary>
+<div class="scroll">
+<table>
+<caption>The entry that supplies each field</caption>
+<thead><tr><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Supplied by</th></tr></thead>
+<tbody>
+</tbody>
+</table>
+</div>
+</details></details>
+<h3>Counts by gate</h3>
+<div class="scroll">
+<table>
+<caption>Counts by gate for noreply@anthropic.com</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col" class="num">Tasks standing here</th><th scope="col" class="num">Contributes</th><th scope="col" class="num">of which next</th><th scope="col" class="num">Reviews</th><th scope="col" class="num">of which next</th></tr></thead>
+<tbody>
+<tr><th scope="row"><span aria-hidden="true">📝</span> defined</th><td class="num">7</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+</tbody>
+<tfoot><tr><th scope="row">Total</th><td class="num">10</td><td class="num">8</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr></tfoot>
+</table>
+</div>
+<h3>Authority</h3>
+<ul class="notes">
+<li>Over <a class="id" href="T/bc86">bc86</a> Markdown views and its 10 descendants</li>
+</ul>
+</details>
+
+</main>
+<footer class="site">
+<p>Task assignment of Tableaux tooling at <code>3cdae52</code>. <a href="V/gate">The gate definition</a> explains every symbol.</p>
+</footer>
+</body>
+</html>

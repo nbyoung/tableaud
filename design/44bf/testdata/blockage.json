@@ -1,0 +1,275 @@
+{
+ "View": "blockage",
+ "Heading": "Work-blockage tree",
+ "Question": "What waits on what?",
+ "Project": "Tableaux tooling",
+ "Ref": {
+  "Name": "main",
+  "Commit": "3cdae52",
+  "Date": "2026-10-05"
+ },
+ "Viewer": "nbyoung@nbyoung.com",
+ "Role": "owner",
+ "Params": null,
+ "Nav": [
+  {
+   "Label": "Tableau",
+   "Href": "V/tableau",
+   "Current": false
+  },
+  {
+   "Label": "My corner",
+   "Href": "V/contextual",
+   "Current": false
+  },
+  {
+   "Label": "Queue",
+   "Href": "V/queue",
+   "Current": false
+  },
+  {
+   "Label": "Blockage",
+   "Href": "V/blockage",
+   "Current": true
+  },
+  {
+   "Label": "Task",
+   "Href": "V/task",
+   "Current": false
+  },
+  {
+   "Label": "Assignment",
+   "Href": "V/assignment",
+   "Current": false
+  },
+  {
+   "Label": "Authority",
+   "Href": "V/authority",
+   "Current": false
+  },
+  {
+   "Label": "History",
+   "Href": "V/history",
+   "Current": false
+  },
+  {
+   "Label": "Audit",
+   "Href": "V/audit",
+   "Current": false
+  },
+  {
+   "Label": "Gates",
+   "Href": "V/gate",
+   "Current": false
+  }
+ ],
+ "Legend": "V/gate",
+ "CSS": "S/tableaud.css",
+ "Script": "S/htmx/htmx.min.js",
+ "Meta": null,
+ "Live": null,
+ "Body": {
+  "Causes": [
+   {
+    "Anchor": "cause-1",
+    "Ord": 1,
+    "Kind": "review",
+    "Task": {
+     "ID": "5471",
+     "Title": "Work-blockage tree view",
+     "Href": "T/5471"
+    },
+    "Gate": {
+     "Glyph": "📌",
+     "Name": "mockup"
+    },
+    "State": null,
+    "Reason": null,
+    "Resolver": {
+     "Email": "nbyoung@nbyoung.com",
+     "Mine": true
+    },
+    "Action": "nbyoung@nbyoung.com accepts the mockup with a commit that carries Reviewed: 5471 mockup.",
+    "Holds": 4,
+    "Fold": {
+     "ID": "d-cause-1",
+     "Class": "detail",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Held": [
+     {
+      "Task": {
+       "ID": "5fe3",
+       "Title": "HTML views",
+       "Href": "T/5fe3"
+      },
+      "Parent": true,
+      "Gate": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Why": "its child has not passed",
+      "Fold": {
+       "ID": "h-1-5fe3",
+       "Class": "detail",
+       "Open": true,
+       "Src": "",
+       "Alt": ""
+      },
+      "Held": [
+       {
+        "Task": {
+         "ID": "c6e8",
+         "Title": "tablotui",
+         "Href": "T/c6e8"
+        },
+        "Parent": false,
+        "Gate": {
+         "Glyph": "📐",
+         "Name": "design"
+        },
+        "Why": "requires 5fe3 at mockup",
+        "Fold": {
+         "ID": "",
+         "Class": "",
+         "Open": false,
+         "Src": "",
+         "Alt": ""
+        },
+        "Held": null
+       }
+      ]
+     }
+    ],
+    "Prov": {
+     "ID": "prov-cause-1",
+     "Class": "prov",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Facts": [
+     {
+      "Label": "The status",
+      "Value": ".tableaux/status/5471.yaml"
+     }
+    ],
+    "Commands": [
+     "tabloio review 5471 mockup"
+    ]
+   },
+   {
+    "Anchor": "cause-2",
+    "Ord": 2,
+    "Kind": "status",
+    "Task": {
+     "ID": "9f31",
+     "Title": "Sensor board",
+     "Href": "T/9f31"
+    },
+    "Gate": null,
+    "State": {
+     "Glyph": "🔴",
+     "Name": "stalled"
+    },
+    "Reason": {
+     "Glyph": "⛔",
+     "Name": "blocked"
+    },
+    "Resolver": {
+     "Email": "ada@example.org",
+     "Mine": false
+    },
+    "Action": "clear the reason",
+    "Holds": 2,
+    "Fold": {
+     "ID": "d-cause-2",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Held": null,
+    "Prov": {
+     "ID": "prov-cause-2",
+     "Class": "prov",
+     "Open": false,
+     "Src": "P/prov-cause-2",
+     "Alt": "A/prov-cause-2"
+    },
+    "Facts": null,
+    "Commands": null
+   }
+  ],
+  "Next": [
+   {
+    "Task": {
+     "ID": "77b2",
+     "Title": "tablo",
+     "Href": "T/77b2"
+    },
+    "Status": {
+     "Gate": {
+      "Glyph": "📝",
+      "Name": "defined"
+     },
+     "State": {
+      "Glyph": "🟢",
+      "Name": "nominal"
+     },
+     "Reason": null,
+     "Note": "",
+     "Date": "",
+     "Recorder": "",
+     "From": null,
+     "Snapshot": null
+    },
+    "Next": {
+     "Glyph": "📌",
+     "Name": "mockup"
+    },
+    "Fold": {
+     "ID": "d-next-77b2",
+     "Class": "detail",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Edges": [
+     {
+      "Task": {
+       "ID": "e3cb",
+       "Title": "Schema files",
+       "Href": "T/e3cb"
+      },
+      "Project": "",
+      "ReadAt": "",
+      "From": {
+       "Glyph": "🧱",
+       "Name": "implementation"
+      },
+      "To": {
+       "Glyph": "🧱",
+       "Name": "implementation"
+      },
+      "Text": "The schema files it embeds",
+      "Status": null,
+      "Condition": "met, not yet due"
+     }
+    ],
+    "Prov": {
+     "ID": "prov-next-77b2",
+     "Class": "prov",
+     "Open": false,
+     "Src": "P/prov-next-77b2",
+     "Alt": "A/prov-next-77b2"
+    },
+    "Facts": null,
+    "Commands": null
+   }
+  ],
+  "NextUnmet": 0
+ }
+}

@@ -1,0 +1,33 @@
+{{define "page"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{range .Meta}}<meta name="{{.Name}}" content="{{.Content}}">
+{{end}}<title>{{.Heading}} · {{.Project}}</title>
+<link rel="stylesheet" href="{{.CSS}}">
+{{if .Script}}<script src="{{.Script}}" defer></script>
+{{end}}</head>
+<body>
+<a class="skip" href="#main">Skip to the view</a>
+<header class="site">
+<nav aria-label="Views">
+<ul>
+{{range .Nav}}<li><a href="{{.Href}}"{{if .Current}} aria-current="page"{{end}}>{{.Label}}</a></li>
+{{end}}</ul>
+</nav>
+<p class="context">{{.Project}} · <code>{{.Ref.Name}}</code> at <code>{{.Ref.Commit}}</code>, {{.Ref.Date}} · {{if .Viewer}}viewer {{.Viewer}}, {{.Role}}{{else}}no viewer, observer{{end}}{{range .Params}} · {{.Name}} {{if .Task}}{{template "task" .Task}}{{else}}{{.Value}}{{end}}{{end}}</p>
+</header>
+{{template "main" .}}
+<footer class="site">
+<p>{{.Heading}} of {{.Project}} at <code>{{.Ref.Commit}}</code>. <a href="{{.Legend}}">The gate definition</a> explains every symbol.</p>
+</footer>
+</body>
+</html>
+{{end}}
+
+{{define "main"}}<main id="main" class="v-{{.View}}"{{with .Live}} hx-get="{{.Get}}" hx-trigger="{{.Trigger}}" hx-headers="{{.Headers}}" hx-swap="outerHTML"{{end}}>
+<h1>{{.Heading}}</h1>
+<p class="question">{{.Question}}</p>
+{{template "body" .}}
+</main>{{end}}

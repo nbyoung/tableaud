@@ -1,0 +1,91 @@
+{{define "body"}}{{with .Body}}
+<h2 id="people">People</h2>
+{{if .People}}<div class="scroll">
+<table>
+<caption>One row per email in the project; a count covers leaf tasks</caption>
+<thead><tr><th scope="col">Email</th><th scope="col" class="num">Assigned</th><th scope="col" class="num">Contributes next</th><th scope="col" class="num">Reviews next</th><th scope="col">Models</th></tr></thead>
+<tbody>
+{{range .People}}<tr{{if .Mine}} class="mine"{{end}}><th scope="row"><a href="{{.Href}}">{{.Email}}</a>{{if .Mine}} (you){{end}}</th><td class="num">{{.Assigned}}</td><td class="num">{{.Contributes}}</td><td class="num">{{.Reviews}}</td><td>{{range $i, $m := .Models}}{{if $i}}, {{end}}<code>{{$m}}</code>{{else}}none: a person{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{else}}<p class="empty">No task names an email at this ref.</p>
+{{end}}{{if .Sections}}
+<h2 id="carries">What each carries</h2>
+<p>A junction is <strong>next</strong> when it is the task's next applicable gate, passed when the status stands at or after it, and later otherwise.</p>
+{{range .Sections}}{{template "fold" .Fold}}<summary>{{.Email}} <span class="tally">· {{.Kind}} · {{.Row.Assigned}} {{plural .Row.Assigned "task" "tasks"}} assigned · {{.Row.Contributes}} to contribute next · {{.Row.Reviews}} to review next</span></summary>
+<h3>Tasks assigned: {{len .Assigned}}</h3>
+{{if .Assigned}}<div class="scroll">
+<table>
+<caption>Tasks assigned to {{.Email}}, in display order</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Under</th><th scope="col">Status</th><th scope="col">Next junction</th></tr></thead>
+<tbody>
+{{range .Assigned}}{{$a := .}}<tr><th scope="row"><a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a></th><td>{{.Task.Title}}</td><td>{{with .Parent}}<code class="id">{{.ID}}</code>{{else}}root{{end}}</td><td>{{template "status" .Status}}</td><td>{{with .Next}}{{template "sym" .}} {{template "syms" $a.Marks}}{{else}}none{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{template "fold" .AssignedProv}}<summary>Provenance: the file behind each assignment</summary><p><code>assignee</code> in each task's own file, <code>.tableaux/tasks/ID.yaml</code>.</p></details>
+{{else}}<p class="empty">No task names {{.Email}} as its assignee.</p>
+{{end}}<h3>Contributes: {{.Contributes.Total}} {{plural .Contributes.Total "junction" "junctions"}}, {{.Contributes.Next}} next</h3>
+{{if .Contributes.Groups}}{{range .Contributes.Groups}}{{template "group" .}}{{end}}{{else}}<p class="empty">{{.Email}} contributes at no junction.</p>
+{{end}}<h3>Reviews: {{.Reviews.Total}} {{plural .Reviews.Total "junction" "junctions"}}, {{.Reviews.Next}} next</h3>
+{{if .Reviews.Groups}}{{range .Reviews.Groups}}{{template "group" .}}{{end}}{{else}}<p class="empty">{{.Email}} reviews at no junction.</p>
+{{end}}<h3>Counts by gate</h3>
+<div class="scroll">
+<table>
+<caption>Counts by gate for {{.Email}}</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col" class="num">Tasks standing here</th><th scope="col" class="num">Contributes</th><th scope="col" class="num">of which next</th><th scope="col" class="num">Reviews</th><th scope="col" class="num">of which next</th></tr></thead>
+<tbody>
+{{range .Counts}}<tr><th scope="row">{{template "sym" .Gate}}</th>{{template "counts" .}}</tr>
+{{end}}</tbody>
+<tfoot><tr><th scope="row">Total</th>{{template "counts" .Totals}}</tr></tfoot>
+</table>
+</div>
+<h3>Authority</h3>
+{{if .Authority}}<ul class="notes">
+{{range .Authority}}<li>Over {{template "task" .Task}} and its {{.Descendants}} {{plural .Descendants "descendant" "descendants"}}</li>
+{{end}}</ul>
+{{else}}<p class="empty">{{.Email}} has authority over no task.</p>
+{{end}}</details>
+{{end}}{{end}}{{end}}{{end}}
+
+{{define "counts"}}<td class="num">{{.Standing}}</td><td class="num">{{.Contributes}}</td><td class="num">{{.ContribNext}}</td><td class="num">{{.Reviews}}</td><td class="num">{{.ReviewsNext}}</td>{{end}}
+
+{{define "group"}}{{template "fold" .Fold}}<summary>{{template "sym" .Gate}} <span class="tally">· {{.Total}} {{plural .Total "junction" "junctions"}} · {{.Next}} next</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part-group" .}}{{end}}</details>
+{{end}}
+
+{{define "part-group"}}{{if .Reviews}}{{template "reviewed" .Rows.Shown}}{{else}}{{template "contributed" .Rows.Shown}}{{end}}
+{{if .Rows.Rest}}{{template "fold" .Rows.Fold}}<summary>… and {{len .Rows.Rest}} more {{.Rows.Alike}}</summary>
+{{if .Reviews}}{{template "reviewed" .Rows.Rest}}{{else}}{{template "contributed" .Rows.Rest}}{{end}}
+</details>
+{{end}}{{template "fold" .Prov}}<summary>Provenance: the file and the ancestor behind these positions</summary>
+<div class="scroll">
+<table>
+<caption>The entry that supplies each field</caption>
+<thead><tr><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Supplied by</th></tr></thead>
+<tbody>
+{{range .From}}<tr><th scope="row">{{.Field}}</th><td>{{.Value}}</td><td>{{with .By}}{{template "task" .}}{{else}}No entry; {{.Default}}{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+</details>{{end}}
+
+{{define "contributed"}}<div class="scroll">
+<table>
+<caption>{{len .}} {{plural (len .) "junction" "junctions"}} where the person contributes</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Model</th><th scope="col">Reviewer</th><th scope="col">When</th></tr></thead>
+<tbody>
+{{range .}}<tr><th scope="row"><a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a></th><td>{{.Task.Title}}</td><td>{{if .Model}}<code>{{.Model}}</code>{{else}}none: a person{{end}}</td><td>{{if .Reviewer}}{{.Reviewer}}{{else}}none{{end}}</td><td>{{.When}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>{{end}}
+
+{{define "reviewed"}}<div class="scroll">
+<table>
+<caption>{{len .}} {{plural (len .) "junction" "junctions"}} where the person reviews</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Title</th><th scope="col">Contributor</th><th scope="col">Model</th><th scope="col">When</th></tr></thead>
+<tbody>
+{{range .}}<tr><th scope="row"><a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a></th><td>{{.Task.Title}}</td><td>{{.Contributor}}</td><td>{{if .Model}}<code>{{.Model}}</code>{{else}}none: a person{{end}}</td><td>{{.When}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>{{end}}

@@ -1,0 +1,21 @@
+{{define "body"}}{{with .Body}}
+<section aria-labelledby="h-corner">
+<h2 id="h-corner">{{with .Task}}{{template "task" .}} and its children{{else}}The tasks of {{.Person}}{{end}}</h2>
+{{if .Grid.Rows}}{{template "grid" .Grid}}
+<p class="key">Columns: {{range $i, $c := .Grid.Columns}}{{if $i}} · {{end}}{{template "sym" $c.First}}{{with $c.Last}} to {{template "sym" .}}{{end}}{{if $c.Folded}}, folded{{end}}{{end}}. <a href="{{$.Legend}}">The gate definition gives every gate and symbol</a>.</p>
+{{with .Wider}}{{template "fold" .Fold}}<summary>Spine, siblings and notes</summary>
+{{template "grid" .Grid}}
+</details>
+{{end}}{{range .Blocks}}{{template "fold" .Row.Fold}}<summary><span class="id">{{.Row.Task.ID}}</span> {{.Row.Task.Title}}: {{template "status" .Row.Status}}{{if .Row.Status.From}}, rolled up{{end}}</summary>
+<dl class="fields">
+<dt>Status</dt><dd>{{template "status" .Row.Status}}{{with .Row.Status.From}}, from {{template "task" .}}{{end}}</dd>
+<dt>Date</dt><dd>{{if .Row.Status.Date}}{{.Row.Status.Date}}{{else}}None{{end}}</dd>
+<dt>Note</dt><dd>{{if .Row.Status.Note}}{{.Row.Status.Note}}{{else}}None{{end}}</dd>
+<dt>Next gate</dt><dd>{{with .Next}}{{template "sym" .}}{{else}}None; the task has passed its last gate{{end}}{{if .NextMarks}}: {{template "syms" .NextMarks}}{{end}}</dd>
+</dl>
+<p><a href="{{.Row.Task.Href}}">The task view shows {{.Row.Task.ID}} in full</a>.</p>
+{{template "fold" .Row.ProvFold}}<summary>Provenance of the status and the marks</summary>{{if .Row.ProvFold.Src}}{{template "lazy" .Row.ProvFold}}{{else}}{{template "part-row" .Row.Prov}}{{end}}</details>
+</details>
+{{end}}{{else}}<p class="empty">{{if .Task}}The task has no row at this ref.{{else}}{{.Person}} is assigned no task and contributes at no next gate at this ref.{{end}}</p>
+{{end}}</section>
+{{end}}{{end}}

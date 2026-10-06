@@ -1,0 +1,61 @@
+{{define "body"}}{{with .Body}}
+<p class="filter">Show: <a href="{{.All.Href}}"{{template "swap" .All}}{{if not .Filtered}} aria-current="true"{{end}}>all {{.Total}} {{plural .Total "task" "tasks"}}</a> · <a href="{{.Only.Href}}"{{template "swap" .Only}}{{if .Filtered}} aria-current="true"{{end}}>proposed tasks only, {{.Proposed}}</a></p>
+{{if .OffTrunk}}<p class="empty">The ref lies off the trunk, so every task reads as <span class="proposed">proposed</span>; a task whose file differs from the trunk's says so.</p>
+{{end}}<h2 id="tree">The tree of assignees</h2>
+{{with .Root}}<p class="cols" aria-hidden="true"><span class="title">Task</span> <span class="who">Assignee</span></p>
+<ul class="tree auth">
+{{template "node" .}}
+</ul>
+{{else}}<p class="empty">No task is proposed: all {{.Total}} are authorised.</p>
+{{end}}
+<h2 id="deciding">Deciding commits</h2>
+{{template "fold" .Commits.Fold}}<summary>Provenance: {{len .Commits.Rows}} deciding {{plural (len .Commits.Rows) "commit" "commits"}}</summary>{{if .Commits.Fold.Src}}{{template "lazy" .Commits.Fold}}{{else}}{{template "part-commits" .Commits}}{{end}}</details>
+{{end}}{{end}}
+
+{{define "node"}}<li>{{template "fold" .Fold}}<summary><span class="row"><code class="id">{{.Task.ID}}</code> <span class="title">{{.Task.Title}}</span> <span class="who {{depth .Depth}}{{if .Same}} same{{end}}">{{.Assignee}}<span class="sr">, {{.Relation}}</span>{{if .Proposed}} <span class="proposed">proposed{{if .Differs}} (differs from trunk){{end}}</span>{{end}}</span></span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part-node" .Body}}{{end}}</details>
+{{if .Count}}{{template "fold" .Kids}}<summary><span class="fold">{{.Count}} {{plural .Count "child" "children"}} of <code class="id">{{.Task.ID}}</code></span></summary>{{if .Kids.Src}}{{template "lazy" .Kids}}{{else}}{{template "part-kids" .}}{{end}}</details>{{end}}</li>{{end}}
+
+{{define "part-kids"}}<ul>
+{{range .Children}}{{template "node" .}}
+{{end}}</ul>{{end}}
+
+{{define "part-node"}}<div class="body">
+<dl class="fields">
+<dt>Assignee</dt><dd>{{.Assignee}}{{with .From}}, {{if $.Delegation}}a delegation at{{else}}as{{end}} {{template "task" .}}{{else}}, the owner{{end}}</dd>
+<dt>Authorities, nearest first</dt><dd>{{range $i, $a := .Authorities}}{{if $i}}; then {{end}}{{$a.Person.Email}} ({{range $j, $t := $a.By}}{{if $j}}, {{end}}{{template "task" $t}}{{end}}){{else}}None above; the owner alone authorises the root{{end}}</dd>
+<dt>Authorisation</dt><dd>{{if .Authorised}}Authorised by <code>{{.Decided}}</code>, {{.Date}}{{else}}<span class="proposed">Proposed</span>: the deciding commit is not by an authority{{end}}</dd>
+<dt>More</dt><dd><a href="{{.Task.Href}}">The task definition of {{.Task.ID}}</a></dd>
+</dl>
+{{if .ChildCount}}<p>Authorities of its {{.ChildCount}} {{plural .ChildCount "child" "children"}}, nearest first: {{range $i, $a := .Below}}{{if $i}}; then {{end}}{{$a.Person.Email}} ({{range $j, $t := $a.By}}{{if $j}}, {{end}}<code class="id">{{$t.ID}}</code>{{end}}){{end}}.</p>
+{{if .Defaults}}<div class="scroll">
+<table>
+<caption>Junction defaults {{.Task.ID}} states for its subtree</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col" class="gate">Marks</th><th scope="col">Contributor</th><th scope="col">Model</th><th scope="col">Reviewer</th></tr></thead>
+<tbody>
+{{range .Defaults}}<tr{{if .Exempt}} class="na"{{end}}>{{template "junction-cells" .}}</tr>
+{{end}}</tbody>
+</table>
+</div>
+{{else}}<p>{{.Task.ID}} states no junction defaults.</p>
+{{end}}{{end}}{{template "fold" .Prov.Fold}}<summary>Provenance: the deciding commit</summary>{{if .Prov.Fold.Src}}{{template "lazy" .Prov.Fold}}{{else}}{{template "part-deciding" .}}{{end}}</details>
+</div>{{end}}
+
+{{define "part-deciding"}}{{with .Prov.Commit}}<dl class="fields">
+{{template "commit" .}}<dt>Accepts by</dt><dd>{{$.Prov.Way}}</dd>
+<dt>The authority is</dt><dd>{{$.Prov.By}}</dd>
+<dt>Also decides</dt><dd>{{$.Others}} other {{plural $.Others "task" "tasks"}}; see <a href="{{$.CommitsHref}}">the deciding commits</a></dd>
+</dl>
+{{else}}<p class="empty">No commit on the trunk decides this task.</p>
+{{end}}{{template "commands" .Prov.Commands}}{{end}}
+
+{{define "part-commits"}}<div class="scroll">
+<table>
+<caption>Each deciding commit and the tasks it decides</caption>
+<thead><tr><th scope="col">Commit</th><th scope="col">Date</th><th scope="col">Author</th><th scope="col">Committer</th><th scope="col">Accepts by</th><th scope="col">The authority is</th><th scope="col">Tasks</th></tr></thead>
+<tbody>
+{{range .Rows}}<tr><th scope="row"><code>{{.Commit.Hash}}</code> {{.Commit.Subject}}</th><td>{{.Commit.Date}}</td><td>{{.Commit.Author}}</td><td>{{.Commit.Committer}}</td><td>{{.Way}}</td><td>{{.By}}</td><td>{{len .Tasks}}: {{range $i, $t := .Tasks}}{{if $i}} {{end}}<code class="id">{{$t.ID}}</code>{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+<p>By way of acceptance: {{range $i, $w := .Ways}}{{if $i}}, {{end}}{{$w.Count}} by {{$w.Way}}{{end}}.</p>
+{{template "commands" .Commands}}{{end}}

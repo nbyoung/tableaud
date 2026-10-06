@@ -1,0 +1,85 @@
+{
+ "View": "contextual",
+ "Heading": "Contextual tableau",
+ "Question": "q",
+ "Project": "Tableaux tooling",
+ "Ref": {
+  "Name": "main",
+  "Commit": "3cdae52",
+  "Date": "2026-10-05"
+ },
+ "Viewer": "nbyoung@nbyoung.com",
+ "Role": "owner",
+ "Params": null,
+ "Nav": [
+  {
+   "Label": "Tableau",
+   "Href": "V/tableau",
+   "Current": false
+  },
+  {
+   "Label": "My corner",
+   "Href": "V/contextual",
+   "Current": true
+  },
+  {
+   "Label": "Queue",
+   "Href": "V/queue",
+   "Current": false
+  },
+  {
+   "Label": "Blockage",
+   "Href": "V/blockage",
+   "Current": false
+  },
+  {
+   "Label": "Task",
+   "Href": "V/task",
+   "Current": false
+  },
+  {
+   "Label": "Assignment",
+   "Href": "V/assignment",
+   "Current": false
+  },
+  {
+   "Label": "Authority",
+   "Href": "V/authority",
+   "Current": false
+  },
+  {
+   "Label": "History",
+   "Href": "V/history",
+   "Current": false
+  },
+  {
+   "Label": "Audit",
+   "Href": "V/audit",
+   "Current": false
+  },
+  {
+   "Label": "Gates",
+   "Href": "V/gate",
+   "Current": false
+  }
+ ],
+ "Legend": "V/gate",
+ "CSS": "S/tableaud.css",
+ "Script": "S/htmx/htmx.min.js",
+ "Meta": null,
+ "Live": null,
+ "Body": {
+  "Task": null,
+  "Person": "opus@example.org",
+  "Grid": {
+   "ID": "",
+   "Caption": "",
+   "Columns": null,
+   "Rows": null,
+   "Notes": false,
+   "Control": null
+  },
+  "Wider": null,
+  "Blocks": null
+ }
+}
