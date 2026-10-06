@@ -28,7 +28,7 @@ never reads a task file itself.
 
 ```
 tableaud serve                    # http://localhost:8642/
-tableaud serve --as ben@example.org --at main
+tableaud serve --as ben@example.org --ref main
 tableaud export --out public/     # a static bundle for CI to publish
 ```
 
