@@ -1,0 +1,16 @@
+{{/* choose.html: the body of a page that lists the focuses of one view.
+     The export writes three such pages, task.html, queue.html and
+     context.html, for the views that need a task or a person and have no
+     viewer to take one from. The shared chrome wraps this body; every class
+     here comes from the shared style block of the mockups. */}}
+<h1>{{.Title}}</h1>
+<p class="question">{{.Question}}</p>
+<p class="muted">{{.Note}}</p>
+{{range .Tables}}<div class="scroll"><table>
+<caption>{{.Caption}}</caption>
+<thead><tr>{{range .Head}}<th scope="col">{{.}}</th>{{end}}</tr></thead>
+<tbody>
+{{range .Rows}}<tr>{{range .}}<td>{{if .Href}}<a{{if .ID}} class="id"{{end}} href="{{.Href}}">{{.Text}}</a>{{else}}{{.Text}}{{end}}</td>{{end}}</tr>
+{{end}}</tbody>
+</table></div>
+{{end}}
