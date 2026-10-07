@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"net/url"
 	"slices"
 	"strconv"
 	"strings"
@@ -29,10 +30,26 @@ type Link struct {
 }
 
 // Linker spells an address. The daemon's writes a path and a canonical query;
-// the export's writes a relative file path.
+// the export's writes a relative file path. Every medium answers the
+// reference question, since the export must make no request outside its
+// directory (the owner's ruling of 2026-10-06; design 6160, decision 6).
 type Linker interface {
 	Page(l Link) string        // a view page, or one part when l.Params.Part is set
 	Static(name string) string // "tableaud.css", "htmx/htmx.min.js"
+	// Reference gives the address of a task reference or of a text of the
+	// method, and false when the medium gives it no link.
+	Reference(url string) (string, bool)
+}
+
+// AbsoluteReference is the daemon's answer to Linker.Reference: an absolute
+// http or https address is a link, and any other reference is text, since
+// the daemon serves no file of the repository.
+func AbsoluteReference(ref string) (string, bool) {
+	u, err := url.Parse(ref)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		return "", false
+	}
+	return ref, true
 }
 
 // set applies one name and value to p, as Page.To and Page.Self do. An empty

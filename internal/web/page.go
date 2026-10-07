@@ -1,7 +1,6 @@
 package web
 
 import (
-	"net/url"
 	"strings"
 
 	"github.com/nbyoung/tableaud/internal/source"
@@ -43,13 +42,6 @@ type Page struct {
 	Scripts bool       // false on the export
 	Err     *PageError // Data is then nil
 	Version string     // the tableaud version, for the footer
-}
-
-// Referencer is the optional question a Linker answers for a task reference
-// or a text of the method. A Linker without it links an absolute http or
-// https address and nothing else.
-type Referencer interface {
-	Reference(url string) (string, bool)
 }
 
 // To returns the address of another view: the sticky parameters of p, then
@@ -112,18 +104,8 @@ func (p *Page) Anchor(kind, key string) string {
 }
 
 // Reference returns the address of a task reference or of a text of the
-// method, and false when the daemon gives it no link. An absolute http or
-// https address is a link; any other reference is text.
-func (p *Page) Reference(ref string) (string, bool) {
-	if r, ok := p.Link.(Referencer); ok {
-		return r.Reference(ref)
-	}
-	u, err := url.Parse(ref)
-	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
-		return "", false
-	}
-	return ref, true
-}
+// method, and false when the medium gives it no link; the Linker answers.
+func (p *Page) Reference(ref string) (string, bool) { return p.Link.Reference(ref) }
 
 // Nav returns the ten entries of the navigation, each with the sticky
 // parameters and no focus.

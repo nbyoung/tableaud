@@ -298,3 +298,7 @@ func (Linker) Page(l web.Link) string {
 
 // Static implements web.Linker.
 func (Linker) Static(name string) string { return "/static/" + name }
+
+// Reference implements web.Linker: an absolute http or https address is a
+// link, and any other reference is text.
+func (Linker) Reference(ref string) (string, bool) { return web.AbsoluteReference(ref) }

@@ -21,8 +21,9 @@ import (
 // links_test.go.
 type plainLinker struct{}
 
-func (plainLinker) Page(l web.Link) string    { return "/" + l.View }
-func (plainLinker) Static(name string) string { return "/static/" + name }
+func (plainLinker) Page(l web.Link) string              { return "/" + l.View }
+func (plainLinker) Static(name string) string           { return "/static/" + name }
+func (plainLinker) Reference(ref string) (string, bool) { return web.AbsoluteReference(ref) }
 
 func page(view web.View) *web.Page {
 	return &web.Page{
