@@ -29,7 +29,7 @@ never reads a task file itself.
 ```
 tableaud serve                    # http://127.0.0.1:8642/
 tableaud serve --as ben@example.org --ref main
-tableaud export --out public/     # a static bundle for CI to publish
+tableaud export --out public/ --ref main   # a static bundle for CI to publish
 ```
 
 ## Plan
@@ -49,13 +49,14 @@ daemon serves the weather-station fixture of `internal/source/sourcetest`; the
 adapter over `tablo` replaces it.
 
 ```
-cmd/tableaud/            # the command: main.go dispatches version and serve; serve.go parses the options and runs the daemon
+cmd/tableaud/            # the command: main.go dispatches version, serve and export; serve.go and export.go parse the options
 internal/source/         # Source, the one seam to tablo; sourcetest/ answers from JSON fixtures for every test
 internal/web/            # what a page is, for the daemon and the export alike
   views.go params.go     # the ten views, the validated parameters, Link and Linker
   page.go render.go      # Page and its address methods; Render, with the three shapes of one route
   templates/             # html/template files: base.html is the frame, views/ holds one file per view
   static/                # tableaud.css, tableaud.js and the vendored HTMX with its licence and a README
+internal/export/         # the static bundle: the plan, the linker, the check, the manifest and the writer
 internal/serve/          # the HTTP side: routes, the query scheme, the Linker, the watcher, the cache, the Host check
 scripts/vendor-htmx.sh   # fetches the pinned HTMX release
 .github/workflows/       # ci.yml on push and pull request, release.yml on a tag

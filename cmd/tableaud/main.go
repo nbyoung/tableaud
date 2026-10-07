@@ -1,6 +1,6 @@
 // Command tableaud serves the Tableaux views as HTML from a checked-out
-// repository. The word serve runs the daemon; version prints the version. The
-// export command arrives with a later task.
+// repository. The word serve runs the daemon; export writes every view as a
+// static bundle; version prints the version.
 package main
 
 import (
@@ -25,6 +25,7 @@ var (
 const usage = `usage: tableaud <command> [options]
 
   serve     serve the views of the repository at -C as HTML (see tableaud serve --help)
+  export    write every view as a static bundle (see tableaud export --help)
   version   print the version
 `
 
@@ -48,6 +49,8 @@ func run(ctx context.Context, args []string, stdout, stderr io.Writer) int {
 		return 0
 	case "serve":
 		return runServe(ctx, args[1:], stdout, stderr)
+	case "export":
+		return runExport(ctx, args[1:], stdout, stderr)
 	case "-h", "--help", "help":
 		_, _ = fmt.Fprint(stdout, usage)
 		return 0
