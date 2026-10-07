@@ -39,8 +39,9 @@
 
 {{/* "page" is the page fragment: what a request with HX-Request and no part
      receives, and what the live poll swaps. hx-target and hx-swap sit here so
-     that a control inside needs hx-boost="true" and nothing else. */}}
-{{define "page"}}<div id="page" hx-target="this" hx-swap="outerHTML"
+     that a control inside needs hx-boost="true" and nothing else; a page
+     without scripts, the export's, holds no hx- attribute. */}}
+{{define "page"}}<div id="page"{{if .Scripts}} hx-target="this" hx-swap="outerHTML"{{end}}
   {{- with .Live}} hx-get="{{.URL}}" hx-trigger="every {{.Every}}" hx-headers="{{.Headers}}"{{end}}>
 <a class="skip" href="#main">Skip to the view</a>
 <header class="site">

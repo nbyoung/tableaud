@@ -135,8 +135,8 @@ func parse(src fs.FS) (map[string]*template.Template, error) {
 // Part. It executes into a buffer first, so a template error becomes a 500
 // page and never half a page.
 //
-// A page that holds no model, no error and a view with an adapter gets its
-// model from the adapter, on a copy: Render never writes to the caller's page.
+// A page that holds no model, no raw markup, no error and a view with an
+// adapter gets its model from the adapter, on a copy: Render never writes to the caller's page.
 // A Part of a page with a model is drawn from the value of the model's Part;
 // a model that knows no such part or key makes the error wrap ErrNoPart.
 func Render(w io.Writer, shape Shape, p *Page) error {
@@ -148,7 +148,7 @@ func Render(w io.Writer, shape Shape, p *Page) error {
 	if !ok {
 		set = all[Views[0].Name] // an error page of no view draws the frame alone
 	}
-	if adapt, ok := adapters[p.View.Name]; ok && p.Body == nil && p.Err == nil {
+	if adapt, ok := adapters[p.View.Name]; ok && p.Body == nil && p.Raw == "" && p.Err == nil {
 		c := *p
 		c.Body = adapt(envOf(&c, shape))
 		p = &c

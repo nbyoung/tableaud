@@ -87,18 +87,57 @@ func TestFrame(t *testing.T) {
 	}
 }
 
-// TestFrameWithoutScripts checks the export's shape: no script, no poll.
+// TestFrameWithoutScripts checks the export's shape for every view: no script,
+// no poll and no hx- attribute, and with scripts the frame's own target and swap.
 func TestFrameWithoutScripts(t *testing.T) {
-	p := page(web.Views[0])
-	p.Scripts, p.Live = false, nil
+	for _, v := range web.Views {
+		p := page(v)
+		p.Scripts, p.Live = false, nil
+		var b, frag bytes.Buffer
+		if err := web.Render(&b, web.Document, p); err != nil {
+			t.Fatal(err)
+		}
+		if err := web.Render(&frag, web.Fragment, p); err != nil {
+			t.Fatal(err)
+		}
+		for _, bad := range []string{"<script", "htmx-config", "hx-"} {
+			if strings.Contains(b.String(), bad) || strings.Contains(frag.String(), bad) {
+				t.Errorf("%s: a page without scripts holds %q", v.Name, bad)
+			}
+		}
+		if !strings.Contains(b.String(), `<div id="page">`) {
+			t.Errorf("%s: the frame lost its id", v.Name)
+		}
+	}
 	var b bytes.Buffer
-	if err := web.Render(&b, web.Document, p); err != nil {
+	if err := web.Render(&b, web.Fragment, page(web.Views[0])); err != nil {
 		t.Fatal(err)
 	}
-	for _, bad := range []string{"<script", "htmx-config", "hx-get", "hx-trigger"} {
-		if strings.Contains(b.String(), bad) {
-			t.Errorf("a page without scripts holds %q", bad)
+	if !strings.HasPrefix(b.String(), `<div id="page" hx-target="this" hx-swap="outerHTML" hx-get="/tableau"`) {
+		t.Errorf("a page with scripts: %.120s", b.String())
+	}
+}
+
+// TestRaw checks that markup the caller draws replaces the view's body inside
+// the frame, byte for byte, and that Render does not call the adapter for it.
+func TestRaw(t *testing.T) {
+	const raw = `<h1>Raw</h1><p>Drawn by the caller, <a href="x.html">linked</a>.</p>`
+	called := false
+	register(t, "task", func(web.Env) any { called = true; return nil })
+	for _, v := range web.Views {
+		p := page(v)
+		p.Scripts, p.Live, p.Data, p.Raw = false, nil, nil, raw
+		var b bytes.Buffer
+		if err := web.Render(&b, web.Document, p); err != nil {
+			t.Fatalf("%s: %v", v.Name, err)
 		}
+		want := `<main id="main" class="v-` + v.Name + `">` + raw + "\n</main>"
+		if !strings.Contains(b.String(), want) || strings.Contains(b.String(), "<pre>") {
+			t.Errorf("%s: the raw markup does not stand in main:\n%s", v.Name, b.String())
+		}
+	}
+	if called {
+		t.Error("Render called the adapter for a page with raw markup")
 	}
 }
 

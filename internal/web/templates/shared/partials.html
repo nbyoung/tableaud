@@ -1,5 +1,5 @@
 {{/* partials: what every view's body draws with; the frame is base.html. */}}
-{{define "main"}}{{if .Body}}
+{{define "main"}}{{if .Raw}}{{.Raw}}{{else if .Body}}
 <h1>{{.View.Title}}</h1>
 <p class="question">{{.View.Question}}</p>
 {{template "body" .}}{{else}}<h1>{{.View.Title}}</h1>
