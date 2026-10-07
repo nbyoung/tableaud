@@ -81,16 +81,12 @@ func newPaths(ix source.Index) *paths {
 	return p
 }
 
-// hasCorner reports whether a task has a contextual page of its own: the root
-// and every task with children.
-func (p *paths) hasCorner(t source.IndexTask) bool { return t.ID == p.root || t.Children > 0 }
-
 // corner returns the nearest task from id upward, itself included, that has a
 // contextual page: the root at the latest.
 func (p *paths) corner(id string) string {
 	for {
 		t := p.tasks[id]
-		if p.hasCorner(t) {
+		if hasCorner(t, p.root) {
 			return t.ID
 		}
 		if _, ok := p.tasks[t.Parent]; !ok {
@@ -198,7 +194,7 @@ func plan(ix source.Index) ([]page, error) {
 		if t.ID != p.root {
 			pages = append(pages, page{Path: "history-" + t.ID + ".html", View: "history", Task: t.ID})
 		}
-		if p.hasCorner(t) {
+		if hasCorner(t, p.root) {
 			pages = append(pages, page{Path: "context-" + t.ID + ".html", View: "context", Task: t.ID})
 		}
 	}
