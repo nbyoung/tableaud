@@ -1,3 +1,4 @@
 gate: function
 state: nominal
-note: One URL carries person, open rows and a column difference from the default gate window; role entry points, hidden markers and a stored choice script
+reason: review
+note: design/db74.md on branch wave/db74 awaits the owner's review at the design gate
