@@ -219,8 +219,16 @@ func TestDigestSubmodule(t *testing.T) {
 	git(t, main, "-c", "protocol.file.allow=always", "submodule", "add", "-q", sub, "subprojects/sub")
 	git(t, main, "commit", "-q", "-m", "add the submodule")
 	w := watcher(t, main)
-	d0 := w.Current()
 	checkout := filepath.Join(main, "subprojects", "sub")
+	// A commit on the submodule's attached branch moves a ref under its Git
+	// directory and not its HEAD (the owner's ruling of 2026-10-06).
+	git(t, checkout, "checkout", "-q", "-B", "work")
+	d0 := w.Current()
+	commit(t, checkout, "on the submodule's branch")
+	if w.Current() == d0 {
+		t.Error("a commit on a submodule's attached branch does not change the digest")
+	}
+	d0 = w.Current()
 	git(t, checkout, "checkout", "-q", "--detach")
 	d1 := w.Current()
 	if d1 == d0 {

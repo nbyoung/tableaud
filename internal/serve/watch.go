@@ -73,10 +73,12 @@ type Digester interface {
 // The digest covers the bytes of HEAD; the name, size and modification time of
 // every file under refs/, of packed-refs and of every file under reftable/, in
 // the worktree's own Git directory and in the common one; the name, size and
-// modification time of .gitmodules; the bytes of the HEAD of each submodule
-// under modules/, which stand for the checkouts of the submodules; and every
-// file under the project's .tableaux. A failure to read
-// is a digest too, so that a broken repository is a change and heals as one.
+// modification time of .gitmodules; the same of each submodule's Git
+// directory under modules/, its HEAD, refs/, packed-refs and reftable/, which
+// stand for the checkouts of the submodules, so that a commit on an attached
+// branch inside one is a change (the owner's ruling of 2026-10-06); and every
+// file under the project's .tableaux. A failure to read is a digest too, so
+// that a broken repository is a change and heals as one.
 type Watcher struct {
 	project, root string
 	maxAge        time.Duration
@@ -129,21 +131,20 @@ func (w *Watcher) hash(h writer) error {
 	}
 	for i, dir := range dirs {
 		tag := fmt.Sprintf("git%d", i)
-		for _, sub := range []string{"refs", "reftable"} {
-			if err := walk(h, tag, filepath.Join(dir, sub)); err != nil {
-				return err
-			}
-		}
-		if err := stat(h, tag+"/packed-refs", filepath.Join(dir, "packed-refs")); err != nil {
+		if err := refs(h, tag, dir); err != nil {
 			return err
 		}
-		for _, m := range moduleHeads(filepath.Join(dir, "modules")) {
-			b, err := os.ReadFile(m)
+		for _, m := range modules(filepath.Join(dir, "modules")) {
+			b, err := os.ReadFile(filepath.Join(m, "HEAD"))
 			if err != nil {
 				return err
 			}
 			rel, _ := filepath.Rel(dir, m)
-			_, _ = fmt.Fprintf(h, "%s/%s\x00%s\x00", tag, filepath.ToSlash(rel), b)
+			mtag := tag + "/" + filepath.ToSlash(rel)
+			_, _ = fmt.Fprintf(h, "%s/HEAD\x00%s\x00", mtag, b)
+			if err := refs(h, mtag, m); err != nil {
+				return err
+			}
 		}
 	}
 	if err := stat(h, ".gitmodules", filepath.Join(w.root, ".gitmodules")); err != nil {
@@ -152,25 +153,36 @@ func (w *Watcher) hash(h writer) error {
 	return walk(h, "tableaux", filepath.Join(w.project, ".tableaux"))
 }
 
-// moduleHeads lists the HEAD file of each submodule's Git directory under dir,
-// the modules directory of a Git directory. A module is named by its path, so
-// it may lie in nested directories; a directory with a HEAD is a module, and
-// only its own modules directory is searched further.
-func moduleHeads(dir string) []string {
+// refs hashes the refs of the Git directory dir under tag: every file under
+// refs/ and reftable/, and packed-refs.
+func refs(h writer, tag, dir string) error {
+	for _, sub := range []string{"refs", "reftable"} {
+		if err := walk(h, tag, filepath.Join(dir, sub)); err != nil {
+			return err
+		}
+	}
+	return stat(h, tag+"/packed-refs", filepath.Join(dir, "packed-refs"))
+}
+
+// modules lists each submodule's Git directory under dir, the modules
+// directory of a Git directory. A module is named by its path, so it may lie
+// in nested directories; a directory with a HEAD is a module, and only its
+// own modules directory is searched further.
+func modules(dir string) []string {
 	if _, err := os.Stat(filepath.Join(dir, "HEAD")); err == nil {
-		return append([]string{filepath.Join(dir, "HEAD")}, moduleHeads(filepath.Join(dir, "modules"))...)
+		return append([]string{dir}, modules(filepath.Join(dir, "modules"))...)
 	}
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil
 	}
-	var heads []string
+	var found []string
 	for _, e := range entries {
 		if e.IsDir() {
-			heads = append(heads, moduleHeads(filepath.Join(dir, e.Name()))...)
+			found = append(found, modules(filepath.Join(dir, e.Name()))...)
 		}
 	}
-	return heads
+	return found
 }
 
 // gitDirs finds the private Git directory of the working tree (the one with
