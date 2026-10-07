@@ -1,6 +1,6 @@
 # Design db74: the model
 
-The declarations of [`db74`](../db74.md), as one file. It lands as `internal/web/disclose.go`, bodies included: a throwaway copy of `main` at `b63b682` compiles it, passes `go vet` and `golangci-lint run` with it, and answers every case of [`cases.json`](cases.json) from it. The design's body states the seven edits of files that stand, which complete the model.
+The declarations of [`db74`](../db74.md), as one file. It lands as `internal/web/disclose.go`, bodies included: a throwaway copy of the branch, whose code is `main` at `b63b682`, compiles it, passes `go vet` and `golangci-lint run` with it, and answers every case of [`cases.json`](cases.json) from it. The revision of 2026-10-07 changes `roleOf`, `ByRole.Opens`, `openerOf`, `Share` and one line of `ColumnsOf`, and adds `SeenBy`, `AsSelf`, `Resolved` and `AuditFocus`. The design's body lists the edits of files that stand, which complete the model: among them the fields `Params.SeenBy`, `Params.Minimum` and `Page.Seen`, which this file reads.
 
 ```go
 package web
@@ -8,18 +8,45 @@ package web
 import (
 	"slices"
 	"strings"
+
+	"github.com/nbyoung/tableaud/internal/source"
 )
 
 // Progressive disclosure (task db74): what arrives open for a role, which
 // rows a tableau draws, the address of each next state, and the column choice.
 
+// SeenBy returns the person whose arrangement the page draws: the one the
+// address names with as_seen_by, with the roles tablo finds for that email,
+// else the viewer. That person gives the role in force, the level a role
+// arrives at and the focus; the viewer stays the connection's.
+func (p *Page) SeenBy() source.Viewer {
+	switch {
+	case p.Seen != nil:
+		return *p.Seen
+	case p.Params.SeenBy != "":
+		return source.Viewer{Email: p.Params.SeenBy}
+	}
+	return p.Viewer
+}
+
+// AsSelf returns the address of this page without as_seen_by, for the frame's
+// "as seen by" notice, when the address names a person other than the viewer;
+// the empty string otherwise, and on an error page.
+func (p *Page) AsSelf() string {
+	if p.Err != nil || p.Params.SeenBy == "" || p.Params.SeenBy == p.Viewer.Email {
+		return ""
+	}
+	return p.Self("as_seen_by", "", "part", "")
+}
+
 // roleOf returns the role in force on a page: the role the address states,
-// else the viewer's first, else "observer".
+// else the first role of the person the page is seen by, else "observer".
+// levelOf reads it in place of the viewer's first role.
 func roleOf(p *Page) string {
 	if p.Params.Role != "" {
 		return p.Params.Role
 	}
-	return p.Viewer.Role()
+	return p.SeenBy().Role()
 }
 
 // ByRole opens the folds of a page by more than the level: by the role in
@@ -40,7 +67,7 @@ func (b ByRole) Opens(v View, class, id string) bool {
 	}
 	if b.Focus != nil {
 		switch v.Name + " " + class {
-		case "authority detail", "authority kids", "assignment group", "queue detail":
+		case "authority detail", "authority kids", "assignment group", "queue detail", "audit detail":
 			return b.Focus[id]
 		case "assignment detail", "blockage detail":
 			return b.Role == "owner" || b.Focus[id]
@@ -53,9 +80,11 @@ func (b ByRole) Opens(v View, class, id string) bool {
 // address states no level and the level is not glance, so neither to an
 // observer nor to the export: the global tableau then arrives at glance, and
 // the authority delegation, the assignment, the queue and the blockage tree
-// read the role and the focus. A contextual tableau whose address states the
-// open rows opens the grid that holds them, for every viewer. Every other
-// page opens by its level.
+// read the role and the focus. The audit reads the focus for every role but
+// the owner, whose arrival stays the level's: every group open down to its
+// provenance. A contextual tableau whose address states the open rows opens
+// the grid that holds them, for every viewer. Every other page opens by its
+// level.
 func openerOf(p *Page) Opener {
 	l := levelOf(p)
 	arrival := p.Params.Level == "" && l != Glance
@@ -72,15 +101,19 @@ func openerOf(p *Page) Opener {
 		if arrival {
 			return ByRole{Level: l, Role: roleOf(p)}
 		}
+	case "audit":
+		if arrival && roleOf(p) != "owner" {
+			return ByRole{Level: l, Role: roleOf(p)}
+		}
 	}
 	return ByLevel(l)
 }
 
 // Focus returns e with the folds of ids named as the focus of the arrival: the
-// folds that hold the viewer's own items, or the ones the view leads with. An
-// opener that reads no focus, ByLevel or openAll, stays as it is. An adapter
-// calls it once, before it asks for a fold; Focus() with no id names an empty
-// focus, which is not the same as none.
+// folds that hold the items of the person the page is seen by, or the ones
+// the view leads with. An opener that reads no focus, ByLevel or openAll,
+// stays as it is. An adapter calls it once, before it asks for a fold; Focus()
+// with no id names an empty focus, which is not the same as none.
 func (e Env) Focus(ids ...string) Env {
 	if r, ok := e.Open.(ByRole); ok {
 		r.Focus = make(map[string]bool, len(ids))
@@ -270,26 +303,20 @@ func (p *Page) Levels() []NavItem {
 }
 
 // Share returns the address that opens this page for another viewer as this
-// viewer sees it: the page's own address with the role in force and, on the
-// two views whose person defaults to the viewer, the viewer as person. It
-// returns the empty string when that address is the page's own, on a page
-// with no scripts and on an error page.
+// viewer sees it: the page's own address with as_seen_by the viewer, and with
+// role only when the role in force is not the viewer's first. It returns the
+// empty string where the address states as_seen_by already, since the page's
+// own address is then that link; for a viewer with no email; on a page with
+// no scripts; and on an error page.
 func (p *Page) Share() string {
-	if !p.Scripts || p.Err != nil {
+	if !p.Scripts || p.Err != nil || p.Params.SeenBy != "" || p.Viewer.Email == "" {
 		return ""
 	}
-	pairs := []string{"part", ""}
-	if r := roleOf(p); r != "observer" {
-		pairs = append(pairs, "role", r)
+	role := roleOf(p)
+	if role == p.Viewer.Role() {
+		role = ""
 	}
-	viewerDefault := p.View.Name == "queue" || (p.View.Name == "context" && p.Params.Task == "")
-	if viewerDefault && p.Params.Person == "" && p.Viewer.Email != "" {
-		pairs = append(pairs, "person", p.Viewer.Email)
-	}
-	if s := p.Self(pairs...); s != p.Self() {
-		return s
-	}
-	return ""
+	return p.Self("part", "", "as_seen_by", p.Viewer.Email, "role", role)
 }
 
 // GateChoice is one gate of the project as the column choice reads it, in
@@ -304,7 +331,8 @@ type GateChoice struct {
 // ColumnsOf returns the column choice of a tableau page, for Grid.Control of
 // its first grid, or nil in the export, which draws none. The form asks the
 // view's own route; it keeps every parameter in force but columns, window,
-// historical and part, and names its fields columns and historical.
+// historical and part, as_seen_by among them, and names its fields columns
+// and historical.
 func ColumnsOf(e Env, gates []GateChoice) *ColumnsForm {
 	p := e.Page
 	if !p.Scripts {
@@ -321,7 +349,7 @@ func ColumnsOf(e Env, gates []GateChoice) *ColumnsForm {
 	q := p.Params
 	for _, h := range []Meta{
 		{"project", q.Project}, {"ref", q.Ref}, {"task", q.Task}, {"person", q.Person},
-		{"role", q.Role}, {"level", q.Level},
+		{"as_seen_by", q.SeenBy}, {"role", q.Role}, {"level", q.Level},
 	} {
 		if h.Content != "" && p.View.Reads(h.Name) {
 			f.Hidden = append(f.Hidden, h)
@@ -405,5 +433,27 @@ func AuthorityFocus(tasks []Holder, viewer string) []string {
 		}
 	}
 	return out
+}
+
+// Resolved is one group of the audit as its focus reads it: its anchor, which
+// is the id of its fold, and the email of its resolver, empty for nobody.
+type Resolved struct{ Anchor, Resolver string }
+
+// AuditFocus returns e with the focus of the audit named: the group of each
+// anchor whose resolver is the person the page is seen by. Where that person
+// resolves no group of the page, or has no email, it returns e as it is: the
+// page names no focus and arrives by level.
+func AuditFocus(e Env, groups []Resolved) Env {
+	who := e.Page.SeenBy().Email
+	var ids []string
+	for _, g := range groups {
+		if who != "" && g.Resolver == who {
+			ids = append(ids, g.Anchor)
+		}
+	}
+	if len(ids) == 0 {
+		return e
+	}
+	return e.Focus(ids...)
 }
 ```
