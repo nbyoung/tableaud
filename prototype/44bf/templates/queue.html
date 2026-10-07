@@ -1,9 +1,0 @@
-{{define "title"}}Work queue {{.Person}}{{end}}
-{{define "content"}}{{template "style"}}
-<h1>Work queue: {{.Person}}</h1>
-<p>ref {{.Ref}}; order {{.Order}}</p>
-{{if .Items}}<ol class="queue">
-{{range .Items}}{{template "item" .}}{{end}}</ol>
-{{else}}<p class="empty">Nothing to do.</p>{{end}}
-<p class="more">Other queues: {{range .People}}<a href="/queue?person={{.}}">{{.}}</a> {{end}}</p>
-{{end}}
