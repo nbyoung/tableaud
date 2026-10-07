@@ -1,0 +1,127 @@
+{
+ "View": "audit",
+ "Body": {
+  "Errors": 1,
+  "Warnings": 0,
+  "Information": 0,
+  "Kinds": [
+   {
+    "Severity": "warning",
+    "Rule": "H3",
+    "Title": "A Model: trailer outside the junction's model",
+    "Href": "#s11",
+    "Count": 0,
+    "Tasks": null,
+    "Resolver": {
+     "Email": "nbyoung@nbyoung.com",
+     "Mine": true
+    }
+   },
+   {
+    "Severity": "information",
+    "Rule": "H4",
+    "Title": "A hand-off the history implies",
+    "Href": "#s11",
+    "Count": 0,
+    "Tasks": null,
+    "Resolver": {
+     "Email": "noreply@anthropic.com",
+     "Mine": false
+    }
+   },
+   {
+    "Severity": "error",
+    "Rule": "S11",
+    "Title": "A status past a reviewed junction with no review",
+    "Href": "#s11",
+    "Count": 1,
+    "Tasks": [
+     {
+      "ID": "e3cb",
+      "Title": "",
+      "Href": "T/e3cb"
+     }
+    ],
+    "Resolver": {
+     "Email": "noreply@anthropic.com",
+     "Mine": false
+    }
+   }
+  ],
+  "Most": "noreply@anthropic.com",
+  "MostCount": 1,
+  "Stale": 7,
+  "Silent": [
+   "No task is proposed."
+  ],
+  "Groups": [
+   {
+    "Anchor": "s11",
+    "Severity": "error",
+    "Action": "Review",
+    "Rule": "S11",
+    "Title": "a status past a reviewed junction with no review",
+    "Resolver": {
+     "Email": "noreply@anthropic.com",
+     "Mine": false
+    },
+    "Fold": {
+     "ID": "s11",
+     "Class": "detail",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": [
+     {
+      "Tasks": [
+       {
+        "ID": "e3cb",
+        "Title": "Schema files",
+        "Href": "T/e3cb"
+       }
+      ],
+      "Gate": {
+       "Glyph": "🧱",
+       "Name": "implementation"
+      },
+      "Files": [
+       "status/e3cb.yaml"
+      ],
+      "Message": "The status passes implementation",
+      "Action": "Review",
+      "Resolver": {
+       "Email": "nbyoung@nbyoung.com",
+       "Mine": true
+      }
+     }
+    ],
+    "Prov": {
+     "ID": "prov-s11",
+     "Class": "prov",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Sentence": "A validator rejects a status whose gate passes a reviewed junction that has no such commit.",
+    "Source": "README.md, Status",
+    "Commits": [
+     {
+      "Hash": "0fed913",
+      "Full": "0fed9130000",
+      "Subject": "Mark the abstract views design as awaiting review",
+      "Date": "2026-10-02",
+      "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+      "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+      "Trailers": [
+       "Model: claude-opus-5-5"
+      ]
+     }
+    ],
+    "Commands": [
+     "git log"
+    ]
+   }
+  ]
+ }
+}

@@ -1,0 +1,335 @@
+{
+ "View": "history",
+ "Body": {
+  "Events": 3,
+  "Commits": 3,
+  "From": "2026-09-30",
+  "To": "2026-10-02",
+  "Counts": [
+   {
+    "Kind": "task",
+    "Count": 0
+   },
+   {
+    "Kind": "status",
+    "Count": 1
+   },
+   {
+    "Kind": "pin",
+    "Count": 2
+   }
+  ],
+  "Days": [
+   {
+    "Date": "2026-09-30",
+    "Events": 1,
+    "Commits": 1,
+    "Counts": [
+     {
+      "Kind": "status",
+      "Count": 1
+     }
+    ],
+    "Fold": {
+     "ID": "day-2026-09-30",
+     "Class": "day",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": [
+     {
+      "Anchor": "e-0fed913-e9c6",
+      "By": {
+       "Email": "noreply@anthropic.com",
+       "Mine": false
+      },
+      "Kinds": [
+       "status"
+      ],
+      "Task": {
+       "ID": "e9c6",
+       "Title": "",
+       "Href": "T/e9c6"
+      },
+      "Status": {
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": {
+        "Glyph": "👓",
+        "Name": "review"
+       },
+       "Note": "",
+       "Date": "",
+       "Recorder": "",
+       "From": null,
+       "Snapshot": null
+      },
+      "Gate": null,
+      "Pin": null,
+      "Proposal": false,
+      "Fold": {
+       "ID": "d-0fed913-e9c6",
+       "Class": "detail",
+       "Open": true,
+       "Src": "",
+       "Alt": ""
+      },
+      "After": {
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": {
+        "Glyph": "👓",
+        "Name": "review"
+       },
+       "Note": "awaits the owner's review",
+       "Date": "",
+       "Recorder": "",
+       "From": null,
+       "Snapshot": null
+      },
+      "Effect": "the hand-off",
+      "Model": "claude-fable-5-1",
+      "Stated": "claude-fable",
+      "Committer": "nbyoung@nbyoung.com",
+      "Sub": null,
+      "Prov": {
+       "ID": "prov-0fed913-e9c6",
+       "Class": "prov",
+       "Open": true,
+       "Src": "",
+       "Alt": ""
+      },
+      "Commit": {
+       "Hash": "0fed913",
+       "Full": "0fed9130000",
+       "Subject": "Mark the abstract views design as awaiting review",
+       "Date": "2026-10-02",
+       "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+       "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+       "Trailers": [
+        "Model: claude-opus-5-5"
+       ]
+      },
+      "Files": [
+       ".tableaux/status/e9c6.yaml"
+      ],
+      "Commands": [
+       "git show 0fed913"
+      ]
+     }
+    ]
+   },
+   {
+    "Date": "2026-10-02",
+    "Events": 2,
+    "Commits": 2,
+    "Counts": [
+     {
+      "Kind": "pin",
+      "Count": 2
+     }
+    ],
+    "Fold": {
+     "ID": "day-2026-10-02",
+     "Class": "day",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": [
+     {
+      "Anchor": "e-55e32e3-6103",
+      "By": {
+       "Email": "nbyoung@nbyoung.com",
+       "Mine": true
+      },
+      "Kinds": [
+       "pin"
+      ],
+      "Task": {
+       "ID": "6103",
+       "Title": "",
+       "Href": "T/6103"
+      },
+      "Status": null,
+      "Gate": null,
+      "Pin": {
+       "URL": "subprojects/tabloio",
+       "Old": "62261d4",
+       "New": "7eba1e5"
+      },
+      "Proposal": true,
+      "Fold": {
+       "ID": "d-55e32e3-6103",
+       "Class": "detail",
+       "Open": true,
+       "Src": "",
+       "Alt": ""
+      },
+      "After": null,
+      "Effect": "",
+      "Model": "",
+      "Stated": "",
+      "Committer": "",
+      "Sub": {
+       "Project": "subprojects/tabloio",
+       "Old": "62261d4",
+       "New": "7eba1e5",
+       "Events": 1,
+       "Commits": 1,
+       "Fold": {
+        "ID": "sub-55e32e3-6103",
+        "Class": "sub",
+        "Open": true,
+        "Src": "",
+        "Alt": ""
+       },
+       "Rows": [
+        {
+         "Date": "2026-10-01",
+         "Hash": "aaaaaaa",
+         "By": {
+          "Email": "noreply@anthropic.com",
+          "Mine": false
+         },
+         "Event": "status",
+         "Status": {
+          "Gate": {
+           "Glyph": "🔧",
+           "Name": "function"
+          },
+          "State": {
+           "Glyph": "🟢",
+           "Name": "nominal"
+          },
+          "Reason": null,
+          "Note": "",
+          "Date": "",
+          "Recorder": "",
+          "From": null,
+          "Snapshot": null
+         },
+         "Gate": null,
+         "Pin": null
+        }
+       ]
+      },
+      "Prov": {
+       "ID": "prov-55e32e3-6103",
+       "Class": "prov",
+       "Open": false,
+       "Src": "P/prov-55e32e3-6103",
+       "Alt": "A/prov-55e32e3-6103"
+      },
+      "Commit": null,
+      "Files": null,
+      "Commands": null
+     },
+     {
+      "Anchor": "e-fb8c0b2-77b2",
+      "By": {
+       "Email": "nbyoung@nbyoung.com",
+       "Mine": true
+      },
+      "Kinds": [
+       "pin"
+      ],
+      "Task": {
+       "ID": "6103",
+       "Title": "",
+       "Href": "T/6103"
+      },
+      "Status": null,
+      "Gate": null,
+      "Pin": {
+       "URL": "subprojects/tabloio",
+       "Old": "62261d4",
+       "New": "7eba1e5"
+      },
+      "Proposal": true,
+      "Fold": {
+       "ID": "d-fb8c0b2-77b2",
+       "Class": "detail",
+       "Open": true,
+       "Src": "",
+       "Alt": ""
+      },
+      "After": null,
+      "Effect": "",
+      "Model": "",
+      "Stated": "",
+      "Committer": "",
+      "Sub": {
+       "Project": "subprojects/tablo",
+       "Old": "",
+       "New": "816f2a0",
+       "Events": 0,
+       "Commits": 0,
+       "Fold": {
+        "ID": "",
+        "Class": "",
+        "Open": false,
+        "Src": "",
+        "Alt": ""
+       },
+       "Rows": null
+      },
+      "Prov": {
+       "ID": "prov-fb8c0b2-77b2",
+       "Class": "prov",
+       "Open": false,
+       "Src": "P/prov-55e32e3-6103",
+       "Alt": "A/prov-55e32e3-6103"
+      },
+      "Commit": null,
+      "Files": null,
+      "Commands": null
+     }
+    ]
+   },
+   {
+    "Date": "2026-10-03",
+    "Events": 9,
+    "Commits": 2,
+    "Counts": [
+     {
+      "Kind": "pin",
+      "Count": 9
+     }
+    ],
+    "Fold": {
+     "ID": "day-2026-10-03",
+     "Class": "day",
+     "Open": false,
+     "Src": "P/day-2026-10-03",
+     "Alt": "A/day-2026-10-03"
+    },
+    "Rows": null
+   }
+  ],
+  "Prov": {
+   "ID": "prov-list",
+   "Class": "prov",
+   "Open": false,
+   "Src": "",
+   "Alt": ""
+  },
+  "Commands": [
+   "git log --format='%as %h %ae' -- .tableaux"
+  ],
+  "OffTrunk": true
+ }
+}

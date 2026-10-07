@@ -1,0 +1,14 @@
+{
+ "View": "audit",
+ "Body": {
+  "Errors": 0,
+  "Warnings": 0,
+  "Information": 0,
+  "Kinds": null,
+  "Most": "",
+  "MostCount": 0,
+  "Stale": 7,
+  "Silent": null,
+  "Groups": null
+ }
+}

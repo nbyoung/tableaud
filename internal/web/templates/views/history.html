@@ -1,5 +1,47 @@
-{{/* A placeholder: a template task replaces this file. */}}
-{{define "view"}}<h1>{{.View.Title}}</h1>
-<pre>{{json .Data}}</pre>
-{{end}}
-{{define "context"}}{{end}}
+{{define "view"}}{{template "main" .}}{{end}}
+{{define "context"}}{{template "params" .}}{{end}}
+{{define "body"}}{{with .Body}}
+{{if .OffTrunk}}<p class="empty">The ref lies off the trunk: the page marks each event the branch adds as a <span class="proposed">proposal</span>.</p>
+{{end}}{{if .Days}}<p class="fold">{{.Events}} {{plural .Events "event" "events"}} in {{.Commits}} {{plural .Commits "commit" "commits"}}, {{.From}} to {{.To}}:{{range $i, $k := .Counts}}{{if $i}},{{end}} {{$k.Count}} {{$k.Kind}}{{end}}.</p>
+{{range .Days}}{{template "fold" .Fold}}<summary><h2>{{.Date}}</h2> <span class="fold">{{.Events}} {{plural .Events "event" "events"}} in {{.Commits}} {{plural .Commits "commit" "commits"}}:{{range $i, $k := .Counts}}{{if $i}},{{end}} {{$k.Count}} {{$k.Kind}}{{end}}</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/day" .}}{{end}}</details>
+{{end}}{{template "fold" .Prov}}<summary>Provenance of the list: the commands that produce it</summary>
+<p>The tool merges the output of the commands in author-time order.</p>
+{{template "commands" .Commands}}
+</details>
+{{else}}<p class="empty">No event in the range.</p>
+{{end}}{{end}}{{end}}
+
+{{define "part/day"}}<ul class="events">
+{{range .Rows}}<li id="{{.Anchor}}">{{template "fold" .Fold}}<summary><span class="by">{{template "person" .By}}</span> <span class="ev">{{range $i, $k := .Kinds}}{{if $i}}, {{end}}{{$k}}{{end}}</span> {{template "task" .Task}} <span class="what">{{with .Status}}{{template "status" .}}{{end}}{{with .Gate}}{{template "sym" .}}{{end}}{{with .Pin}}<code>{{.URL}}</code> {{if .Old}}<code>{{.Old}}</code> → {{end}}<code>{{.New}}</code>{{end}}{{if .Proposal}} <span class="proposed">proposal</span>{{end}}</span></summary>
+<dl class="fields">
+<dt>Status after</dt><dd>{{with .After}}{{template "status" .}}{{with .From}}, rolled up from {{template "task" .}}{{end}}{{else}}Not recorded{{end}}</dd>
+{{with .After}}{{if .Note}}<dt>Note</dt><dd>{{.Note}}</dd>
+{{end}}{{end}}{{if .Effect}}<dt>Effect</dt><dd>{{.Effect}}</dd>
+{{end}}<dt>Model</dt><dd>{{if .Model}}<code>{{.Model}}</code>{{else}}none recorded{{end}}{{if .Stated}}; the junction states <code>{{.Stated}}</code>{{end}}</dd>
+{{if .Committer}}<dt>Committer</dt><dd>{{.Committer}}, who differs from the author</dd>
+{{end}}</dl>
+{{with .Sub}}{{if .Events}}{{template "fold" .Fold}}<summary>Subproject events: {{.Events}} {{plural .Events "event" "events"}} in {{.Commits}} {{plural .Commits "commit" "commits"}} of <code>{{.Project}}</code>{{if .Old}} between <code>{{.Old}}</code> and{{else}} up to{{end}} <code>{{.New}}</code></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/sub" .}}{{end}}</details>
+{{else}}<p class="fold">Subproject events: no event in <code>{{.Project}}</code>{{if .Old}} between <code>{{.Old}}</code> and{{else}} up to{{end}} <code>{{.New}}</code></p>
+{{end}}{{end}}{{template "fold" .Prov}}<summary>Provenance: the commit</summary>{{if .Prov.Src}}{{template "lazy" .Prov}}{{else}}{{template "part/commit" .}}{{end}}</details>
+</details></li>
+{{end}}</ul>{{end}}
+
+{{define "part/sub"}}<div class="scroll">
+<table>
+<caption>The events of {{.Project}} between the two pins</caption>
+<thead><tr><th scope="col">Date</th><th scope="col">Commit</th><th scope="col">By</th><th scope="col">Event</th><th scope="col">What it records</th></tr></thead>
+<tbody>
+{{range .Rows}}{{template "event-row" .}}
+{{end}}</tbody>
+</table>
+</div>{{end}}
+
+{{define "part/commit"}}<dl class="fields">
+{{with .Commit}}<dt>Commit</dt><dd><code>{{.Full}}</code></dd>
+<dt>Subject</dt><dd>{{.Subject}}</dd>
+<dt>Author</dt><dd>{{.Author}}, {{.Date}}</dd>
+<dt>Committer</dt><dd>{{.Committer}}</dd>
+<dt>Trailers</dt><dd>{{range $i, $t := .Trailers}}{{if $i}}, {{end}}<code>{{$t}}</code>{{else}}None{{end}}</dd>
+{{end}}<dt>Files</dt><dd>{{range $i, $f := .Files}}{{if $i}}, {{end}}<code>{{$f}}</code>{{end}}</dd>
+</dl>
+{{template "commands" .Commands}}{{end}}

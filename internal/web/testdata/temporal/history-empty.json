@@ -1,0 +1,20 @@
+{
+ "View": "history",
+ "Body": {
+  "Events": 0,
+  "Commits": 0,
+  "From": "",
+  "To": "",
+  "Counts": null,
+  "Days": null,
+  "Prov": {
+   "ID": "",
+   "Class": "",
+   "Open": false,
+   "Src": "",
+   "Alt": ""
+  },
+  "Commands": null,
+  "OffTrunk": false
+ }
+}

@@ -1,5 +1,52 @@
-{{/* A placeholder: a template task replaces this file. */}}
-{{define "view"}}<h1>{{.View.Title}}</h1>
-<pre>{{json .Data}}</pre>
-{{end}}
-{{define "context"}}{{end}}
+{{define "view"}}{{template "main" .}}{{end}}
+{{define "context"}}{{template "params" .}}{{end}}
+{{define "body"}}{{with .Body}}
+<section aria-labelledby="glance">
+<h2 id="glance">Counts</h2>
+{{if .Groups}}<p class="counts"><strong>{{.Errors}} {{plural .Errors "error" "errors"}}, {{.Warnings}} {{plural .Warnings "warning" "warnings"}}, {{.Information}} {{plural .Information "item" "items"}} of information</strong>.</p>
+<div class="scroll">
+<table>
+<caption>Findings by kind: errors first, then warnings, then information. Each kind links to its findings below.</caption>
+<thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Kind</th><th scope="col" class="num">Findings</th><th scope="col">Tasks</th><th scope="col">Resolver</th></tr></thead>
+<tbody>
+{{range .Kinds}}<tr><td><span class="sev {{.Severity}}">{{.Severity}}</span></td><td>{{.Rule}}</td><th scope="row"><a href="{{.Href}}">{{.Title}}</a></th><td class="num">{{.Count}}</td><td>{{range $i, $t := .Tasks}}{{if $i}}, {{end}}{{template "task" $t}}{{end}}</td><td{{if .Resolver.Mine}} class="mine"{{end}}>{{.Resolver.Email}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+<p><strong>Most to resolve:</strong> {{.Most}}, {{.MostCount}}.</p>
+{{else}}<p class="empty">No finding: files and history agree at this ref. A status counts as stale after {{.Stale}} days.</p>
+{{end}}{{if .Silent}}<p class="muted">Silent:</p>
+<ul class="notes muted">
+{{range .Silent}}<li>{{.}}</li>
+{{end}}</ul>
+{{end}}</section>
+{{if .Groups}}<section aria-labelledby="findings">
+<h2 id="findings">Findings, by the action that resolves them</h2>
+{{range .Groups}}{{template "fold" .Fold}}<summary><span class="sev {{.Severity}}">{{.Severity}}</span> {{.Action}} · {{.Rule}} · {{len .Rows}} {{plural (len .Rows) "finding" "findings"}} <span class="muted">· {{.Resolver.Email}} resolves</span></summary>
+<div class="scroll">
+<table>
+<caption>{{.Rule}}: {{.Title}}</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Gate</th><th scope="col">File</th><th scope="col">Message</th><th scope="col">Action</th><th scope="col">Resolver</th></tr></thead>
+<tbody>
+{{range .Rows}}<tr><th scope="row">{{range $i, $t := .Tasks}}{{if $i}}, {{end}}{{template "task" $t}}{{end}}</th><td>{{with .Gate}}{{template "sym" .}}{{end}}</td><td>{{range $i, $f := .Files}}{{if $i}}, {{end}}<code>{{$f}}</code>{{end}}</td><td>{{.Message}}</td><td>{{.Action}}</td><td{{if .Resolver.Mine}} class="mine"{{end}}>{{.Resolver.Email}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{template "fold" .Prov}}<summary>Provenance: the rule, the commits and the commands</summary>{{if .Prov.Src}}{{template "lazy" .Prov}}{{else}}{{template "part/rule" .}}{{end}}</details>
+</details>
+{{end}}</section>
+{{end}}{{end}}{{end}}
+
+{{define "part/rule"}}<dl class="fields">
+<dt>Rule</dt><dd>{{.Rule}}, from {{.Source}}: <blockquote>{{.Sentence}}</blockquote></dd>
+</dl>
+{{if .Commits}}<div class="scroll">
+<table>
+<caption>The commits involved</caption>
+<thead><tr><th scope="col">Commit</th><th scope="col">Date</th><th scope="col">Author</th><th scope="col">Committer</th><th scope="col">Subject</th><th scope="col">Trailers</th></tr></thead>
+<tbody>
+{{range .Commits}}<tr><th scope="row"><code>{{.Hash}}</code></th><td>{{.Date}}</td><td>{{.Author}}</td><td>{{.Committer}}</td><td>{{.Subject}}</td><td>{{range $i, $t := .Trailers}}{{if $i}}, {{end}}<code>{{$t}}</code>{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{end}}{{template "commands" .Commands}}{{end}}
