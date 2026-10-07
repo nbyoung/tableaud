@@ -49,11 +49,11 @@ func jsonIndent(v any) (string, error) {
 	return b.String(), nil
 }
 
-// Overlay holds template text for the tests of the machinery, keyed by view
-// name. Render parses each view's text after the view's file, so that a test
-// can give a view a part of its own. A test sets Overlay and the Parts of the
-// view before the first Render; no task fills it.
-var Overlay = map[string]string{}
+// Source is the file system Render parses the templates from: Templates, the
+// embedded files, unless a test replaces it before the first Render with a
+// copy that adds what the test needs, such as a part of a probe view (the
+// owner's ruling of 2026-10-06). No task sets it.
+var Source fs.FS = Templates
 
 var (
 	setsOnce sync.Once
@@ -66,18 +66,18 @@ var (
 // name.
 func frames() (map[string]*template.Template, error) {
 	setsOnce.Do(func() {
-		base, err := template.New("base.html").Funcs(Funcs).ParseFS(Templates, "templates/base.html")
+		base, err := template.New("base.html").Funcs(Funcs).ParseFS(Source, "templates/base.html")
 		if err != nil {
 			setsErr = err
 			return
 		}
-		shared, err := fs.Glob(Templates, "templates/shared/*.html")
+		shared, err := fs.Glob(Source, "templates/shared/*.html")
 		if err != nil {
 			setsErr = err
 			return
 		}
 		if len(shared) > 0 {
-			if base, err = base.ParseFS(Templates, shared...); err != nil {
+			if base, err = base.ParseFS(Source, shared...); err != nil {
 				setsErr = err
 				return
 			}
@@ -89,15 +89,9 @@ func frames() (map[string]*template.Template, error) {
 				setsErr = err
 				return
 			}
-			if clone, err = clone.ParseFS(Templates, "templates/views/"+v.Name+".html"); err != nil {
+			if clone, err = clone.ParseFS(Source, "templates/views/"+v.Name+".html"); err != nil {
 				setsErr = err
 				return
-			}
-			if text, ok := Overlay[v.Name]; ok {
-				if clone, err = clone.Parse(text); err != nil {
-					setsErr = err
-					return
-				}
 			}
 			sets[v.Name] = clone
 		}

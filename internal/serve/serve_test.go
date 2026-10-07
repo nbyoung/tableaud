@@ -16,6 +16,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"testing/fstest"
 	"time"
 
 	"github.com/nbyoung/tableaud/internal/serve"
@@ -32,7 +33,25 @@ func TestMain(m *testing.M) {
 			web.Views[i].Parts = []string{"probe"}
 		}
 	}
-	web.Overlay["gates"] = `{{define "part/probe"}}<p class="probe">probe {{.Params.Task}} {{.Viewer.Email}}</p>{{end}}`
+	// A copy of the embedded templates whose gates view gains a probe part.
+	src := fstest.MapFS{}
+	if err := fs.WalkDir(web.Templates, "templates", func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return err
+		}
+		data, err := fs.ReadFile(web.Templates, path)
+		if err != nil {
+			return err
+		}
+		if path == "templates/views/gates.html" {
+			data = append(data, `{{define "part/probe"}}<p class="probe">probe {{.Params.Task}} {{.Viewer.Email}}</p>{{end}}`...)
+		}
+		src[path] = &fstest.MapFile{Data: data}
+		return nil
+	}); err != nil {
+		panic(err)
+	}
+	web.Source = src
 	os.Exit(m.Run())
 }
 
