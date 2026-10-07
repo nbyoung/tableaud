@@ -106,11 +106,30 @@ func (v Viewer) Role() string {
 	return v.Roles[0]
 }
 
+// Index lists what a static bundle makes a page for, and what its manifest
+// states about the commit.
+type Index struct {
+	Tasks       []IndexTask // in display order; Tasks[0] is the root
+	People      []string    // the emails the project names in a position, sorted by their bytes
+	Date        time.Time   // the commit's author date, in the zone the commit records
+	Trunk       string      // the trunk's name from version.yaml
+	TrunkCommit string      // the commit the trunk stands at
+}
+
+// IndexTask is one task of the index.
+type IndexTask struct {
+	ID, Title, Parent string // Parent is empty for the root
+	Children          int
+}
+
 // Source is everything the daemon and the export ask of tablo. An
 // implementation is safe for concurrent use. View returns ErrNotFound,
 // wrapped with the thing missing, or *InvalidError with tablo's diagnostics
 // when the project does not load. Describe answers with no view, for "/".
+// Index answers with no view either: the tasks and the people of the project
+// at ref, for the export; the daemon never asks for it.
 type Source interface {
 	View(ctx context.Context, r Request) (Result, error)
 	Describe(ctx context.Context, project, ref, viewer string) (Project, Viewer, error)
+	Index(ctx context.Context, project, ref string) (Index, error)
 }

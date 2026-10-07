@@ -18,6 +18,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/nbyoung/tableaud/internal/source"
 )
@@ -45,8 +46,8 @@ var files = map[string]string{
 // Fixture is a source.Source over the fixtures. The zero value is not ready:
 // use New.
 type Fixture struct {
-	// Hook, when set, runs first in View and Describe, with the request
-	// (View empty for Describe). It may block until ctx ends, or fail the call
+	// Hook, when set, runs first in View, Describe and Index, with the
+	// request (View empty for the last two). It may block until ctx ends, or fail the call
 	// with any error. A test sets it before it serves.
 	Hook func(ctx context.Context, r source.Request) error
 
@@ -56,9 +57,12 @@ type Fixture struct {
 	tasks   map[string]map[string]bool
 	roles   map[string][]string
 
-	mu    sync.Mutex
-	views int
-	calls int
+	index source.Index
+
+	mu      sync.Mutex
+	views   int
+	calls   int
+	indexes int
 }
 
 // New reads the fixtures.
@@ -109,6 +113,22 @@ func New() *Fixture {
 		}
 	}
 	f.commits["main"], f.commits["HEAD"], f.commits[""] = last, last, last
+	var ix struct {
+		Tasks []struct {
+			ID, Title, Parent string
+			Children          int
+		}
+		People []string
+		Date   time.Time
+		Trunk  string
+	}
+	if err := json.Unmarshal([]byte(mustRead("index.json")), &ix); err != nil {
+		panic(fmt.Sprintf("index.json: %v", err))
+	}
+	f.index = source.Index{People: ix.People, Date: ix.Date, Trunk: ix.Trunk, TrunkCommit: f.commits[ix.Trunk]}
+	for _, t := range ix.Tasks {
+		f.index.Tasks = append(f.index.Tasks, source.IndexTask{ID: t.ID, Title: t.Title, Parent: t.Parent, Children: t.Children})
+	}
 	return f
 }
 
@@ -125,6 +145,13 @@ func (f *Fixture) Calls() int {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	return f.views
+}
+
+// Indexes returns the number of Index calls so far.
+func (f *Fixture) Indexes() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.indexes
 }
 
 // Describes returns the number of Describe calls so far.
@@ -203,6 +230,29 @@ func (f *Fixture) describe(project, ref, viewer string) (source.Project, source.
 		p.Title, p.Root = "Node firmware", SubprojectID
 	}
 	return p, source.Viewer{Email: viewer, Roles: f.roles[viewer]}, nil
+}
+
+// Index implements source.Source: the weather station's tasks and people, the
+// same for every ref the fixture knows.
+func (f *Fixture) Index(ctx context.Context, project, ref string) (source.Index, error) {
+	f.mu.Lock()
+	f.indexes++
+	f.mu.Unlock()
+	if f.Hook != nil {
+		if err := f.Hook(ctx, source.Request{Project: project, Ref: ref}); err != nil {
+			return source.Index{}, err
+		}
+	}
+	if _, ok := f.tasks[project]; !ok {
+		return source.Index{}, &source.NotFoundError{Kind: "project", Name: project}
+	}
+	if _, err := f.resolve(ref); err != nil {
+		return source.Index{}, err
+	}
+	ix := f.index
+	ix.Tasks = slices.Clone(ix.Tasks)
+	ix.People = slices.Clone(ix.People)
+	return ix, nil
 }
 
 // resolve names the commit of a ref: a name of the fixture, a commit prefix of

@@ -3,7 +3,10 @@ package sourcetest_test
 import (
 	"context"
 	"errors"
+	"slices"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/source/sourcetest"
@@ -66,6 +69,58 @@ func TestFixture(t *testing.T) {
 	var inv *source.InvalidError
 	if _, err := f.View(ctx, source.Request{View: "gates"}); !errors.As(err, &inv) {
 		t.Errorf("hook error: %v", err)
+	}
+}
+
+// TestIndex checks the weather station's index: the six tasks in display order
+// with their parents and child counts, the four people sorted by their bytes,
+// the date, the trunk at the commit of the last label, and the errors of a
+// project or a ref the fixture lacks.
+func TestIndex(t *testing.T) {
+	f := sourcetest.New()
+	ctx := context.Background()
+	ix, err := f.Index(ctx, "", "main")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var ids []string
+	children := 0
+	for i, task := range ix.Tasks {
+		ids = append(ids, task.ID)
+		children += task.Children
+		if (i == 0) != (task.Parent == "") || task.Title == "" {
+			t.Errorf("task %+v", task)
+		}
+	}
+	if got := strings.Join(ids, " "); got != "a1c0 4e2b 9f31 c07d 7b2e 3c5d" {
+		t.Errorf("tasks in the order %s", got)
+	}
+	if children != len(ix.Tasks)-1 {
+		t.Errorf("%d children in all for %d tasks", children, len(ix.Tasks))
+	}
+	if got := strings.Join(ix.People, " "); got != "ada@example.org ben@example.org dan@example.org opus@example.org" || !slices.IsSorted(ix.People) {
+		t.Errorf("people %s", got)
+	}
+	if got := ix.Date.Format(time.DateOnly); got != "2026-09-30" {
+		t.Errorf("date %s", got)
+	}
+	proj, _, err := f.Describe(ctx, "", "main", "")
+	if err != nil || ix.Trunk != "main" || ix.TrunkCommit != proj.Commit {
+		t.Errorf("trunk %q at %q, commit %q, %v", ix.Trunk, ix.TrunkCommit, proj.Commit, err)
+	}
+	ix.Tasks[0].ID = "changed"
+	if again, _ := f.Index(ctx, "", "HEAD"); again.Tasks[0].ID != sourcetest.Root || f.Indexes() != 2 {
+		t.Error("the caller's copy writes into the fixture, or the calls are miscounted")
+	}
+	for _, c := range []struct{ project, ref, kind string }{{"nosuch", "main", "project"}, {"", "nosuch", "ref"}} {
+		var nf *source.NotFoundError
+		if _, err := f.Index(ctx, c.project, c.ref); !errors.Is(err, source.ErrNotFound) || !errors.As(err, &nf) || nf.Kind != c.kind {
+			t.Errorf("%+v: %v, want a missing %s", c, err, c.kind)
+		}
+	}
+	f.Hook = func(context.Context, source.Request) error { return errors.New("hooked") }
+	if _, err := f.Index(ctx, "", "main"); err == nil {
+		t.Error("the hook does not fail Index")
 	}
 }
 

@@ -1,0 +1,13 @@
+{
+  "tasks": [
+    {"id": "a1c0", "title": "Weather station", "parent": "", "children": 3},
+    {"id": "4e2b", "title": "Sensor node", "parent": "a1c0", "children": 2},
+    {"id": "9f31", "title": "Sensor board", "parent": "4e2b", "children": 0},
+    {"id": "c07d", "title": "Node firmware", "parent": "4e2b", "children": 0},
+    {"id": "7b2e", "title": "Gateway", "parent": "a1c0", "children": 0},
+    {"id": "3c5d", "title": "Dashboard", "parent": "a1c0", "children": 0}
+  ],
+  "people": ["ada@example.org", "ben@example.org", "dan@example.org", "opus@example.org"],
+  "date": "2026-09-30T12:00:00Z",
+  "trunk": "main"
+}
