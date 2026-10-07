@@ -1,0 +1,14 @@
+{
+  "schema": "tableaud-export/1",
+  "generator": { "tableaud": "0.1.0+a&b<c>", "tablo": "0.1.0" },
+  "ref": { "name": "main", "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a", "date": "2026-09-28T14:00:00+02:00" },
+  "trunk": { "name": "main", "commit": "97e423122790a250e4e067d7d33bbf88622b00d5" },
+  "arrival": { "role": "observer", "level": "glance" },
+  "files": [
+    { "path": "context-4e2b.html", "view": "context", "task": "4e2b", "bytes": 14, "sha256": "ea12c2f88f57207e249b2ece7063d32e2c290da1906618f03492cbeaa56579e0" },
+    { "path": "history.html", "view": "history", "bytes": 0, "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
+    { "path": "index.html", "view": "tableau", "bytes": 13, "sha256": "7497e59e92ef6795b86dfbff7cbe7f6093cdba247df8c192e35b430ae7813efd" },
+    { "path": "queue-ada@example.org.html", "view": "queue", "person": "ada@example.org", "bytes": 13, "sha256": "d99e1a4db7d872db891259dd5277e3c9c7b0bc7b46834d281c887f338a209624" },
+    { "path": "static/tableaud.css", "bytes": 19, "sha256": "b4d5deb2f19a59cc8683e443244245fad7c2e9a22e20b02dc2068698c69a9528" }
+  ]
+}

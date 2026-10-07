@@ -8,7 +8,26 @@
 // checks the bundle with Check, and only then writes it.
 package export
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/nbyoung/tableaud/internal/source"
+)
+
+// Options is one run.
+type Options struct {
+	Out      string // the output directory: absent, or empty
+	Ref      string // the text after --ref; "HEAD" when empty
+	Tableaud string // this binary's version, for the footer and the manifest
+	Tablo    string // the tablo version in use, for the manifest
+}
+
+// Result is what the command prints.
+type Result struct {
+	Files   int            // the files written, the manifest and the assets among them
+	Bytes   int64          // their sizes added
+	Project source.Project // the project and the commit in view
+}
 
 // ErrRefused marks an error that the command answers with exit 1: the output
 // directory holds something, two names need one file, or the bundle check
