@@ -1,0 +1,150 @@
+--- a/internal/web/static/tableaud.css
++++ b/internal/web/static/tableaud.css
+@@ -57,7 +57,7 @@
+ tbody th { font-weight: 400; }
+ th.num { text-align: right; }
+ tfoot th, tfoot td { border-top: 2px solid var(--line); font-weight: 600; }
+-pre { background: var(--band); font-family: var(--mono); font-size: .8125rem; margin: .5rem 0; overflow-x: auto; padding: .5rem .75rem; }
++pre { background: var(--band); font-family: var(--mono); font-size: .8125rem; margin: .5rem 0; overflow-wrap: anywhere; padding: .5rem .75rem; white-space: pre-wrap; }
+ blockquote { border-left: 3px solid var(--line); margin: .25rem 0; padding-left: .75rem; }
+ ul.notes { margin: .25rem 0; padding-left: 1.25rem; }
+ p.key { color: var(--muted); font-size: .875rem; }
+@@ -91,7 +91,7 @@
+ .d1 { padding-left: 1.7rem; } .d2 { padding-left: 2.8rem; } .d3 { padding-left: 3.9rem; } .d4 { padding-left: 5rem; }
+ .d5 { padding-left: 6.1rem; } .d6 { padding-left: 7.2rem; } .d7 { padding-left: 8.3rem; } .d8 { padding-left: 9.4rem; }
+ th.task a.fold { margin-left: .5rem; font-weight: 400; white-space: nowrap; }
+-td.hist { color: var(--muted); border-bottom-style: dashed; }
++td.hist { color: var(--muted); border-bottom: 1px dashed var(--muted); }
+ td.status { white-space: nowrap; }
+ td.status details[open] { white-space: normal; min-width: 19rem; max-width: 30rem; }
+ td.status p { margin: .25rem 0; }
+@@ -101,6 +101,21 @@
+ form.columns fieldset { border: 1px solid var(--line); margin: .5rem 0; padding: .25rem .75rem .5rem; }
+ form.columns label { display: inline-block; margin-right: 1rem; white-space: nowrap; }
+ 
++/* accessibility: the rules of design 5a2f, for the frame and every view */
++:root { color-scheme: light dark; }
++html { font-size: 100%; }
++button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
++.mine, .proposed, tr:target > td, tr:target > th, li:target, details:target > summary { --muted: var(--fg); }
++.mine, .proposed { color: var(--fg); }
++td.cell.s2 { border-bottom: 2px dashed var(--fg); }
++td.cell.s3 { border-bottom: 4px solid var(--fg); }
++table.tableau th.task { position: sticky; left: 0; }
++table.tableau tbody th.task { background: var(--bg); }
++table.tableau tr:target > th.task { background: var(--mark); }
++@media (forced-colors: active) {
++  .mine, .proposed, tr:target > td, tr:target > th, li:target, details:target > summary { outline: 1px solid; }
++}
++
+ /* gates */
+ .v-gates table.legend th.gate { width: 4.5rem; }
+ .v-gates table.legend td.cell { font-size: 1.25rem; line-height: 1.2; }
+@@ -153,7 +168,7 @@
+ .v-queue p.rule { color: var(--muted); font-size: .875rem; margin: .25rem 0 .5rem; }
+ .v-queue label.brief { display: block; margin: .5rem 0 .25rem; }
+ .v-queue textarea.brief { display: block; width: 100%; max-width: 44rem; font: .8125rem/1.4 var(--mono);
+-  background: var(--bg); color: var(--fg); border: 1px solid var(--prov-line); padding: .5rem; resize: vertical; }
++  background: var(--bg); color: var(--fg); border: 1px solid var(--muted); padding: .5rem; resize: vertical; }
+ 
+ /* history */
+ .v-history details.day { border-top: 1px solid var(--line); padding-top: .5rem; margin-top: .75rem; }
+@@ -180,4 +195,9 @@
+   .v-queue ol.items > li > .q-task { grid-column: 1 / -1; }
+   dl.fields dd + dd { grid-column: 1; }
+   .v-history ul.events summary .by, .v-history ul.events summary .ev { min-width: 0; margin-right: .5rem; }
++  table:not(.tableau) thead th { white-space: normal; }
++  table.tableau th.task { width: 9rem; min-width: 0; }
++  .d1 { padding-left: .9rem; } .d2 { padding-left: 1.4rem; } .d3 { padding-left: 1.9rem; } .d4 { padding-left: 2.4rem; }
++  .d5 { padding-left: 2.9rem; } .d6 { padding-left: 3.4rem; } .d7 { padding-left: 3.9rem; } .d8 { padding-left: 4.4rem; }
++  .v-authority ul.auth summary > .row .who, .v-authority p.cols .who { flex-basis: 100%; }
+ }
+--- a/internal/web/templates/base.html
++++ b/internal/web/templates/base.html
+@@ -23,6 +23,7 @@
+ <head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
++<meta name="color-scheme" content="light dark">
+ <title>{{.Title}}</title>
+ <link rel="stylesheet" href="{{.Link.Static "tableaud.css"}}">
+ {{- if .Scripts}}
+--- a/internal/web/templates/shared/grid.html
++++ b/internal/web/templates/shared/grid.html
+@@ -1,11 +1,11 @@
+ {{/* grid: the tableau both the global and the contextual tableau draw, and its column choice. */}}
+ {{define "grid"}}{{$g := .}}{{with .Control}}{{template "gridcolumns" .}}{{end}}
+-<div class="scroll">
++<div class="scroll" id="{{.ID}}-scroll" role="group" tabindex="0" aria-labelledby="{{.ID}}-cap">
+ <table class="tableau" id="{{.ID}}">
+-<caption>{{.Caption}}</caption>
+-<thead><tr><th scope="col">Id</th><th scope="col">Task</th>{{range .Columns}}<th scope="col" class="gate{{if .Folded}} fold{{end}}">{{if .Last}}<span aria-hidden="true">{{.First.Glyph}} … {{.Last.Glyph}}</span> <span class="gname">{{.First.Name}} to {{.Last.Name}}</span>{{else}}<a href="{{.Href}}"><span aria-hidden="true">{{.First.Glyph}}</span> <span class="gname">{{.First.Name}}</span></a>{{end}}{{if .Folded}} <span class="count">folded ×{{.Count}}<span class="sr"> {{plural .Count "task stands" "tasks stand"}} here</span></span>{{end}}</th>{{end}}{{if .Notes}}<th scope="col">Date and note</th>{{end}}</tr></thead>
++<caption id="{{.ID}}-cap">{{.Caption}}</caption>
++<thead><tr><th scope="col">Id</th><th scope="col" class="task">Task</th>{{range .Columns}}<th scope="col" class="gate{{if .Folded}} fold{{end}}">{{if .Last}}<span aria-hidden="true">{{.First.Glyph}} … {{.Last.Glyph}}</span> <span class="gname">{{.First.Name}} to {{.Last.Name}}</span>{{else}}<a href="{{.Href}}"><span aria-hidden="true">{{.First.Glyph}}</span> <span class="gname">{{.First.Name}}</span></a>{{end}}{{if .Folded}} <span class="count">folded ×{{.Count}}<span class="sr"> {{plural .Count "task stands" "tasks stand"}} here</span></span>{{end}}</th>{{end}}{{if .Notes}}<th scope="col">Date and note</th>{{end}}</tr></thead>
+ <tbody>
+-{{range .Rows}}<tr id="{{$g.ID}}-{{.Task.ID}}"{{if .Parent}} class="parent"{{end}}><td>{{if .Task.Href}}<a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a>{{else}}<code class="id">{{.Task.ID}}</code>{{end}}</td><th scope="row" class="task {{depth .Depth}}"><span class="sr">level {{add .Depth 1}}: </span>{{.Task.Title}}{{if .Sibling}} <span class="fold">· sibling</span>{{end}}{{if .Expand}} <a class="fold" href="{{.Expand.Href}}"{{template "swap" .Expand}}>{{.Beneath}} {{plural .Beneath "row" "rows"}} beneath</a>{{else if .Collapse}} <a class="fold" href="{{.Collapse.Href}}"{{template "swap" .Collapse}}>fold the {{.Beneath}} {{plural .Beneath "row" "rows"}} beneath</a>{{else if .Beneath}} <span class="fold">({{.Beneath}}<span class="sr"> {{plural .Beneath "row" "rows"}} not drawn</span>)</span>{{end}}</th>{{range .Cells}}<td class="cell{{if .Folded}} fold{{end}}{{if and .Hist .Syms}} hist{{end}}{{if .Mine}} mine{{end}}">{{template "syms" .Syms}}{{if .Hist}}<span class="sr">{{if .Syms}}, {{end}}historical</span>{{end}}{{if .Mine}}<span class="sr">, this person acts here</span>{{end}}</td>{{end}}{{if $g.Notes}}<td class="status">{{template "fold" .Fold}}<summary>{{if .Status.Date}}{{.Status.Date}}{{else}}no date{{end}}<span class="sr"> note and provenance of {{.Task.ID}}</span></summary>
++{{range .Rows}}<tr id="{{$g.ID}}-{{.Task.ID}}"{{if .Parent}} class="parent"{{end}}><td>{{if .Task.Href}}<a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a>{{else}}<code class="id">{{.Task.ID}}</code>{{end}}</td><th scope="row" class="task {{depth .Depth}}"><span class="sr">level {{add .Depth 1}}: </span>{{.Task.Title}}{{if .Sibling}} <span class="fold">· sibling</span>{{end}}{{if .Expand}} <a class="fold" id="{{$g.ID}}-x-{{.Task.ID}}" href="{{.Expand.Href}}"{{template "swap" .Expand}}>{{.Beneath}} {{plural .Beneath "row" "rows"}} beneath<span class="sr"> {{.Task.Title}}, {{.Task.ID}}</span></a>{{else if .Collapse}} <a class="fold" id="{{$g.ID}}-x-{{.Task.ID}}" href="{{.Collapse.Href}}"{{template "swap" .Collapse}}>fold the {{.Beneath}} {{plural .Beneath "row" "rows"}} beneath<span class="sr"> {{.Task.Title}}, {{.Task.ID}}</span></a>{{else if .Beneath}} <span class="fold">({{.Beneath}}<span class="sr"> {{plural .Beneath "row" "rows"}} not drawn</span>)</span>{{end}}</th>{{range .Cells}}<td class="cell{{if .Folded}} fold{{end}}{{if and .Hist .Syms}} hist{{end}}{{if .Mine}} mine{{end}}{{if gt .Rank 1}} s{{.Rank}}{{end}}">{{template "syms" .Syms}}{{if .Hist}}<span class="sr">{{if .Syms}}, {{end}}historical</span>{{end}}{{if .Mine}}<span class="sr">, this person acts here</span>{{end}}</td>{{end}}{{if $g.Notes}}<td class="status">{{template "fold" .Fold}}<summary>{{if .Status.Date}}{{.Status.Date}}{{else}}no date{{end}}<span class="sr"> note and provenance of {{.Task.ID}}</span></summary>
+ {{if .Status.Note}}<p class="note">{{.Status.Note}}</p>{{end}}{{with .Status.From}}<p class="muted">Rolled up from {{template "task" .}}.</p>{{end}}{{with .Status.Snapshot}}<p class="muted">Snapshot of {{template "task" .Task}} at pin <code>{{.Pin}}</code>, which stands at {{template "sym" .Gate}} there.</p>{{end}}
+ {{template "fold" .ProvFold}}<summary>Provenance</summary>{{if .ProvFold.Src}}{{template "lazy" .ProvFold}}{{else}}{{template "part/row" .Prov}}{{end}}</details>
+ </details></td>{{end}}</tr>
+@@ -17,9 +17,9 @@
+ <form class="columns" method="get" action="{{.Action}}" hx-boost="true">
+ {{range .Hidden}}<input type="hidden" name="{{.Name}}" value="{{.Content}}">
+ {{end}}<fieldset><legend>Gate columns</legend>
+-{{range .Gates}}<label><input type="checkbox" name="{{$.Name}}" value="{{.Key}}"{{if .Checked}} checked{{end}}> {{template "sym" .Sym}}</label>
++{{range .Gates}}<label><input type="checkbox" id="{{$.Fold.ID}}-{{.Key}}" name="{{$.Name}}" value="{{.Key}}"{{if .Checked}} checked{{end}}> {{template "sym" .Sym}}</label>
+ {{end}}</fieldset>
+-<label><input type="checkbox" name="{{.HistName}}" value="on"{{if .Hist}} checked{{end}}> Show the marks of historical junctions</label>
+-<button type="submit">Show these columns</button>
++<label><input type="checkbox" id="{{.Fold.ID}}-historical" name="{{.HistName}}" value="on"{{if .Hist}} checked{{end}}> Show the marks of historical junctions</label>
++<button type="submit" id="{{.Fold.ID}}-submit">Show these columns</button>
+ </form>
+ </details>{{end}}
+--- a/internal/web/templates/views/authority.html
++++ b/internal/web/templates/views/authority.html
+@@ -1,7 +1,7 @@
+ {{define "view"}}{{template "main" .}}{{end}}
+ {{define "context"}}{{template "params" .}}{{end}}
+ {{define "body"}}{{with .Body}}
+-<p class="filter">Show: <a href="{{.All.Href}}"{{template "swap" .All}}{{if not .Filtered}} aria-current="true"{{end}}>all {{.Total}} {{plural .Total "task" "tasks"}}</a> · <a href="{{.Only.Href}}"{{template "swap" .Only}}{{if .Filtered}} aria-current="true"{{end}}>proposed tasks only, {{.Proposed}}</a></p>
++<p class="filter">Show: <a id="filter-all" href="{{.All.Href}}"{{template "swap" .All}}{{if not .Filtered}} aria-current="true"{{end}}>all {{.Total}} {{plural .Total "task" "tasks"}}</a> · <a id="filter-proposed" href="{{.Only.Href}}"{{template "swap" .Only}}{{if .Filtered}} aria-current="true"{{end}}>proposed tasks only, {{.Proposed}}</a></p>
+ {{if .OffTrunk}}<p class="empty">The ref lies off the trunk, so every task reads as <span class="proposed">proposed</span>; a task whose file differs from the trunk's says so.</p>
+ {{end}}<h2 id="tree">The tree of assignees</h2>
+ {{with .Root}}<p class="cols" aria-hidden="true"><span class="title">Task</span> <span class="who">Assignee</span></p>
+--- a/internal/web/templates/views/context.html
++++ b/internal/web/templates/views/context.html
+@@ -4,7 +4,7 @@
+ <section aria-labelledby="h-corner">
+ <h2 id="h-corner">{{with .Task}}{{template "task" .}} and its children{{else}}The tasks of {{.Person}}{{end}}</h2>
+ {{if .Grid.Rows}}{{template "grid" .Grid}}
+-<p class="key">Columns: {{range $i, $c := .Grid.Columns}}{{if $i}} · {{end}}{{template "sym" $c.First}}{{with $c.Last}} to {{template "sym" .}}{{end}}{{if $c.Folded}}, folded{{end}}{{end}}. <a href="{{$.To "gates"}}">The gate definition gives every gate and symbol</a>.</p>
++<p class="key">Columns: {{range $i, $c := .Grid.Columns}}{{if $i}} · {{end}}{{template "sym" $c.First}}{{with $c.Last}} to {{template "sym" .}}{{end}}{{if $c.Folded}}, folded{{end}}{{end}}. A dashed or a heavy line under a state ranks its severity. <a href="{{$.To "gates"}}">The gate definition gives every gate and symbol</a>.</p>
+ {{with .Wider}}{{template "fold" .Fold}}<summary>Spine, siblings and notes</summary>
+ {{template "grid" .Grid}}
+ </details>
+--- a/internal/web/templates/views/gates.html
++++ b/internal/web/templates/views/gates.html
+@@ -19,10 +19,10 @@
+ <h2 id="states-h">States</h2>
+ {{if .States}}<div class="scroll">
+ <table class="legend">
+-<caption>A state says how a task stands towards its next gate. A parent takes the state of its most severe child, and a state of severity 0 steps aside.</caption>
++<caption>A state says how a task stands towards its next gate. A parent takes the state of its most severe child, and a state of severity 0 steps aside. In a tableau a line under a state ranks its severity: none for the lowest, a dashed line for the second, a heavy line from the third on.</caption>
+ <thead><tr><th scope="col" class="gate">Symbol</th><th scope="col">State, with its severity and synopsis</th></tr></thead>
+ <tbody>
+-{{range .States}}<tr id="{{.Anchor}}"><td class="cell"><span aria-hidden="true">{{.Sym.Glyph}}</span></td><th scope="row">{{template "fold" .Fold}}<summary><code>{{.Key}}</code></summary><dl class="fields"><dt>Severity</dt><dd>{{.Severity}}</dd><dt>Synopsis</dt><dd>{{.Text}}</dd></dl></details></th></tr>
++{{range .States}}<tr id="{{.Anchor}}"><td class="cell{{if gt .Rank 1}} s{{.Rank}}{{end}}"><span aria-hidden="true">{{.Sym.Glyph}}</span></td><th scope="row">{{template "fold" .Fold}}<summary><code>{{.Key}}</code></summary><dl class="fields"><dt>Severity</dt><dd>{{.Severity}}</dd><dt>Synopsis</dt><dd>{{.Text}}</dd></dl></details></th></tr>
+ {{end}}</tbody>
+ </table>
+ </div>
+--- a/internal/web/templates/views/tableau.html
++++ b/internal/web/templates/views/tableau.html
+@@ -3,7 +3,7 @@
+ {{define "body"}}{{with .Body}}
+ <h2 id="glance">{{.Shown}} of {{.Total}} {{plural .Total "task" "tasks"}}</h2>
+ {{if .Grid.Rows}}{{template "grid" .Grid}}
+-<p class="key">A row is a task, indented by depth, with a parent in bold. The cell at the gate a task passed last holds its state, and its reason when it has one. Each later cell says who works there. An earlier cell stays empty, since that work is done. A folded column shows the count of tasks that stand in it. <a href="{{$.To "gates"}}">The gate definition gives every gate and symbol</a>.</p>
++<p class="key">A row is a task, indented by depth, with a parent in bold. The cell at the gate a task passed last holds its state, and its reason when it has one; a dashed or a heavy line under the state ranks its severity. Each later cell says who works there. An earlier cell stays empty, since that work is done. A folded column shows the count of tasks that stand in it. <a href="{{$.To "gates"}}">The gate definition gives every gate and symbol</a>.</p>
+ {{else}}<p class="empty">The project holds no task at this ref.</p>
+ {{end}}{{if .Branches}}
+ <h2 id="detail">Every row</h2>
