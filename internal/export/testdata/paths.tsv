@@ -1,0 +1,46 @@
+# The link fixture of design 6160: one target per line, against the index of
+# the corpus entry weather-station at main (root a1c0; a1c0 and 4e2b have
+# children; people ada, ben, dan and opus at example.org).
+# Tab-separated: view, task, person, project, fragment, then the bundle
+# address. A hyphen stands for an empty field; a hyphen as the address says the
+# bundle holds no page and the template writes the text without a link.
+tableau	-	-	-	-	index.html
+tableau	-	ben@example.org	-	-	index.html
+tableau	4e2b	-	-	branch-4e2b	index.html#branch-4e2b
+gates	-	-	-	-	gates.html
+gates	-	-	-	gate-design	gates.html#gate-design
+gates	9f31	-	-	-	gates.html
+task	-	-	-	-	task.html
+task	a1c0	-	-	-	task-a1c0.html
+task	9f31	-	-	-	task-9f31.html
+task	9f31	ben@example.org	-	junctions	task-9f31.html#junctions
+task	ffff	-	-	-	-
+task	8608	-	subprojects/tableaud	-	-
+authority	-	-	-	-	authority.html
+authority	4e2b	-	-	-	authority.html
+authority	-	ada@example.org	-	commits	authority.html#commits
+assignment	-	-	-	-	assignment.html
+assignment	-	ben@example.org	-	p-ben	assignment.html#p-ben
+queue	-	-	-	-	queue.html
+queue	-	ada@example.org	-	-	queue-ada@example.org.html
+queue	4e2b	ben@example.org	-	ready-c07d	queue-ben@example.org.html#ready-c07d
+queue	-	eve@example.org	-	-	-
+blockage	-	-	-	-	blockage.html
+blockage	9f31	-	-	cause-1	blockage.html#cause-1
+blockage	-	dan@example.org	-	-	blockage.html
+context	-	-	-	-	context.html
+context	a1c0	-	-	-	context-a1c0.html
+context	4e2b	-	-	-	context-4e2b.html
+context	9f31	-	-	-	context-4e2b.html
+context	7b2e	-	-	-	context-a1c0.html
+context	-	ben@example.org	-	-	context-ben@example.org.html
+context	4e2b	ben@example.org	-	-	context-4e2b.html
+context	-	eve@example.org	-	-	-
+history	-	-	-	-	history.html
+history	a1c0	-	-	-	history.html
+history	9f31	-	-	-	history-9f31.html
+history	4e2b	-	-	-	history-4e2b.html
+history	-	ada@example.org	-	-	history.html
+history	9f31	-	-	t-edb30d2-9f31	history-9f31.html#t-edb30d2-9f31
+audit	-	-	-	-	audit.html
+audit	4e2b	ben@example.org	-	h3	audit.html#h3
