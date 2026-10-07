@@ -27,7 +27,7 @@ never reads a task file itself.
 - **Export** a self-contained static bundle for hosting where no daemon runs.
 
 ```
-tableaud serve                    # http://localhost:8642/
+tableaud serve                    # http://127.0.0.1:8642/
 tableaud serve --as ben@example.org --ref main
 tableaud export --out public/     # a static bundle for CI to publish
 ```
@@ -44,22 +44,27 @@ proposes Go as the implementation language.
 
 The module is `github.com/nbyoung/tableaud`. It uses the standard library alone
 for the server, the templates and the embedding, and it shares one skeleton
-shape with the other three subprojects.
+shape with the other three subprojects. Until `tablo` releases its views, the
+daemon serves the weather-station fixture of `internal/source/sourcetest`; the
+adapter over `tablo` replaces it.
 
 ```
-cmd/tableaud/            # the command; main.go prints the version until the server lands
-internal/web/            # what the daemon serves
-  doc.go                 # the package description
-  embed.go               # go:embed of templates/ and static/
-  templates/             # html/template files; base.html is the layout every view extends
-  static/htmx/           # the vendored HTMX script, its licence and a README
-  web_test.go            # the tests for the templates and the embedded assets
+cmd/tableaud/            # the command: main.go dispatches version and serve; serve.go parses the options and runs the daemon
+internal/source/         # Source, the one seam to tablo; sourcetest/ answers from JSON fixtures for every test
+internal/web/            # what a page is, for the daemon and the export alike
+  views.go params.go     # the ten views, the validated parameters, Link and Linker
+  page.go render.go      # Page and its address methods; Render, with the three shapes of one route
+  templates/             # html/template files: base.html is the frame, views/ holds one file per view
+  static/                # tableaud.css, tableaud.js and the vendored HTMX with its licence and a README
+internal/serve/          # the HTTP side: routes, the query scheme, the Linker, the watcher, the cache, the Host check
 scripts/vendor-htmx.sh   # fetches the pinned HTMX release
 .github/workflows/       # ci.yml on push and pull request, release.yml on a tag
 .goreleaser.yaml         # the release matrix
 .golangci.yml            # the lint configuration
 .tableaux/               # the plan
 ```
+
+A prototype under `prototype/` is the function gate's demonstration. It goes when its task records `implementation`: the design's account of what it kept from the prototype and `git log -- prototype/<id>` keep what it showed, and the trunk builds what it ships. The layout at the top of `templates/base.html` serves the prototypes that still execute it and goes with the last of them.
 
 ## Build and test
 
