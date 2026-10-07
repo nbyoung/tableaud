@@ -17,7 +17,7 @@ type Params struct {
 	OpenSet                                 bool // open= is present, even empty
 	Historical, Proposed                    bool
 	Brief                                   string // TASK:GATE
-	Part                                    string
+	Part, Key                               string // a lazy part, and the item it belongs to: part=NAME:KEY
 }
 
 // NewParams returns the parameters of an address that states nothing.
@@ -54,7 +54,8 @@ func AbsoluteReference(ref string) (string, bool) {
 
 // set applies one name and value to p, as Page.To and Page.Self do. An empty
 // value removes the name. Setting window or columns, whatever the value,
-// removes the other.
+// removes the other. Setting part cuts NAME:KEY at the first colon and
+// replaces the key.
 func (p *Params) set(name, value string) error {
 	switch name {
 	case "project":
@@ -72,7 +73,7 @@ func (p *Params) set(name, value string) error {
 	case "brief":
 		p.Brief = value
 	case "part":
-		p.Part = value
+		p.Part, p.Key, _ = strings.Cut(value, ":")
 	case "window":
 		p.Columns = nil
 		p.Window = -1

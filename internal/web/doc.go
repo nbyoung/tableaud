@@ -9,6 +9,11 @@
 // Page, which asks a Linker. The daemon's Linker, in package serve, spells a
 // path and a query; the export's spells a file path.
 //
+// What stands inside <main> is a model: one Go type for each view, built by an
+// adapter from the data of tablo and the Page, and drawn by a template that
+// holds markup and fixed wording alone. A view with no adapter draws a
+// placeholder.
+//
 // The HTTP side lives in package serve, and the command that wires it in
 // cmd/tableaud. Package web imports source for the data of a view and never
 // reads a task file.

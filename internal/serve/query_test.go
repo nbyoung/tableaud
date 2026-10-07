@@ -157,3 +157,61 @@ func mustQuery(t *testing.T, s string) url.Values {
 	}
 	return q
 }
+
+// TestPartKey covers the key of a part: part=NAME:KEY parses, writes
+// canonically and round-trips; the name must be the view's, the key must fit
+// the pattern, and Page.Self sets and clears it.
+func TestPartKey(t *testing.T) {
+	v := web.View{Name: "task", Params: []string{"task", "person"}, Parts: []string{"status", "edges"}}
+	long := strings.Repeat("a", 128)
+	for _, c := range []struct {
+		query     string
+		part, key string // the result; both empty for an error
+	}{
+		{"part=status", "status", ""},
+		{"part=edges:requires", "edges", "requires"},
+		{"part=edges:cause-1.x_y", "edges", "cause-1.x_y"},
+		{"part=edges:" + long, "edges", long},
+		{"part=edges:" + long + "a", "", ""},
+		{"part=edges:", "", ""},
+		{"part=edges:Requires", "", ""},
+		{"part=edges:a:b", "", ""},
+		{"part=edges:a%20b", "", ""},
+		{"part=nosuch:requires", "", ""},
+		{"part=:requires", "", ""},
+		{"part=", "", ""},
+	} {
+		q, err := url.ParseQuery(c.query)
+		if err != nil {
+			t.Fatal(err)
+		}
+		p, err := serve.ParseQuery(v, q)
+		var pe *serve.ParamError
+		switch {
+		case c.part == "" && (err == nil || !errorsAs(err, &pe) || pe.Name != "part"):
+			t.Errorf("%s: error %v, want one naming part", c.query, err)
+		case c.part != "" && err != nil:
+			t.Errorf("%s: %v", c.query, err)
+		case c.part != "" && (p.Part != c.part || p.Key != c.key):
+			t.Errorf("%s: part %q key %q, want %q %q", c.query, p.Part, p.Key, c.part, c.key)
+		case c.part != "":
+			if got := serve.Query(v, p); got != c.query {
+				t.Errorf("%s: writes %q", c.query, got)
+			}
+		}
+	}
+
+	// Through Page.Self: the colon cuts at the first, a bare name drops the key.
+	pg := &web.Page{View: v, Params: web.NewParams(), Link: serve.Linker{}}
+	pg.Params.Task = "9f31"
+	if got, want := pg.Self("part", "edges:requires"), "/task?task=9f31&part=edges:requires"; got != want {
+		t.Errorf("Self part with a key: %s, want %s", got, want)
+	}
+	pg.Params.Part, pg.Params.Key = "edges", "requires"
+	if got, want := pg.Self("part", "status"), "/task?task=9f31&part=status"; got != want {
+		t.Errorf("Self part without a key: %s, want %s", got, want)
+	}
+	if got, want := pg.Self("part", ""), "/task?task=9f31"; got != want {
+		t.Errorf("Self part removed: %s, want %s", got, want)
+	}
+}

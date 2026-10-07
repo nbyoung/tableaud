@@ -19,6 +19,7 @@ var (
 	reGate = regexp.MustCompile(`^[a-z][a-z0-9_-]{0,31}$`)
 	reRef  = regexp.MustCompile(`^[A-Za-z0-9._/@+-]+$`)
 	reNum  = regexp.MustCompile(`^[0-9]{1,5}$`)
+	reKey  = regexp.MustCompile(`^[a-z0-9._-]{1,128}$`)
 
 	roles  = []string{"owner", "authority", "assignee", "contributor", "agent", "reviewer", "observer"}
 	levels = []string{"glance", "detail", "provenance"}
@@ -44,7 +45,8 @@ func bad(name, format string, a ...any) error {
 // effect, so it does not appear in the result; a name outside the table, a
 // malformed value, a name given twice (columns and open excepted), window with
 // columns, task with person on the contextual tableau, a range off the
-// history and a part the view does not list are errors.
+// history, a part the view does not list and a part key outside its syntax
+// are errors. A part reads as NAME or NAME:KEY.
 func ParseQuery(v web.View, q url.Values) (web.Params, error) {
 	p := web.NewParams()
 	names := make([]string, 0, len(q))
@@ -184,10 +186,14 @@ func ParseQuery(v web.View, q url.Values) (web.Params, error) {
 		p.Brief = s
 	}
 	if s, ok := one("part"); ok {
-		if !v.HasPart(s) {
-			return p, bad("part", "%q is not a part of this view", s)
+		name, key, keyed := strings.Cut(s, ":")
+		if !v.HasPart(name) {
+			return p, bad("part", "%q is not a part of this view", name)
 		}
-		p.Part = s
+		if keyed && !reKey.MatchString(key) {
+			return p, bad("part", "%q is not a key of a part (1 to 128 of a-z, 0-9, dot, hyphen and underscore)", key)
+		}
+		p.Part, p.Key = name, key
 	}
 	return p, nil
 }
@@ -270,7 +276,11 @@ func Query(v web.View, p web.Params) string {
 		add("brief", p.Brief)
 	}
 	if p.Part != "" {
-		add("part", p.Part)
+		if p.Key != "" {
+			add("part", p.Part+":"+p.Key)
+		} else {
+			add("part", p.Part)
+		}
 	}
 	return strings.Join(parts, "&")
 }

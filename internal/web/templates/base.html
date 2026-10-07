@@ -55,7 +55,7 @@
   <p class="context">{{.Title}} · {{if .Worktree}}the working tree on {{end}}<code>{{.Ref}}</code> at <code>{{.Short}}</code>, {{.Date}} · {{template "viewer" $}}{{if not $.Err}}{{template "context" $}}{{end}}</p>
   {{- end}}
 </header>
-<main id="main" class="{{if .Err}}error{{else}}{{.View.Name}}{{end}}">
+<main id="main" class="{{if .Err}}error{{else}}v-{{.View.Name}}{{end}}">
 {{- if .Err}}{{template "error" .}}{{else}}{{template "view" .}}{{end}}
 </main>
 <footer class="site">

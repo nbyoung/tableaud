@@ -1,6 +1,8 @@
 package web
 
 import (
+	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/nbyoung/tableaud/internal/source"
@@ -37,6 +39,7 @@ type Page struct {
 	Viewer  source.Viewer
 	Data    any // tablo's data for View at Params, every level in it
 	Legend  any // tablo's gate definition at the same revision
+	Body    any // the view's model; Render fills it from the view's adapter; nil draws the placeholder
 	Link    Linker
 	Live    *Live      // the poll; nil when --poll is 0 and on the export
 	Scripts bool       // false on the export
@@ -115,6 +118,64 @@ func (p *Page) Nav() []NavItem {
 		items = append(items, NavItem{Href: p.To(v.Name), Label: v.Label, Current: v.Name == p.View.Name})
 	}
 	return items
+}
+
+// InForce returns the parameters in force that the view reads beside the
+// shared ones, in the order of Order, for the context line. A parameter at its
+// default is absent, and a task carries the address of its definition.
+func (p *Page) InForce() []Param {
+	var out []Param
+	add := func(name, value string) { out = append(out, Param{Name: name, Value: value}) }
+	for _, name := range Order {
+		if !p.View.Reads(name) || slices.Contains(Shared, name) {
+			continue
+		}
+		q := p.Params
+		switch name {
+		case "task":
+			if q.Task != "" {
+				ref := &TaskRef{ID: q.Task, Href: p.To("task", "task", q.Task)}
+				out = append(out, Param{Name: name, Task: ref})
+			}
+		case "person":
+			if q.Person != "" {
+				add(name, q.Person)
+			}
+		case "window":
+			if q.Window >= 0 && q.Window != 1 {
+				add(name, strconv.Itoa(q.Window))
+			}
+		case "columns":
+			if len(q.Columns) > 0 {
+				add(name, strings.Join(q.Columns, ","))
+			}
+		case "historical":
+			if q.Historical {
+				add(name, "on")
+			}
+		case "open":
+			if q.OpenSet || len(q.Open) > 0 {
+				ids := strings.Join(q.Open, ",")
+				if ids == "" {
+					ids = "none"
+				}
+				add(name, ids)
+			}
+		case "proposed":
+			if q.Proposed {
+				add(name, "on")
+			}
+		case "stale":
+			if q.Stale > 0 && q.Stale != 7 {
+				add(name, strconv.Itoa(q.Stale))
+			}
+		case "brief":
+			if q.Brief != "" {
+				add(name, q.Brief)
+			}
+		}
+	}
+	return out
 }
 
 // Title returns the <title>: "VIEW · PROJECT".

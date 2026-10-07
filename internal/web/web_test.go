@@ -59,7 +59,7 @@ func TestFrame(t *testing.T) {
 			"<!doctype html>",
 			`<a class="skip" href="#main">`,
 			`<p class="context">Weather station · the working tree on <code>main</code> at <code>edb30d2</code>, 2026-09-17 · viewer ben@example.org, contributor</p>`,
-			`<main id="main" class="` + v.Name + `">`,
+			`<main id="main" class="v-` + v.Name + `">`,
 			`<footer class="site">`,
 			`the link to this page</a>`,
 			`<h1>` + v.Title + `</h1>`,

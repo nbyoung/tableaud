@@ -290,7 +290,7 @@ func (s *Server) page(v web.View, p web.Params, email string) *web.Page {
 // and the tag of the fragment it holds, or none when the page has no tag.
 func (s *Server) live(v web.View, p web.Params, email, digest string, tagged bool) *web.Live {
 	q := p
-	q.Part = ""
+	q.Part, q.Key = "", ""
 	hdr := "{}"
 	if tagged {
 		if b, err := json.Marshal(map[string]string{"If-None-Match": s.tag(v, q, web.Fragment, email, digest)}); err == nil {
@@ -378,12 +378,19 @@ func (s *Server) notFound(w http.ResponseWriter, r *http.Request, msg string) {
 func (s *Server) respond(w http.ResponseWriter, r *http.Request, status int, sh web.Shape, pg *web.Page, tag string) {
 	var buf strings.Builder
 	if err := web.Render(&buf, sh, pg); err != nil {
-		s.log.Printf("%s %s: 500 %v", r.Method, r.URL.RequestURI(), err)
 		fail := *pg
-		fail.Err = &web.PageError{Status: http.StatusInternalServerError, Text: "Internal Server Error", Message: err.Error()}
-		fail.Live, fail.Data, fail.Legend = nil, nil, nil
+		if errors.Is(err, web.ErrNoPart) {
+			// The part is the address's to get wrong, not the server's: no log.
+			fail.Err = &web.PageError{Status: http.StatusNotFound, Text: "Not Found", Message: err.Error()}
+			status = http.StatusNotFound
+		} else {
+			s.log.Printf("%s %s: 500 %v", r.Method, r.URL.RequestURI(), err)
+			fail.Err = &web.PageError{Status: http.StatusInternalServerError, Text: "Internal Server Error", Message: err.Error()}
+			status = http.StatusInternalServerError
+		}
+		fail.Live, fail.Data, fail.Legend, fail.Body = nil, nil, nil, nil
 		buf.Reset()
-		status, tag = http.StatusInternalServerError, ""
+		tag = ""
 		if err := web.Render(&buf, sh, &fail); err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
