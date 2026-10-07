@@ -1,0 +1,30 @@
+{
+ "View": "authority",
+ "Body": {
+  "Total": 37,
+  "Proposed": 0,
+  "Filtered": true,
+  "All": {
+   "Href": "a",
+   "Swap": false
+  },
+  "Only": {
+   "Href": "b",
+   "Swap": false
+  },
+  "OffTrunk": false,
+  "Root": null,
+  "Commits": {
+   "Fold": {
+    "ID": "prov-commits",
+    "Class": "prov",
+    "Open": false,
+    "Src": "P/prov-commits",
+    "Alt": "A/prov-commits"
+   },
+   "Rows": null,
+   "Ways": null,
+   "Commands": null
+  }
+ }
+}

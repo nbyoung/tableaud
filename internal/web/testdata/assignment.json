@@ -1,0 +1,346 @@
+{
+ "View": "assignment",
+ "Body": {
+  "People": [
+   {
+    "Email": "nbyoung@nbyoung.com",
+    "Href": "V/assignment?person=nbyoung",
+    "Mine": true,
+    "Assigned": 10,
+    "Contributes": 0,
+    "Reviews": 26,
+    "Models": null
+   },
+   {
+    "Email": "noreply@anthropic.com",
+    "Href": "#p-noreply",
+    "Mine": false,
+    "Assigned": 27,
+    "Contributes": 28,
+    "Reviews": 2,
+    "Models": [
+     "claude-haiku",
+     "claude-opus"
+    ]
+   }
+  ],
+  "Sections": [
+   {
+    "Anchor": "p-noreply",
+    "Email": "noreply@anthropic.com",
+    "Kind": "agent",
+    "Row": {
+     "Email": "noreply@anthropic.com",
+     "Href": "#p-noreply",
+     "Mine": false,
+     "Assigned": 27,
+     "Contributes": 28,
+     "Reviews": 2,
+     "Models": [
+      "claude-haiku",
+      "claude-opus"
+     ]
+    },
+    "Fold": {
+     "ID": "p-noreply",
+     "Class": "detail",
+     "Open": true,
+     "Src": "",
+     "Alt": ""
+    },
+    "Assigned": [
+     {
+      "Task": {
+       "ID": "c2ad",
+       "Title": "Roles",
+       "Href": "T/c2ad"
+      },
+      "Parent": {
+       "ID": "bc63",
+       "Title": "",
+       "Href": "T/bc63"
+      },
+      "Status": {
+       "Gate": {
+        "Glyph": "🧱",
+        "Name": "implementation"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": null,
+       "Note": "",
+       "Date": "2026-09-30",
+       "Recorder": "noreply@anthropic.com",
+       "From": null,
+       "Snapshot": null
+      },
+      "Next": {
+       "Glyph": "🌍",
+       "Name": "validate"
+      },
+      "Marks": [
+       {
+        "Glyph": "🤖",
+        "Name": "an agent contributes"
+       },
+       {
+        "Glyph": "👀",
+        "Name": "a reviewer accepts"
+       }
+      ]
+     }
+    ],
+    "AssignedProv": {
+     "ID": "prov-assigned-noreply",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Contributes": {
+     "Total": 79,
+     "Next": 28,
+     "Groups": [
+      {
+       "Gate": {
+        "Glyph": "📌",
+        "Name": "mockup"
+       },
+       "Reviews": false,
+       "Next": 4,
+       "Total": 4,
+       "Fold": {
+        "ID": "g-noreply-c-mockup",
+        "Class": "group",
+        "Open": true,
+        "Src": "",
+        "Alt": ""
+       },
+       "Rows": {
+        "Shown": [
+         {
+          "Task": {
+           "ID": "99f0",
+           "Title": "T 99f0",
+           "Href": "T/99f0"
+          },
+          "Contributor": "noreply@anthropic.com",
+          "Model": "claude-haiku",
+          "Reviewer": "",
+          "When": "next"
+         },
+         {
+          "Task": {
+           "ID": "05a9",
+           "Title": "T 05a9",
+           "Href": "T/05a9"
+          },
+          "Contributor": "noreply@anthropic.com",
+          "Model": "claude-haiku",
+          "Reviewer": "",
+          "When": "next"
+         },
+         {
+          "Task": {
+           "ID": "a9ce",
+           "Title": "T a9ce",
+           "Href": "T/a9ce"
+          },
+          "Contributor": "noreply@anthropic.com",
+          "Model": "claude-haiku",
+          "Reviewer": "",
+          "When": "next"
+         }
+        ],
+        "Rest": [
+         {
+          "Task": {
+           "ID": "bb7c",
+           "Title": "T bb7c",
+           "Href": "T/bb7c"
+          },
+          "Contributor": "noreply@anthropic.com",
+          "Model": "claude-haiku",
+          "Reviewer": "",
+          "When": "next"
+         }
+        ],
+        "Fold": {
+         "ID": "fold-noreply-c-mockup",
+         "Class": "fold",
+         "Open": false,
+         "Src": "",
+         "Alt": ""
+        },
+        "Alike": "at mockup"
+       },
+       "Prov": {
+        "ID": "prov-g-noreply-c-mockup",
+        "Class": "prov",
+        "Open": false,
+        "Src": "",
+        "Alt": ""
+       },
+       "From": [
+        {
+         "Gate": {
+          "Glyph": "",
+          "Name": ""
+         },
+         "Span": 0,
+         "Field": "contributor and model",
+         "Value": "noreply@anthropic.com, claude-opus",
+         "Mine": false,
+         "By": {
+          "ID": "437e",
+          "Title": "Tableaux tooling",
+          "Href": "T/437e"
+         },
+         "Default": ""
+        },
+        {
+         "Gate": {
+          "Glyph": "",
+          "Name": ""
+         },
+         "Span": 0,
+         "Field": "reviewer",
+         "Value": "none",
+         "Mine": false,
+         "By": null,
+         "Default": "a person contributes"
+        }
+       ]
+      },
+      {
+       "Gate": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "Reviews": false,
+       "Next": 0,
+       "Total": 9,
+       "Fold": {
+        "ID": "g-noreply-c-design",
+        "Class": "group",
+        "Open": false,
+        "Src": "P/g-noreply-c-design",
+        "Alt": "A/g-noreply-c-design"
+       },
+       "Rows": {
+        "Shown": null,
+        "Rest": null,
+        "Fold": {
+         "ID": "",
+         "Class": "",
+         "Open": false,
+         "Src": "",
+         "Alt": ""
+        },
+        "Alike": ""
+       },
+       "Prov": {
+        "ID": "",
+        "Class": "",
+        "Open": false,
+        "Src": "",
+        "Alt": ""
+       },
+       "From": null
+      }
+     ]
+    },
+    "Reviews": {
+     "Total": 2,
+     "Next": 2,
+     "Groups": [
+      {
+       "Gate": {
+        "Glyph": "🧱",
+        "Name": "implementation"
+       },
+       "Reviews": true,
+       "Next": 1,
+       "Total": 1,
+       "Fold": {
+        "ID": "g-noreply-r-implementation",
+        "Class": "group",
+        "Open": true,
+        "Src": "",
+        "Alt": ""
+       },
+       "Rows": {
+        "Shown": [
+         {
+          "Task": {
+           "ID": "e9c6",
+           "Title": "T e9c6",
+           "Href": "T/e9c6"
+          },
+          "Contributor": "noreply@anthropic.com",
+          "Model": "claude-haiku",
+          "Reviewer": "",
+          "When": "next"
+         }
+        ],
+        "Rest": null,
+        "Fold": {
+         "ID": "",
+         "Class": "",
+         "Open": false,
+         "Src": "",
+         "Alt": ""
+        },
+        "Alike": ""
+       },
+       "Prov": {
+        "ID": "prov-g-noreply-r-implementation",
+        "Class": "prov",
+        "Open": false,
+        "Src": "",
+        "Alt": ""
+       },
+       "From": null
+      }
+     ]
+    },
+    "Counts": [
+     {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "Standing": 7,
+      "Contributes": 0,
+      "ContribNext": 0,
+      "Reviews": 0,
+      "ReviewsNext": 0
+     }
+    ],
+    "Totals": {
+     "Gate": {
+      "Glyph": "",
+      "Name": ""
+     },
+     "Standing": 10,
+     "Contributes": 8,
+     "ContribNext": 0,
+     "Reviews": 0,
+     "ReviewsNext": 0
+    },
+    "Authority": [
+     {
+      "Task": {
+       "ID": "bc86",
+       "Title": "Markdown views",
+       "Href": "T/bc86"
+      },
+      "Descendants": 10
+     }
+    ]
+   }
+  ]
+ }
+}
