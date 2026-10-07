@@ -1,3 +1,3 @@
-gate: implementation
+gate: unit
 state: nominal
-note: internal/export and the export command stand with T1 to T14 and T17 on the fake source and the fixture, the unit gate runs them, and T15 and T16 wait at integrate for tablo's Source and the templates' adapters
+note: T1 to T14 and T17 pass through go test on the fake source and the fixture, T8 reading the ten mockups of the tableaux checkout; T15 and T16 wait at integrate for tablo Source and the templates adapters; integrate needs both and the require line
