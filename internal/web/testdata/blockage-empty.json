@@ -1,5 +1,5 @@
 {
- "Route": "blockage",
+ "View": "blockage",
  "Body": {
   "Causes": null,
   "Next": null,

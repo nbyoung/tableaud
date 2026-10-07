@@ -179,25 +179,44 @@ func symsOf(v any) []web.Sym {
 	return out
 }
 
+// symbolContainers are the elements a symbol's name may share with it: a cell,
+// an item, a term or its description, a summary, a paragraph or a label. A row
+// serves as well.
+var symbolContainers = []string{"td", "th", "li", "dd", "dt", "summary", "p", "label"}
+
+// symbolText returns the text of an aria-hidden element without the ellipsis
+// and the spaces that stand between the two glyphs of a folded run.
+func symbolText(n *Node) string {
+	return strings.NewReplacer("…", "", " ", "").Replace(n.text(false))
+}
+
 // TestSymbolsHaveTextNames covers T4: in every fixture each glyph stands only
-// inside aria-hidden="true", and its name stands as text in the same cell, item
-// or row.
+// inside aria-hidden="true", and its name stands as text in the same container
+// or row. An aria-hidden element that holds no glyph of any fixture is no
+// symbol, as the column header of the authority tree, and a page may show no
+// symbol at all, as an empty form.
 func TestSymbolsHaveTextNames(t *testing.T) {
-	for _, f := range loadFixtures(t) {
-		syms := symsOf(f.Model)
-		if len(syms) == 0 {
-			t.Errorf("%s: the model holds no symbol", f.Name)
-			continue
+	fixtures := loadFixtures(t)
+	var legend []string
+	for _, f := range fixtures {
+		for _, s := range symsOf(f.Model) {
+			legend = append(legend, s.Glyph)
 		}
+	}
+	shown := 0
+	for _, f := range fixtures {
+		syms := symsOf(f.Model)
 		// The longest glyph first, so that a sequence is read symbol by symbol.
 		sort.Slice(syms, func(i, j int) bool { return len(syms[i].Glyph) > len(syms[j].Glyph) })
 		root := mustParse(t, render(t, web.Document, f.page()))
-		seen := map[string]bool{}
 		root.walk(func(n *Node) bool {
 			if n.Tag != "" && n.Attr["aria-hidden"] == "true" {
-				container := n.ancestor("td", "th", "li", "dd", "summary", "p")
+				rest := symbolText(n)
+				if !slices.ContainsFunc(legend, func(g string) bool { return strings.Contains(rest, g) }) {
+					return false
+				}
+				container := n.ancestor(symbolContainers...)
 				row := n.ancestor("tr")
-				rest := n.text(false)
 				for rest != "" {
 					i := slices.IndexFunc(syms, func(s web.Sym) bool { return strings.HasPrefix(rest, s.Glyph) })
 					if i < 0 {
@@ -205,7 +224,7 @@ func TestSymbolsHaveTextNames(t *testing.T) {
 						break
 					}
 					s := syms[i]
-					seen[s.Glyph] = true
+					shown++
 					name := strings.ToLower(s.Name)
 					here := container != nil && strings.Contains(strings.ToLower(container.text(true)), name)
 					there := row != nil && strings.Contains(strings.ToLower(row.text(true)), name)
@@ -217,17 +236,17 @@ func TestSymbolsHaveTextNames(t *testing.T) {
 				return false
 			}
 			if n.Tag == "" {
-				for _, s := range syms {
-					if strings.Contains(n.Text, s.Glyph) {
-						t.Errorf("%s: the symbol %q stands outside aria-hidden, in %q", f.Name, s.Glyph, n.Text)
+				for _, g := range legend {
+					if strings.Contains(n.Text, g) {
+						t.Errorf("%s: the symbol %q stands outside aria-hidden, in %q", f.Name, g, n.Text)
 					}
 				}
 			}
 			return true
 		})
-		if len(seen) == 0 {
-			t.Errorf("%s: no symbol stands in the page", f.Name)
-		}
+	}
+	if shown == 0 {
+		t.Error("no symbol stands in any page")
 	}
 }
 

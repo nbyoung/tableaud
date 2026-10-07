@@ -1,5 +1,5 @@
 {
- "Route": "context",
+ "View": "context",
  "Body": {
   "Task": null,
   "Person": "opus@example.org",

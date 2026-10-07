@@ -2,10 +2,7 @@ package web_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
-	"os"
-	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
@@ -15,78 +12,15 @@ import (
 )
 
 // The fixtures of the temporal views join the shared tests of golden_test.go.
-// The two empty forms hold no symbol, which TestSymbolsHaveTextNames requires
-// of every fixture of testdata/, so they stand in testdata/temporal/ and the
-// tests below run the shared checks over them.
 func init() {
 	fixtureModels["history"] = func() any { return new(web.HistoryView) }
 	fixtureModels["audit"] = func() any { return new(web.AuditView) }
 }
 
-// temporalEmpty is one empty form of testdata/temporal/.
-type temporalEmpty struct {
-	name string
-	view web.View
-	body any
-}
-
-func (e temporalEmpty) page() *web.Page { return pageOf(e.view, e.body) }
-
-// temporalEmpties loads history-empty and audit-empty.
-func temporalEmpties(t *testing.T) []temporalEmpty {
+// temporalEmpties returns the two empty forms, history-empty and audit-empty.
+func temporalEmpties(t *testing.T) []fixture {
 	t.Helper()
-	var out []temporalEmpty
-	for _, name := range []string{"audit-empty", "history-empty"} {
-		var env struct {
-			View string
-			Body json.RawMessage
-		}
-		if err := json.Unmarshal(mustRead(t, filepath.Join("testdata", "temporal", name+".json")), &env); err != nil {
-			t.Fatalf("%s: %v", name, err)
-		}
-		v, ok := web.Lookup(env.View)
-		mk := fixtureModels[env.View]
-		if !ok || mk == nil {
-			t.Fatalf("%s: no view or model for %q", name, env.View)
-		}
-		body := mk()
-		dec := json.NewDecoder(bytes.NewReader(env.Body))
-		dec.DisallowUnknownFields()
-		if err := dec.Decode(body); err != nil {
-			t.Fatalf("%s: %v", name, err)
-		}
-		out = append(out, temporalEmpty{name, v, body})
-	}
-	return out
-}
-
-// TestTemporalEmptyForms covers T1 and T3, T5 and T8 for the two empty forms,
-// which TestGolden, TestCheck, TestFoldsAreWellFormed and TestDocumentHoldsFragment
-// do not reach: each renders to its golden main element and passes the page
-// check, and the document holds the fragment.
-func TestTemporalEmptyForms(t *testing.T) {
-	for _, e := range temporalEmpties(t) {
-		doc := render(t, web.Document, e.page())
-		got := mainElement(t, doc) + "\n"
-		file := filepath.Join("testdata", "temporal", e.name+".html")
-		if *update {
-			if err := os.WriteFile(file, []byte(got), 0o644); err != nil {
-				t.Fatal(err)
-			}
-		} else if want := string(mustRead(t, file)); got != want {
-			t.Errorf("%s: the main element differs from %s:\n%s", e.name, file, firstDifference(got, want))
-		}
-		for _, b := range check(mustParse(t, doc)) {
-			t.Errorf("%s: %s", e.name, b)
-		}
-		frag := render(t, web.Fragment, e.page())
-		if !strings.Contains(doc, frag) || !strings.HasPrefix(frag, `<div id="page"`) {
-			t.Errorf("%s: the document does not hold the fragment", e.name)
-		}
-		if m := mainElement(t, frag); !strings.HasPrefix(m, `<main id="main" class="v-`+e.view.Name+`">`) {
-			t.Errorf("%s: the main element starts %.60q", e.name, m)
-		}
-	}
+	return []fixture{fixtureNamed(t, "audit-empty"), fixtureNamed(t, "history-empty")}
 }
 
 // historyEvents returns every event of the model, in page order.
@@ -577,16 +511,16 @@ func TestTemporalEmptyText(t *testing.T) {
 		main := root.find("main")[0]
 		empty := main.byClass("p", "empty")
 		if len(empty) != 1 || len(main.find("details")) != 0 {
-			t.Errorf("%s: %d p.empty, %d details", e.name, len(empty), len(main.find("details")))
+			t.Errorf("%s: %d p.empty, %d details", e.Name, len(empty), len(main.find("details")))
 			continue
 		}
-		switch e.name {
+		switch e.Name {
 		case "history-empty":
 			if empty[0].text(true) != "No event in the range." || len(main.find("section")) != 0 {
 				t.Errorf("history-empty: %q", empty[0].text(true))
 			}
 		case "audit-empty":
-			stale := e.body.(*web.AuditView).Stale
+			stale := e.Model.(*web.AuditView).Stale
 			want := "No finding: files and history agree at this ref. A status counts as stale after " + strconv.Itoa(stale) + " days."
 			if empty[0].text(true) != want || root.byID("findings") != nil || len(main.find("table")) != 0 {
 				t.Errorf("audit-empty: %q", empty[0].text(true))

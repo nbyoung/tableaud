@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"path/filepath"
 	"regexp"
 	"slices"
 	"strconv"
@@ -21,122 +19,17 @@ func init() {
 	fixtureModels["assignment"] = func() any { return new(web.AssignmentView) }
 }
 
-// structuralDir holds the fixtures of the two structural views that the shared
-// tests of check_test.go cannot take: TestSymbolsHaveTextNames asks every
-// fixture to hold a symbol, which an empty page cannot, and every aria-hidden
-// element to be one, which the column header of the authority tree is not.
-// TestStructuralFixtures runs the other shared checks over them.
-const structuralDir = "testdata/structural"
-
-// structuralNamed returns the fixture NAME of the two structural views, from
-// structuralDir where it lives there and from testdata/ otherwise.
-func structuralNamed(t testing.TB, name string) fixture {
-	t.Helper()
-	f := structuralFixtures(t)
-	if i := slices.IndexFunc(f, func(f fixture) bool { return f.Name == name }); i >= 0 {
-		return f[i]
-	}
-	return fixtureNamed(t, name)
-}
-
-// structuralFixtures decodes every fixture of structuralDir, as loadFixtures
-// decodes those of testdata/.
-func structuralFixtures(t testing.TB) []fixture {
-	t.Helper()
-	files, err := filepath.Glob(structuralDir + "/*.json")
-	if err != nil || len(files) == 0 {
-		t.Fatalf("no fixture in %s: %v", structuralDir, err)
-	}
-	var out []fixture
-	for _, file := range files {
-		var env struct {
-			View string
-			Body json.RawMessage
-		}
-		if err := json.Unmarshal(mustRead(t, file), &env); err != nil {
-			t.Fatalf("%s: %v", file, err)
-		}
-		v, ok := web.Lookup(env.View)
-		mk := fixtureModels[env.View]
-		if !ok || mk == nil {
-			t.Fatalf("%s: no view or no model type for %q", file, env.View)
-		}
-		model := mk()
-		dec := json.NewDecoder(bytes.NewReader(env.Body))
-		dec.DisallowUnknownFields()
-		if err := dec.Decode(model); err != nil {
-			t.Fatalf("%s: %v", file, err)
-		}
-		out = append(out, fixture{Name: strings.TrimSuffix(filepath.Base(file), ".json"), View: v, Model: model})
-	}
-	return out
-}
-
-// TestStructuralFixtures covers e2b6 T1, T3 and T5 over the fixtures of
-// structuralDir, as the shared tests cover those of testdata/: each renders to
-// its golden main element, the document holds the fragment, the page passes the
-// shared check, every details is well formed and no symbol stands outside an
-// aria-hidden element.
-func TestStructuralFixtures(t *testing.T) {
-	for _, f := range structuralFixtures(t) {
-		doc := render(t, web.Document, f.page())
-		got := mainElement(t, doc) + "\n"
-		file := filepath.Join(structuralDir, f.Name+".html")
-		if *update {
-			if err := os.WriteFile(file, []byte(got), 0o644); err != nil {
-				t.Fatal(err)
-			}
-		} else if want := string(mustRead(t, file)); got != want {
-			t.Errorf("%s: the main element differs from %s (run go test -update to rewrite it):\n%s", f.Name, file, firstDifference(got, want))
-		}
-		if frag := render(t, web.Fragment, f.page()); !strings.Contains(doc, frag) || !strings.HasPrefix(frag, `<div id="page"`) ||
-			!strings.HasPrefix(mainElement(t, frag), `<main id="main" class="v-`+f.View.Name+`">`) {
-			t.Errorf("%s: the document does not hold the fragment, or the fragment is not the page", f.Name)
-		}
-		root := mustParse(t, doc)
-		for _, b := range check(root) {
-			t.Errorf("%s: %s", f.Name, b)
-		}
-		for _, d := range root.find("details") {
-			var first *Node
-			for _, c := range d.Children {
-				if c.Tag != "" || strings.TrimSpace(c.Text) != "" {
-					first = c
-					break
-				}
-			}
-			if d.Attr["id"] == "" || !slices.ContainsFunc(foldClasses, d.hasClass) || first == nil || first.Tag != "summary" {
-				t.Errorf("%s: the details %q of class %q is not well formed", f.Name, d.Attr["id"], d.Attr["class"])
-			}
-			if _, lazy := d.Attr["hx-get"]; lazy && (d.Attr["hx-trigger"] != "toggle once" || d.Attr["hx-target"] != "find .fold-body" || d.Attr["hx-swap"] != "innerHTML") {
-				t.Errorf("%s: the lazy fold %s has hx- attributes %v", f.Name, d.Attr["id"], d.Attr)
-			}
-		}
-		root.walk(func(n *Node) bool {
-			if n.Tag != "" && n.Attr["aria-hidden"] == "true" {
-				return false
-			}
-			for _, s := range symsOf(f.Model) {
-				if n.Tag == "" && strings.Contains(n.Text, s.Glyph) {
-					t.Errorf("%s: the symbol %q stands outside aria-hidden, in %q", f.Name, s.Glyph, n.Text)
-				}
-			}
-			return true
-		})
-	}
-}
-
 // authorityFixture returns a copy of the model of the fixture NAME.
 func authorityFixture(t testing.TB, name string) (*web.AuthorityView, web.View) {
 	t.Helper()
-	f := structuralNamed(t, name)
+	f := fixtureNamed(t, name)
 	return clone(t, f.Model.(*web.AuthorityView)), f.View
 }
 
 // assignmentFixture returns a copy of the model of the fixture NAME.
 func assignmentFixture(t testing.TB, name string) (*web.AssignmentView, web.View) {
 	t.Helper()
-	f := structuralNamed(t, name)
+	f := fixtureNamed(t, name)
 	return clone(t, f.Model.(*web.AssignmentView)), f.View
 }
 
@@ -712,7 +605,7 @@ func TestAssignmentParts(t *testing.T) {
 func TestStructuralTasksWithoutAddresses(t *testing.T) {
 	strip := regexp.MustCompile(`"Href":\s*"T/[^"]*"`)
 	for _, name := range []string{"authority", "assignment"} {
-		f := structuralNamed(t, name)
+		f := fixtureNamed(t, name)
 		raw, err := json.Marshal(f.Model)
 		if err != nil {
 			t.Fatal(err)

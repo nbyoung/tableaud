@@ -2,10 +2,8 @@ package web_test
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"reflect"
 	"regexp"
 	"slices"
@@ -26,42 +24,15 @@ func init() {
 	fixtureModels["queue"] = func() any { return new(web.QueueView) }
 }
 
-// statusFixtureNames are the seven fixtures of the status views. The shared
-// loader takes those that carry a View key: blockage and queue. The other five
-// carry a Route key in its place, so that TestCheck, TestSymbolsHaveTextNames
-// and the rest of the shared tests leave them to this file. TestSymbolsHaveTextNames
-// accepts a symbol only inside a td, th, li, dd, summary or p, and a page that
-// shows a symbol; the column choice, the marks of a row's provenance outside a
-// table and the three empty forms stand outside that. This file holds the same
-// promises, with a dt and a label as one more container, over all seven.
+// statusFixtureNames are the seven fixtures of the status views.
 var statusFixtureNames = []string{"tableau", "tableau-empty", "contextual", "contextual-empty", "blockage", "blockage-empty", "queue"}
 
-// statusFixtures decodes the seven fixtures, by either key.
+// statusFixtures returns the seven, from the shared loader.
 func statusFixtures(t testing.TB) []fixture {
 	t.Helper()
 	var out []fixture
 	for _, name := range statusFixtureNames {
-		file := "testdata/" + name + ".json"
-		var env struct {
-			View, Route string
-			Body        json.RawMessage
-		}
-		if err := json.Unmarshal(mustRead(t, file), &env); err != nil {
-			t.Fatalf("%s: %v", file, err)
-		}
-		route := env.View + env.Route
-		v, ok := web.Lookup(route)
-		mk := fixtureModels[route]
-		if !ok || mk == nil || (env.View != "") == (env.Route != "") {
-			t.Fatalf("%s: one of View and Route names a route with a model, not %q", file, route)
-		}
-		model := mk()
-		dec := json.NewDecoder(bytes.NewReader(env.Body))
-		dec.DisallowUnknownFields()
-		if err := dec.Decode(model); err != nil {
-			t.Fatalf("%s: %v", file, err)
-		}
-		out = append(out, fixture{Name: name, View: v, Model: model})
+		out = append(out, fixtureNamed(t, name))
 	}
 	return out
 }
@@ -69,13 +40,10 @@ func statusFixtures(t testing.TB) []fixture {
 // statusFixtureNamed returns one of the seven.
 func statusFixtureNamed(t testing.TB, name string) fixture {
 	t.Helper()
-	for _, f := range statusFixtures(t) {
-		if f.Name == name {
-			return f
-		}
+	if !slices.Contains(statusFixtureNames, name) {
+		t.Fatalf("no status fixture %s", name)
 	}
-	t.Fatalf("no fixture %s", name)
-	return fixture{}
+	return fixtureNamed(t, name)
 }
 
 // statusGrids returns the grids a tableau model draws, in page order.
@@ -138,159 +106,6 @@ func statusHx(n *Node) []string {
 	}
 	sort.Strings(out)
 	return out
-}
-
-// TestStatusGolden covers T1: each of the seven fixtures renders, as a
-// document, to a main element that equals testdata/NAME.html byte for byte,
-// newline included.
-func TestStatusGolden(t *testing.T) {
-	for _, f := range statusFixtures(t) {
-		got := mainElement(t, render(t, web.Document, f.page())) + "\n"
-		file := "testdata/" + f.Name + ".html"
-		if *update {
-			if err := os.WriteFile(file, []byte(got), 0o644); err != nil {
-				t.Fatal(err)
-			}
-			continue
-		}
-		want := mustRead(t, file)
-		if got != string(want) {
-			t.Errorf("%s: the main element differs from %s (run go test -update to rewrite it):\n%s", f.Name, file, firstDifference(got, string(want)))
-		}
-		if !strings.HasPrefix(got, `<main id="main" class="v-`+f.View.Name+`">`) {
-			t.Errorf("%s: the main element starts %.60q", f.Name, got)
-		}
-	}
-}
-
-// TestStatusSharedChecks runs over the seven fixtures what the shared tests run
-// over the fixtures that carry a View key: T3's check of the document, T5's
-// folds, T8's fragment, T9's glyphs in the templates. The fixtures with a Route
-// key reach none of them otherwise.
-func TestStatusSharedChecks(t *testing.T) {
-	var glyphs []string
-	for _, f := range statusFixtures(t) {
-		root := statusDoc(t, f.page())
-		for _, b := range check(root) {
-			t.Errorf("%s: %s", f.Name, b)
-		}
-
-		for _, d := range root.find("details") {
-			id := d.Attr["id"]
-			if id == "" || !slices.ContainsFunc(foldClasses, d.hasClass) {
-				t.Errorf("%s: a details with id %q and class %q", f.Name, id, d.Attr["class"])
-			}
-			var first *Node
-			for _, c := range d.Children {
-				if c.Tag != "" || strings.TrimSpace(c.Text) != "" {
-					first = c
-					break
-				}
-			}
-			if first == nil || first.Tag != "summary" {
-				t.Errorf("%s: %s does not start with a summary", f.Name, id)
-			}
-			if _, ok := d.Attr["hx-get"]; !ok {
-				continue
-			}
-			if d.Attr["hx-trigger"] != "toggle once" || d.Attr["hx-target"] != "find .fold-body" || d.Attr["hx-swap"] != "innerHTML" {
-				t.Errorf("%s: the lazy fold %s has hx- attributes %v", f.Name, id, d.Attr)
-			}
-			if _, open := d.Attr["open"]; open {
-				t.Errorf("%s: the lazy fold %s arrives open", f.Name, id)
-			}
-			var link *Node
-			for _, a := range d.find("a") {
-				if a.text(true) == "Show this in the page" {
-					link = a
-				}
-			}
-			if link == nil || link.Attr["href"] == "" {
-				t.Errorf("%s: the lazy fold %s has no fallback link", f.Name, id)
-			}
-		}
-
-		doc := render(t, web.Document, f.page())
-		frag := render(t, web.Fragment, f.page())
-		if !strings.Contains(doc, frag) || !strings.HasPrefix(frag, `<div id="page"`) {
-			t.Errorf("%s: the document does not hold the fragment", f.Name)
-		}
-		if m := mainElement(t, frag); !strings.HasPrefix(m, `<main id="main" class="v-`+f.View.Name+`">`) {
-			t.Errorf("%s: the main element starts %.60q", f.Name, m)
-		}
-		for _, s := range symsOf(f.Model) {
-			glyphs = append(glyphs, s.Glyph)
-		}
-	}
-	for path, text := range templateFiles(t) {
-		for _, g := range glyphs {
-			if strings.Contains(text, g) {
-				t.Errorf("%s holds the symbol %q", path, g)
-			}
-		}
-	}
-}
-
-// TestStatusSymbolsHaveTextNames covers T4 of design 438a for the seven
-// fixtures: each glyph stands only inside aria-hidden="true", and its name
-// stands as text in the same cell, item, row, label or term. An empty form shows
-// no symbol at all.
-func TestStatusSymbolsHaveTextNames(t *testing.T) {
-	for _, f := range statusFixtures(t) {
-		syms := symsOf(f.Model)
-		root := statusDoc(t, f.page())
-		hidden := 0
-		root.walk(func(n *Node) bool {
-			if n.Tag != "" && n.Attr["aria-hidden"] == "true" {
-				hidden++
-			}
-			return true
-		})
-		if len(syms) == 0 {
-			if hidden != 0 || !strings.HasSuffix(f.Name, "-empty") {
-				t.Errorf("%s: no symbol in the model, %d aria-hidden elements", f.Name, hidden)
-			}
-			continue
-		}
-		sort.Slice(syms, func(i, j int) bool { return len(syms[i].Glyph) > len(syms[j].Glyph) })
-		seen := map[string]bool{}
-		root.walk(func(n *Node) bool {
-			if n.Tag != "" && n.Attr["aria-hidden"] == "true" {
-				container := n.ancestor("td", "th", "li", "dd", "dt", "summary", "p", "label")
-				row := n.ancestor("tr")
-				// The ellipsis of a folded run stands between its two glyphs.
-				rest := strings.NewReplacer("…", "", " ", "").Replace(n.text(false))
-				for rest != "" {
-					i := slices.IndexFunc(syms, func(s web.Sym) bool { return strings.HasPrefix(rest, s.Glyph) })
-					if i < 0 {
-						t.Errorf("%s: aria-hidden text %q is no symbol of the model", f.Name, rest)
-						break
-					}
-					s := syms[i]
-					seen[s.Glyph] = true
-					name := strings.ToLower(s.Name)
-					here := container != nil && strings.Contains(strings.ToLower(container.text(true)), name)
-					there := row != nil && strings.Contains(strings.ToLower(row.text(true)), name)
-					if !here && !there {
-						t.Errorf("%s: the symbol %q has no text %q beside it", f.Name, s.Glyph, s.Name)
-					}
-					rest = rest[len(s.Glyph):]
-				}
-				return false
-			}
-			if n.Tag == "" {
-				for _, s := range syms {
-					if strings.Contains(n.Text, s.Glyph) {
-						t.Errorf("%s: the symbol %q stands outside aria-hidden, in %q", f.Name, s.Glyph, n.Text)
-					}
-				}
-			}
-			return true
-		})
-		if len(seen) == 0 {
-			t.Errorf("%s: no symbol stands in the page", f.Name)
-		}
-	}
 }
 
 // TestStatusGridIsATable covers T2: every row has one cell per column plus the
