@@ -1,0 +1,16 @@
+{
+ "Route": "tableau",
+ "Body": {
+  "Grid": {
+   "ID": "",
+   "Caption": "",
+   "Columns": null,
+   "Rows": null,
+   "Notes": false,
+   "Control": null
+  },
+  "Shown": 0,
+  "Total": 0,
+  "Branches": null
+ }
+}

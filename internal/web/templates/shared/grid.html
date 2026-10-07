@@ -1,0 +1,25 @@
+{{/* grid: the tableau both the global and the contextual tableau draw, and its column choice. */}}
+{{define "grid"}}{{$g := .}}{{with .Control}}{{template "gridcolumns" .}}{{end}}
+<div class="scroll">
+<table class="tableau" id="{{.ID}}">
+<caption>{{.Caption}}</caption>
+<thead><tr><th scope="col">Id</th><th scope="col">Task</th>{{range .Columns}}<th scope="col" class="gate{{if .Folded}} fold{{end}}">{{if .Last}}<span aria-hidden="true">{{.First.Glyph}} … {{.Last.Glyph}}</span> <span class="gname">{{.First.Name}} to {{.Last.Name}}</span>{{else}}<a href="{{.Href}}"><span aria-hidden="true">{{.First.Glyph}}</span> <span class="gname">{{.First.Name}}</span></a>{{end}}{{if .Folded}} <span class="count">folded ×{{.Count}}<span class="sr"> {{plural .Count "task stands" "tasks stand"}} here</span></span>{{end}}</th>{{end}}{{if .Notes}}<th scope="col">Date and note</th>{{end}}</tr></thead>
+<tbody>
+{{range .Rows}}<tr id="{{$g.ID}}-{{.Task.ID}}"{{if .Parent}} class="parent"{{end}}><td>{{if .Task.Href}}<a class="id" href="{{.Task.Href}}">{{.Task.ID}}</a>{{else}}<code class="id">{{.Task.ID}}</code>{{end}}</td><th scope="row" class="task {{depth .Depth}}"><span class="sr">level {{add .Depth 1}}: </span>{{.Task.Title}}{{if .Sibling}} <span class="fold">· sibling</span>{{end}}{{if .Expand}} <a class="fold" href="{{.Expand.Href}}"{{template "swap" .Expand}}>{{.Beneath}} {{plural .Beneath "row" "rows"}} beneath</a>{{else if .Collapse}} <a class="fold" href="{{.Collapse.Href}}"{{template "swap" .Collapse}}>fold the {{.Beneath}} {{plural .Beneath "row" "rows"}} beneath</a>{{else if .Beneath}} <span class="fold">({{.Beneath}}<span class="sr"> {{plural .Beneath "row" "rows"}} not drawn</span>)</span>{{end}}</th>{{range .Cells}}<td class="cell{{if .Folded}} fold{{end}}{{if and .Hist .Syms}} hist{{end}}{{if .Mine}} mine{{end}}">{{template "syms" .Syms}}{{if .Hist}}<span class="sr">{{if .Syms}}, {{end}}historical</span>{{end}}{{if .Mine}}<span class="sr">, this person acts here</span>{{end}}</td>{{end}}{{if $g.Notes}}<td class="status">{{template "fold" .Fold}}<summary>{{if .Status.Date}}{{.Status.Date}}{{else}}no date{{end}}<span class="sr"> note and provenance of {{.Task.ID}}</span></summary>
+{{if .Status.Note}}<p class="note">{{.Status.Note}}</p>{{end}}{{with .Status.From}}<p class="muted">Rolled up from {{template "task" .}}.</p>{{end}}{{with .Status.Snapshot}}<p class="muted">Snapshot of {{template "task" .Task}} at pin <code>{{.Pin}}</code>, which stands at {{template "sym" .Gate}} there.</p>{{end}}
+{{template "fold" .ProvFold}}<summary>Provenance</summary>{{if .ProvFold.Src}}{{template "lazy" .ProvFold}}{{else}}{{template "part/row" .Prov}}{{end}}</details>
+</details></td>{{end}}</tr>
+{{end}}</tbody>
+</table>
+</div>{{end}}
+
+{{define "gridcolumns"}}{{template "fold" .Fold}}<summary>Columns: {{.Shown}} of {{.Total}} shown</summary>
+<form class="columns" method="get" action="{{.Action}}" hx-boost="true">
+{{range .Hidden}}<input type="hidden" name="{{.Name}}" value="{{.Content}}">
+{{end}}<fieldset><legend>Gate columns</legend>
+{{range .Gates}}<label><input type="checkbox" name="{{$.Name}}" value="{{.Key}}"{{if .Checked}} checked{{end}}> {{template "sym" .Sym}}</label>
+{{end}}</fieldset>
+<label><input type="checkbox" name="{{.HistName}}" value="on"{{if .Hist}} checked{{end}}> Show the marks of historical junctions</label>
+<button type="submit">Show these columns</button>
+</form>
+</details>{{end}}

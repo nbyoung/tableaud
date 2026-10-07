@@ -1,0 +1,6 @@
+{{/* part/row: the provenance of one row of a tableau, which both tableaux and the part row draw. */}}
+{{define "part/row"}}<dl class="fields">
+<dt>Status</dt><dd>{{if .Status.Commit}}<code>{{.Status.File}}</code>; recorded in <code>{{.Status.Commit.Hash}}</code> {{.Status.Commit.Subject}}, {{.Status.Commit.Date}}; author {{.Status.Commit.Author}}; committer {{.Status.Commit.Committer}}{{else if .Chain}}Derived, never stored. Rolls up from {{range $i, $t := .Chain}}{{if $i}}, then {{end}}{{template "task" $t}}{{end}}{{else}}No status file; the task stands at undefined{{end}}</dd>
+{{range .Marks}}<dt>{{range .Gates}}<span aria-hidden="true">{{.Glyph}}</span> {{end}}{{(index .Gates 0).Name}}{{if gt (len .Gates) 1}} to {{(index .Gates (add (len .Gates) -1)).Name}}{{end}}: {{template "syms" .Marks}}</dt><dd>{{if .Exempt}}Exempt: {{with .By}}{{template "task" .}} states{{else}}the task's own file states{{end}} that the gate does not apply{{else}}Contributor {{.Contributor}}{{if .Model}} with model <code>{{.Model}}</code>{{end}}; {{if .Reviewer}}reviewer {{.Reviewer}}{{else}}no reviewer{{end}}; {{with .By}}from {{template "task" .}}{{else}}{{if .Own}}from the task's own file{{else}}the plain default{{end}}{{end}}{{end}}</dd>
+{{end}}</dl>
+{{template "commands" .Status.Commands}}{{end}}

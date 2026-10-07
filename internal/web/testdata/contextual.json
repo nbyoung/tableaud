@@ -1,0 +1,1219 @@
+{
+ "Route": "context",
+ "Body": {
+  "Task": null,
+  "Person": "nbyoung@nbyoung.com",
+  "Grid": {
+   "ID": "grid",
+   "Caption": "Three of 37 tasks.",
+   "Columns": [
+    {
+     "First": {
+      "Glyph": "❔",
+      "Name": "undefined"
+     },
+     "Last": null,
+     "Href": "V/gate#gate-undefined",
+     "Folded": true,
+     "Count": 0
+    },
+    {
+     "First": {
+      "Glyph": "📝",
+      "Name": "defined"
+     },
+     "Last": null,
+     "Href": "V/gate#gate-defined",
+     "Folded": false,
+     "Count": 0
+    },
+    {
+     "First": {
+      "Glyph": "📌",
+      "Name": "mockup"
+     },
+     "Last": null,
+     "Href": "V/gate#gate-mockup",
+     "Folded": false,
+     "Count": 0
+    },
+    {
+     "First": {
+      "Glyph": "🔗",
+      "Name": "integrate"
+     },
+     "Last": {
+      "Glyph": "🚀",
+      "Name": "release"
+     },
+     "Href": "",
+     "Folded": true,
+     "Count": 2
+    }
+   ],
+   "Rows": [
+    {
+     "Task": {
+      "ID": "437e",
+      "Title": "Tableaux tooling",
+      "Href": "T/437e"
+     },
+     "Depth": 0,
+     "Parent": true,
+     "Beneath": 31,
+     "Expand": {
+      "Href": "V/tableau?open=437e",
+      "Swap": true
+     },
+     "Collapse": null,
+     "Sibling": false,
+     "Cells": [
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🟢",
+         "Name": "nominal"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        {
+         "Glyph": "👀",
+         "Name": "a reviewer accepts"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": true
+      },
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      }
+     ],
+     "Status": {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "State": {
+       "Glyph": "🟢",
+       "Name": "nominal"
+      },
+      "Reason": null,
+      "Note": "Mockup waits",
+      "Date": "2026-09-30",
+      "Recorder": "noreply@anthropic.com",
+      "From": {
+       "ID": "99f0",
+       "Title": "Gate definition view in Markdown",
+       "Href": "T/99f0"
+      },
+      "Snapshot": null
+     },
+     "Fold": {
+      "ID": "grid-n1",
+      "Class": "detail",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Prov": null,
+     "ProvFold": {
+      "ID": "grid-p1",
+      "Class": "prov",
+      "Open": false,
+      "Src": "P/prov-437e",
+      "Alt": "A/prov-437e"
+     }
+    },
+    {
+     "Task": {
+      "ID": "c2ad",
+      "Title": "Roles",
+      "Href": "T/c2ad"
+     },
+     "Depth": 1,
+     "Parent": false,
+     "Beneath": 0,
+     "Expand": null,
+     "Collapse": null,
+     "Sibling": false,
+     "Cells": [
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": null,
+       "Folded": false,
+       "Hist": true,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🔴",
+         "Name": "stalled"
+        },
+        {
+         "Glyph": "⛔",
+         "Name": "blocked"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      }
+     ],
+     "Status": {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "State": {
+       "Glyph": "🟢",
+       "Name": "nominal"
+      },
+      "Reason": null,
+      "Note": "Mockup waits",
+      "Date": "2026-09-30",
+      "Recorder": "noreply@anthropic.com",
+      "From": null,
+      "Snapshot": null
+     },
+     "Fold": {
+      "ID": "grid-n2",
+      "Class": "detail",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Prov": {
+      "Status": {
+       "Fold": {
+        "ID": "",
+        "Class": "",
+        "Open": false,
+        "Src": "",
+        "Alt": ""
+       },
+       "File": ".tableaux/status/c2ad.yaml",
+       "Commit": {
+        "Hash": "3d8ce0e",
+        "Full": "3d8ce0e0000",
+        "Subject": "Record the Roles task",
+        "Date": "2026-10-02",
+        "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+        "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+        "Trailers": [
+         "Model: claude-opus-5-5"
+        ]
+       },
+       "Reaffirmed": false,
+       "Snapshot": null,
+       "Commands": [
+        "git log -1"
+       ]
+      },
+      "Chain": null,
+      "Marks": [
+       {
+        "Gates": [
+         {
+          "Glyph": "📏",
+          "Name": "unit"
+         },
+         {
+          "Glyph": "🔗",
+          "Name": "integrate"
+         }
+        ],
+        "Marks": [
+         {
+          "Glyph": "—",
+          "Name": "the gate does not apply"
+         }
+        ],
+        "Exempt": true,
+        "Contributor": "",
+        "Model": "",
+        "Reviewer": "",
+        "By": null,
+        "Own": false
+       },
+       {
+        "Gates": [
+         {
+          "Glyph": "🌍",
+          "Name": "validate"
+         }
+        ],
+        "Marks": [
+         {
+          "Glyph": "🤖",
+          "Name": "an agent contributes"
+         },
+         {
+          "Glyph": "👀",
+          "Name": "a reviewer accepts"
+         }
+        ],
+        "Exempt": false,
+        "Contributor": "noreply@anthropic.com",
+        "Model": "claude-opus",
+        "Reviewer": "nbyoung@nbyoung.com",
+        "By": {
+         "ID": "bc63",
+         "Title": "Method",
+         "Href": "T/bc63"
+        },
+        "Own": false
+       }
+      ]
+     },
+     "ProvFold": {
+      "ID": "prov-grid-c2ad",
+      "Class": "prov",
+      "Open": true,
+      "Src": "",
+      "Alt": ""
+     }
+    },
+    {
+     "Task": {
+      "ID": "77b2",
+      "Title": "tablo",
+      "Href": "T/77b2"
+     },
+     "Depth": 1,
+     "Parent": false,
+     "Beneath": 4,
+     "Expand": null,
+     "Collapse": null,
+     "Sibling": false,
+     "Cells": [
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🟢",
+         "Name": "nominal"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "—",
+         "Name": "the gate does not apply"
+        }
+       ],
+       "Folded": false,
+       "Hist": true,
+       "Mine": false
+      },
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      }
+     ],
+     "Status": {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "State": {
+       "Glyph": "🟢",
+       "Name": "nominal"
+      },
+      "Reason": null,
+      "Note": "Mockup waits",
+      "Date": "2026-09-30",
+      "Recorder": "noreply@anthropic.com",
+      "From": null,
+      "Snapshot": {
+       "Mark": {
+        "Glyph": "🪆",
+        "Name": "a subproject does the work"
+       },
+       "URL": "subprojects/tablo",
+       "Task": {
+        "ID": "b2c1",
+        "Title": "tablo",
+        "Href": "T/b2c1"
+       },
+       "Pin": "00f8f68",
+       "Form": "",
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       }
+      }
+     },
+     "Fold": {
+      "ID": "grid-n3",
+      "Class": "detail",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Prov": null,
+     "ProvFold": {
+      "ID": "grid-p3",
+      "Class": "prov",
+      "Open": false,
+      "Src": "P/prov-77b2",
+      "Alt": "A/prov-77b2"
+     }
+    }
+   ],
+   "Notes": false,
+   "Control": null
+  },
+  "Wider": {
+   "Fold": {
+    "ID": "d-wider",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Grid": {
+    "ID": "wider",
+    "Caption": "Three of 37 tasks.",
+    "Columns": [
+     {
+      "First": {
+       "Glyph": "❔",
+       "Name": "undefined"
+      },
+      "Last": null,
+      "Href": "V/gate#gate-undefined",
+      "Folded": true,
+      "Count": 0
+     },
+     {
+      "First": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "Last": null,
+      "Href": "V/gate#gate-defined",
+      "Folded": false,
+      "Count": 0
+     },
+     {
+      "First": {
+       "Glyph": "📌",
+       "Name": "mockup"
+      },
+      "Last": null,
+      "Href": "V/gate#gate-mockup",
+      "Folded": false,
+      "Count": 0
+     },
+     {
+      "First": {
+       "Glyph": "🔗",
+       "Name": "integrate"
+      },
+      "Last": {
+       "Glyph": "🚀",
+       "Name": "release"
+      },
+      "Href": "",
+      "Folded": true,
+      "Count": 2
+     }
+    ],
+    "Rows": [
+     {
+      "Task": {
+       "ID": "437e",
+       "Title": "Tableaux tooling",
+       "Href": "T/437e"
+      },
+      "Depth": 0,
+      "Parent": true,
+      "Beneath": 31,
+      "Expand": {
+       "Href": "V/tableau?open=437e",
+       "Swap": true
+      },
+      "Collapse": null,
+      "Sibling": false,
+      "Cells": [
+       {
+        "Syms": null,
+        "Folded": true,
+        "Hist": false,
+        "Mine": false
+       },
+       {
+        "Syms": [
+         {
+          "Glyph": "🟢",
+          "Name": "nominal"
+         }
+        ],
+        "Folded": false,
+        "Hist": false,
+        "Mine": false
+       },
+       {
+        "Syms": [
+         {
+          "Glyph": "🤖",
+          "Name": "an agent contributes"
+         },
+         {
+          "Glyph": "👀",
+          "Name": "a reviewer accepts"
+         }
+        ],
+        "Folded": false,
+        "Hist": false,
+        "Mine": true
+       },
+       {
+        "Syms": null,
+        "Folded": true,
+        "Hist": false,
+        "Mine": false
+       }
+      ],
+      "Status": {
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": null,
+       "Note": "Mockup waits",
+       "Date": "2026-09-30",
+       "Recorder": "noreply@anthropic.com",
+       "From": {
+        "ID": "99f0",
+        "Title": "Gate definition view in Markdown",
+        "Href": "T/99f0"
+       },
+       "Snapshot": null
+      },
+      "Fold": {
+       "ID": "wider-n1",
+       "Class": "detail",
+       "Open": false,
+       "Src": "",
+       "Alt": ""
+      },
+      "Prov": null,
+      "ProvFold": {
+       "ID": "wider-p1",
+       "Class": "prov",
+       "Open": false,
+       "Src": "P/prov-437e",
+       "Alt": "A/prov-437e"
+      }
+     },
+     {
+      "Task": {
+       "ID": "c2ad",
+       "Title": "Roles",
+       "Href": "T/c2ad"
+      },
+      "Depth": 1,
+      "Parent": false,
+      "Beneath": 0,
+      "Expand": null,
+      "Collapse": null,
+      "Sibling": true,
+      "Cells": [
+       {
+        "Syms": null,
+        "Folded": true,
+        "Hist": false,
+        "Mine": false
+       },
+       {
+        "Syms": null,
+        "Folded": false,
+        "Hist": true,
+        "Mine": false
+       },
+       {
+        "Syms": [
+         {
+          "Glyph": "🔴",
+          "Name": "stalled"
+         },
+         {
+          "Glyph": "⛔",
+          "Name": "blocked"
+         }
+        ],
+        "Folded": false,
+        "Hist": false,
+        "Mine": false
+       },
+       {
+        "Syms": null,
+        "Folded": true,
+        "Hist": false,
+        "Mine": false
+       }
+      ],
+      "Status": {
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": null,
+       "Note": "Mockup waits",
+       "Date": "2026-09-30",
+       "Recorder": "noreply@anthropic.com",
+       "From": null,
+       "Snapshot": null
+      },
+      "Fold": {
+       "ID": "wider-n2",
+       "Class": "detail",
+       "Open": false,
+       "Src": "",
+       "Alt": ""
+      },
+      "Prov": {
+       "Status": {
+        "Fold": {
+         "ID": "",
+         "Class": "",
+         "Open": false,
+         "Src": "",
+         "Alt": ""
+        },
+        "File": ".tableaux/status/c2ad.yaml",
+        "Commit": {
+         "Hash": "3d8ce0e",
+         "Full": "3d8ce0e0000",
+         "Subject": "Record the Roles task",
+         "Date": "2026-10-02",
+         "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+         "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+         "Trailers": [
+          "Model: claude-opus-5-5"
+         ]
+        },
+        "Reaffirmed": false,
+        "Snapshot": null,
+        "Commands": [
+         "git log -1"
+        ]
+       },
+       "Chain": null,
+       "Marks": [
+        {
+         "Gates": [
+          {
+           "Glyph": "📏",
+           "Name": "unit"
+          },
+          {
+           "Glyph": "🔗",
+           "Name": "integrate"
+          }
+         ],
+         "Marks": [
+          {
+           "Glyph": "—",
+           "Name": "the gate does not apply"
+          }
+         ],
+         "Exempt": true,
+         "Contributor": "",
+         "Model": "",
+         "Reviewer": "",
+         "By": null,
+         "Own": false
+        },
+        {
+         "Gates": [
+          {
+           "Glyph": "🌍",
+           "Name": "validate"
+          }
+         ],
+         "Marks": [
+          {
+           "Glyph": "🤖",
+           "Name": "an agent contributes"
+          },
+          {
+           "Glyph": "👀",
+           "Name": "a reviewer accepts"
+          }
+         ],
+         "Exempt": false,
+         "Contributor": "noreply@anthropic.com",
+         "Model": "claude-opus",
+         "Reviewer": "nbyoung@nbyoung.com",
+         "By": {
+          "ID": "bc63",
+          "Title": "Method",
+          "Href": "T/bc63"
+         },
+         "Own": false
+        }
+       ]
+      },
+      "ProvFold": {
+       "ID": "prov-wider-c2ad",
+       "Class": "prov",
+       "Open": true,
+       "Src": "",
+       "Alt": ""
+      }
+     },
+     {
+      "Task": {
+       "ID": "77b2",
+       "Title": "tablo",
+       "Href": "T/77b2"
+      },
+      "Depth": 1,
+      "Parent": false,
+      "Beneath": 4,
+      "Expand": null,
+      "Collapse": null,
+      "Sibling": false,
+      "Cells": [
+       {
+        "Syms": null,
+        "Folded": true,
+        "Hist": false,
+        "Mine": false
+       },
+       {
+        "Syms": [
+         {
+          "Glyph": "🟢",
+          "Name": "nominal"
+         }
+        ],
+        "Folded": false,
+        "Hist": false,
+        "Mine": false
+       },
+       {
+        "Syms": [
+         {
+          "Glyph": "—",
+          "Name": "the gate does not apply"
+         }
+        ],
+        "Folded": false,
+        "Hist": true,
+        "Mine": false
+       },
+       {
+        "Syms": null,
+        "Folded": true,
+        "Hist": false,
+        "Mine": false
+       }
+      ],
+      "Status": {
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       },
+       "State": {
+        "Glyph": "🟢",
+        "Name": "nominal"
+       },
+       "Reason": null,
+       "Note": "Mockup waits",
+       "Date": "2026-09-30",
+       "Recorder": "noreply@anthropic.com",
+       "From": null,
+       "Snapshot": {
+        "Mark": {
+         "Glyph": "🪆",
+         "Name": "a subproject does the work"
+        },
+        "URL": "subprojects/tablo",
+        "Task": {
+         "ID": "b2c1",
+         "Title": "tablo",
+         "Href": "T/b2c1"
+        },
+        "Pin": "00f8f68",
+        "Form": "",
+        "Gate": {
+         "Glyph": "📝",
+         "Name": "defined"
+        }
+       }
+      },
+      "Fold": {
+       "ID": "wider-n3",
+       "Class": "detail",
+       "Open": false,
+       "Src": "",
+       "Alt": ""
+      },
+      "Prov": null,
+      "ProvFold": {
+       "ID": "wider-p3",
+       "Class": "prov",
+       "Open": false,
+       "Src": "P/prov-77b2",
+       "Alt": "A/prov-77b2"
+      }
+     }
+    ],
+    "Notes": true,
+    "Control": null
+   }
+  },
+  "Blocks": [
+   {
+    "Row": {
+     "Task": {
+      "ID": "437e",
+      "Title": "Tableaux tooling",
+      "Href": "T/437e"
+     },
+     "Depth": 0,
+     "Parent": true,
+     "Beneath": 31,
+     "Expand": {
+      "Href": "V/tableau?open=437e",
+      "Swap": true
+     },
+     "Collapse": null,
+     "Sibling": false,
+     "Cells": [
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🟢",
+         "Name": "nominal"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        {
+         "Glyph": "👀",
+         "Name": "a reviewer accepts"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": true
+      },
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      }
+     ],
+     "Status": {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "State": {
+       "Glyph": "🟢",
+       "Name": "nominal"
+      },
+      "Reason": null,
+      "Note": "Mockup waits",
+      "Date": "2026-09-30",
+      "Recorder": "noreply@anthropic.com",
+      "From": {
+       "ID": "99f0",
+       "Title": "Gate definition view in Markdown",
+       "Href": "T/99f0"
+      },
+      "Snapshot": null
+     },
+     "Fold": {
+      "ID": "grid-n1",
+      "Class": "detail",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Prov": null,
+     "ProvFold": {
+      "ID": "grid-p1",
+      "Class": "prov",
+      "Open": false,
+      "Src": "P/prov-437e",
+      "Alt": "A/prov-437e"
+     }
+    },
+    "Next": {
+     "Glyph": "📌",
+     "Name": "mockup"
+    },
+    "NextMarks": [
+     {
+      "Glyph": "🤖",
+      "Name": "an agent contributes"
+     },
+     {
+      "Glyph": "👀",
+      "Name": "a reviewer accepts"
+     }
+    ]
+   },
+   {
+    "Row": {
+     "Task": {
+      "ID": "c2ad",
+      "Title": "Roles",
+      "Href": "T/c2ad"
+     },
+     "Depth": 1,
+     "Parent": false,
+     "Beneath": 0,
+     "Expand": null,
+     "Collapse": null,
+     "Sibling": false,
+     "Cells": [
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": null,
+       "Folded": false,
+       "Hist": true,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🔴",
+         "Name": "stalled"
+        },
+        {
+         "Glyph": "⛔",
+         "Name": "blocked"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      }
+     ],
+     "Status": {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "State": {
+       "Glyph": "🟢",
+       "Name": "nominal"
+      },
+      "Reason": null,
+      "Note": "Mockup waits",
+      "Date": "2026-09-30",
+      "Recorder": "noreply@anthropic.com",
+      "From": null,
+      "Snapshot": null
+     },
+     "Fold": {
+      "ID": "grid-n2",
+      "Class": "detail",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Prov": {
+      "Status": {
+       "Fold": {
+        "ID": "",
+        "Class": "",
+        "Open": false,
+        "Src": "",
+        "Alt": ""
+       },
+       "File": ".tableaux/status/c2ad.yaml",
+       "Commit": {
+        "Hash": "3d8ce0e",
+        "Full": "3d8ce0e0000",
+        "Subject": "Record the Roles task",
+        "Date": "2026-10-02",
+        "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+        "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+        "Trailers": [
+         "Model: claude-opus-5-5"
+        ]
+       },
+       "Reaffirmed": false,
+       "Snapshot": null,
+       "Commands": [
+        "git log -1"
+       ]
+      },
+      "Chain": null,
+      "Marks": [
+       {
+        "Gates": [
+         {
+          "Glyph": "📏",
+          "Name": "unit"
+         },
+         {
+          "Glyph": "🔗",
+          "Name": "integrate"
+         }
+        ],
+        "Marks": [
+         {
+          "Glyph": "—",
+          "Name": "the gate does not apply"
+         }
+        ],
+        "Exempt": true,
+        "Contributor": "",
+        "Model": "",
+        "Reviewer": "",
+        "By": null,
+        "Own": false
+       },
+       {
+        "Gates": [
+         {
+          "Glyph": "🌍",
+          "Name": "validate"
+         }
+        ],
+        "Marks": [
+         {
+          "Glyph": "🤖",
+          "Name": "an agent contributes"
+         },
+         {
+          "Glyph": "👀",
+          "Name": "a reviewer accepts"
+         }
+        ],
+        "Exempt": false,
+        "Contributor": "noreply@anthropic.com",
+        "Model": "claude-opus",
+        "Reviewer": "nbyoung@nbyoung.com",
+        "By": {
+         "ID": "bc63",
+         "Title": "Method",
+         "Href": "T/bc63"
+        },
+        "Own": false
+       }
+      ]
+     },
+     "ProvFold": {
+      "ID": "prov-grid-c2ad",
+      "Class": "prov",
+      "Open": true,
+      "Src": "",
+      "Alt": ""
+     }
+    },
+    "Next": {
+     "Glyph": "📌",
+     "Name": "mockup"
+    },
+    "NextMarks": [
+     {
+      "Glyph": "🤖",
+      "Name": "an agent contributes"
+     },
+     {
+      "Glyph": "👀",
+      "Name": "a reviewer accepts"
+     }
+    ]
+   },
+   {
+    "Row": {
+     "Task": {
+      "ID": "77b2",
+      "Title": "tablo",
+      "Href": "T/77b2"
+     },
+     "Depth": 1,
+     "Parent": false,
+     "Beneath": 4,
+     "Expand": null,
+     "Collapse": null,
+     "Sibling": false,
+     "Cells": [
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "🟢",
+         "Name": "nominal"
+        }
+       ],
+       "Folded": false,
+       "Hist": false,
+       "Mine": false
+      },
+      {
+       "Syms": [
+        {
+         "Glyph": "—",
+         "Name": "the gate does not apply"
+        }
+       ],
+       "Folded": false,
+       "Hist": true,
+       "Mine": false
+      },
+      {
+       "Syms": null,
+       "Folded": true,
+       "Hist": false,
+       "Mine": false
+      }
+     ],
+     "Status": {
+      "Gate": {
+       "Glyph": "📝",
+       "Name": "defined"
+      },
+      "State": {
+       "Glyph": "🟢",
+       "Name": "nominal"
+      },
+      "Reason": null,
+      "Note": "Mockup waits",
+      "Date": "2026-09-30",
+      "Recorder": "noreply@anthropic.com",
+      "From": null,
+      "Snapshot": {
+       "Mark": {
+        "Glyph": "🪆",
+        "Name": "a subproject does the work"
+       },
+       "URL": "subprojects/tablo",
+       "Task": {
+        "ID": "b2c1",
+        "Title": "tablo",
+        "Href": "T/b2c1"
+       },
+       "Pin": "00f8f68",
+       "Form": "",
+       "Gate": {
+        "Glyph": "📝",
+        "Name": "defined"
+       }
+      }
+     },
+     "Fold": {
+      "ID": "grid-n3",
+      "Class": "detail",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Prov": null,
+     "ProvFold": {
+      "ID": "grid-p3",
+      "Class": "prov",
+      "Open": false,
+      "Src": "P/prov-77b2",
+      "Alt": "A/prov-77b2"
+     }
+    },
+    "Next": {
+     "Glyph": "📌",
+     "Name": "mockup"
+    },
+    "NextMarks": [
+     {
+      "Glyph": "🤖",
+      "Name": "an agent contributes"
+     },
+     {
+      "Glyph": "👀",
+      "Name": "a reviewer accepts"
+     }
+    ]
+   }
+  ]
+ }
+}

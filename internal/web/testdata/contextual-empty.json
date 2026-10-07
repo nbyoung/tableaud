@@ -1,0 +1,17 @@
+{
+ "Route": "context",
+ "Body": {
+  "Task": null,
+  "Person": "opus@example.org",
+  "Grid": {
+   "ID": "",
+   "Caption": "",
+   "Columns": null,
+   "Rows": null,
+   "Notes": false,
+   "Control": null
+  },
+  "Wider": null,
+  "Blocks": null
+ }
+}

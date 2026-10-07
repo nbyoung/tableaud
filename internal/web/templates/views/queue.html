@@ -1,5 +1,34 @@
-{{/* A placeholder: a template task replaces this file. */}}
-{{define "view"}}<h1>{{.View.Title}}</h1>
-<pre>{{json .Data}}</pre>
-{{end}}
-{{define "context"}}{{end}}
+{{define "view"}}{{template "main" .}}{{end}}
+{{define "context"}}{{template "params" .}}{{end}}
+{{define "body"}}{{with .Body}}
+<h2 id="queue">Queue of {{.Person}}</h2>
+<p class="rule">{{.Total}} {{plural .Total "item" "items"}}:{{range $i, $k := .Kinds}}{{if $i}},{{end}} {{$k.Count}} {{$k.Name}}{{end}}.</p>
+{{range .Kinds}}<h3 id="{{.Anchor}}">{{.Ord}}. {{.Title}}: {{if .Count}}{{.Count}}{{else}}none{{end}}</h3>
+{{if .Count}}<ol class="items">
+{{range .Items}}{{range .Shown}}{{template "item" .}}
+{{end}}{{if .Rest}}<li class="run">{{template "fold" .Fold}}<summary><span class="fold">… and {{len .Rest}} more {{.Alike}}</span></summary>
+<ol class="items">
+{{range .Rest}}{{template "item" .}}
+{{end}}</ol>
+</details></li>
+{{end}}{{end}}</ol>
+{{else}}<p class="empty">{{.Why}}</p>
+{{end}}{{end}}{{end}}{{end}}
+
+{{define "item"}}<li id="{{.Anchor}}"><span class="q-task{{if .Mine}} mine{{end}}">{{template "task" .Task}}{{if .Cause}}; <span class="q-cause">{{.Cause}}</span>{{end}}</span> <span class="q-gate">{{template "sym" .Gate}}</span> <span class="q-model">{{with .Agent}}<span aria-hidden="true">{{.Glyph}}</span> <span class="sr">{{.Name}} on model </span>{{end}}{{if .Model}}<code>{{.Model}}</code>{{end}}</span> <span class="q-since">{{if .Age}}{{.Age}}{{else}}<span class="sr">status of </span>{{.Since}}{{end}}</span>
+{{template "fold" .Fold}}<summary>Detail<span class="sr"> of {{.Task.ID}} at {{.Gate.Name}}</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/item" .Body}}{{end}}</details></li>{{end}}
+
+{{define "part/item"}}<dl class="fields">
+<dt>Gate</dt><dd>{{template "sym" .Gate}}, {{.GateName}}: {{.Criteria}}</dd>
+<dt>Contributor</dt><dd>{{.Contributor}}{{if .Model}}, an agent on model <code>{{.Model}}</code>{{end}}{{with .ContribBy}}, from {{template "task" .}}{{end}}</dd>
+<dt>Reviewer</dt><dd>{{if .Self}}{{.Reviewer}}, the assignee, since the junction states no reviewer; the agent reviews its own work{{else if .Reviewer}}{{.Reviewer}}{{with .ReviewerBy}}, from {{template "task" .}}{{end}}{{else}}None{{end}}</dd>
+<dt>References</dt><dd>{{if .References}}{{range $i, $r := .References}}{{if $i}}; {{end}}{{$r.Text}}, {{if $r.Href}}<a href="{{$r.Href}}"><code>{{$r.URL}}</code></a>{{else}}<code>{{$r.URL}}</code>{{end}}{{end}}{{else}}None{{end}}</dd>
+<dt>Requires</dt>{{range .Requires}}<dd>{{template "edge" .}}</dd>{{else}}<dd>Nothing</dd>{{end}}
+<dt>Unblocks</dt>{{range .Unblocks}}<dd>{{template "edge" .}}</dd>{{else}}<dd>Nothing</dd>{{end}}
+<dt>Status</dt><dd>{{template "status" .Status}}, {{.Status.Date}}, {{.Status.Recorder}}, <code>{{.Commit}}</code>{{if .Status.Note}}: {{.Status.Note}}{{end}}</dd>
+<dt>Brief</dt><dd><code>{{.BriefCommand}}</code></dd>
+</dl>
+{{with .Brief}}{{template "fold" .Fold}}<summary>Provenance: the brief</summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/brief" .}}{{end}}</details>{{end}}{{end}}
+
+{{define "part/brief"}}<label class="brief" for="{{.ID}}">The brief, as plain text</label>
+<textarea class="brief" id="{{.ID}}" readonly rows="{{.Rows}}" cols="80" wrap="off" spellcheck="false">{{.Text}}</textarea>{{end}}

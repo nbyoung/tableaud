@@ -1,0 +1,74 @@
+<main id="main" class="v-tableau">
+<h1>Global tableau</h1>
+<p class="question">How does the whole project stand?</p>
+
+<h2 id="glance">3 of 37 tasks</h2>
+<details class="columns" id="columns"><summary>Columns: 2 of 10 shown</summary>
+<form class="columns" method="get" action="V/tableau" hx-boost="true">
+<input type="hidden" name="as" value="nbyoung@nbyoung.com">
+<fieldset><legend>Gate columns</legend>
+<label><input type="checkbox" name="columns" value="defined" checked> <span aria-hidden="true">📝</span> defined</label>
+<label><input type="checkbox" name="columns" value="release"> <span aria-hidden="true">🚀</span> release</label>
+</fieldset>
+<label><input type="checkbox" name="historical" value="on"> Show the marks of historical junctions</label>
+<button type="submit">Show these columns</button>
+</form>
+</details>
+<div class="scroll">
+<table class="tableau" id="grid">
+<caption>Three of 37 tasks.</caption>
+<thead><tr><th scope="col">Id</th><th scope="col">Task</th><th scope="col" class="gate fold"><a href="V/gate#gate-undefined"><span aria-hidden="true">❔</span> <span class="gname">undefined</span></a> <span class="count">folded ×0<span class="sr"> tasks stand here</span></span></th><th scope="col" class="gate"><a href="V/gate#gate-defined"><span aria-hidden="true">📝</span> <span class="gname">defined</span></a></th><th scope="col" class="gate"><a href="V/gate#gate-mockup"><span aria-hidden="true">📌</span> <span class="gname">mockup</span></a></th><th scope="col" class="gate fold"><span aria-hidden="true">🔗 … 🚀</span> <span class="gname">integrate to release</span> <span class="count">folded ×2<span class="sr"> tasks stand here</span></span></th><th scope="col">Date and note</th></tr></thead>
+<tbody>
+<tr id="grid-437e" class="parent"><td><a class="id" href="T/437e">437e</a></td><th scope="row" class="task d0"><span class="sr">level 1: </span>Tableaux tooling <a class="fold" href="V/tableau?open=437e" hx-boost="true">31 rows beneath</a></th><td class="cell fold"></td><td class="cell"><span aria-hidden="true">🟢</span><span class="sr">nominal</span></td><td class="cell mine"><span aria-hidden="true">🤖👀</span><span class="sr">an agent contributes, a reviewer accepts</span><span class="sr">, this person acts here</span></td><td class="cell fold"></td><td class="status"><details class="detail" id="grid-n1"><summary>2026-09-30<span class="sr"> note and provenance of 437e</span></summary>
+<p class="note">Mockup waits</p><p class="muted">Rolled up from <a class="id" href="T/99f0">99f0</a> Gate definition view in Markdown.</p>
+<details class="prov" id="grid-p1" hx-get="P/prov-437e" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance</summary><div class="fold-body"><a href="A/prov-437e">Show this in the page</a></div></details>
+</details></td></tr>
+<tr id="grid-c2ad"><td><a class="id" href="T/c2ad">c2ad</a></td><th scope="row" class="task d1"><span class="sr">level 2: </span>Roles</th><td class="cell fold"></td><td class="cell"><span class="sr">historical</span></td><td class="cell"><span aria-hidden="true">🔴⛔</span><span class="sr">stalled, blocked</span></td><td class="cell fold"></td><td class="status"><details class="detail" id="grid-n2"><summary>2026-09-30<span class="sr"> note and provenance of c2ad</span></summary>
+<p class="note">Mockup waits</p>
+<details class="prov" id="prov-grid-c2ad" open><summary>Provenance</summary><dl class="fields">
+<dt>Status</dt><dd><code>.tableaux/status/c2ad.yaml</code>; recorded in <code>3d8ce0e</code> Record the Roles task, 2026-10-02; author Claude Opus 5.5 &lt;noreply@anthropic.com&gt;; committer Claude Opus 5.5 &lt;noreply@anthropic.com&gt;</dd>
+<dt><span aria-hidden="true">📏</span> <span aria-hidden="true">🔗</span> unit to integrate: <span aria-hidden="true">—</span><span class="sr">the gate does not apply</span></dt><dd>Exempt: the task's own file states that the gate does not apply</dd>
+<dt><span aria-hidden="true">🌍</span> validate: <span aria-hidden="true">🤖👀</span><span class="sr">an agent contributes, a reviewer accepts</span></dt><dd>Contributor noreply@anthropic.com with model <code>claude-opus</code>; reviewer nbyoung@nbyoung.com; from <a class="id" href="T/bc63">bc63</a> Method</dd>
+</dl>
+<pre><code>git log -1</code></pre></details>
+</details></td></tr>
+<tr id="grid-77b2"><td><a class="id" href="T/77b2">77b2</a></td><th scope="row" class="task d1"><span class="sr">level 2: </span>tablo <span class="fold">(4<span class="sr"> rows not drawn</span>)</span></th><td class="cell fold"></td><td class="cell"><span aria-hidden="true">🟢</span><span class="sr">nominal</span></td><td class="cell hist"><span aria-hidden="true">—</span><span class="sr">the gate does not apply</span><span class="sr">, historical</span></td><td class="cell fold"></td><td class="status"><details class="detail" id="grid-n3"><summary>2026-09-30<span class="sr"> note and provenance of 77b2</span></summary>
+<p class="note">Mockup waits</p><p class="muted">Snapshot of <a class="id" href="T/b2c1">b2c1</a> tablo at pin <code>00f8f68</code>, which stands at <span aria-hidden="true">📝</span> defined there.</p>
+<details class="prov" id="grid-p3" hx-get="P/prov-77b2" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance</summary><div class="fold-body"><a href="A/prov-77b2">Show this in the page</a></div></details>
+</details></td></tr>
+</tbody>
+</table>
+</div>
+<p class="key">A row is a task, indented by depth, with a parent in bold. The cell at the gate a task passed last holds its state, and its reason when it has one. Each later cell says who works there. An earlier cell stays empty, since that work is done. A folded column shows the count of tasks that stand in it. <a href="V/gates">The gate definition gives every gate and symbol</a>.</p>
+
+<h2 id="detail">Every row</h2>
+<details class="detail" id="branch-bc63"><summary><code class="id">bc63</code> Method and the 31 tasks beneath it</summary>
+
+<div class="scroll">
+<table class="tableau" id="grid-bc63">
+<caption>Three of 37 tasks.</caption>
+<thead><tr><th scope="col">Id</th><th scope="col">Task</th><th scope="col" class="gate fold"><a href="V/gate#gate-undefined"><span aria-hidden="true">❔</span> <span class="gname">undefined</span></a> <span class="count">folded ×0<span class="sr"> tasks stand here</span></span></th><th scope="col" class="gate"><a href="V/gate#gate-defined"><span aria-hidden="true">📝</span> <span class="gname">defined</span></a></th><th scope="col" class="gate"><a href="V/gate#gate-mockup"><span aria-hidden="true">📌</span> <span class="gname">mockup</span></a></th><th scope="col" class="gate fold"><span aria-hidden="true">🔗 … 🚀</span> <span class="gname">integrate to release</span> <span class="count">folded ×2<span class="sr"> tasks stand here</span></span></th><th scope="col">Date and note</th></tr></thead>
+<tbody>
+<tr id="grid-bc63-437e" class="parent"><td><a class="id" href="T/437e">437e</a></td><th scope="row" class="task d0"><span class="sr">level 1: </span>Tableaux tooling <a class="fold" href="V/tableau?open=437e" hx-boost="true">31 rows beneath</a></th><td class="cell fold"></td><td class="cell"><span aria-hidden="true">🟢</span><span class="sr">nominal</span></td><td class="cell mine"><span aria-hidden="true">🤖👀</span><span class="sr">an agent contributes, a reviewer accepts</span><span class="sr">, this person acts here</span></td><td class="cell fold"></td><td class="status"><details class="detail" id="grid-bc63-n1"><summary>2026-09-30<span class="sr"> note and provenance of 437e</span></summary>
+<p class="note">Mockup waits</p><p class="muted">Rolled up from <a class="id" href="T/99f0">99f0</a> Gate definition view in Markdown.</p>
+<details class="prov" id="grid-bc63-p1" hx-get="P/prov-437e" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance</summary><div class="fold-body"><a href="A/prov-437e">Show this in the page</a></div></details>
+</details></td></tr>
+<tr id="grid-bc63-c2ad"><td><a class="id" href="T/c2ad">c2ad</a></td><th scope="row" class="task d1"><span class="sr">level 2: </span>Roles</th><td class="cell fold"></td><td class="cell"><span class="sr">historical</span></td><td class="cell"><span aria-hidden="true">🔴⛔</span><span class="sr">stalled, blocked</span></td><td class="cell fold"></td><td class="status"><details class="detail" id="grid-bc63-n2"><summary>2026-09-30<span class="sr"> note and provenance of c2ad</span></summary>
+<p class="note">Mockup waits</p>
+<details class="prov" id="prov-grid-bc63-c2ad" open><summary>Provenance</summary><dl class="fields">
+<dt>Status</dt><dd><code>.tableaux/status/c2ad.yaml</code>; recorded in <code>3d8ce0e</code> Record the Roles task, 2026-10-02; author Claude Opus 5.5 &lt;noreply@anthropic.com&gt;; committer Claude Opus 5.5 &lt;noreply@anthropic.com&gt;</dd>
+<dt><span aria-hidden="true">📏</span> <span aria-hidden="true">🔗</span> unit to integrate: <span aria-hidden="true">—</span><span class="sr">the gate does not apply</span></dt><dd>Exempt: the task's own file states that the gate does not apply</dd>
+<dt><span aria-hidden="true">🌍</span> validate: <span aria-hidden="true">🤖👀</span><span class="sr">an agent contributes, a reviewer accepts</span></dt><dd>Contributor noreply@anthropic.com with model <code>claude-opus</code>; reviewer nbyoung@nbyoung.com; from <a class="id" href="T/bc63">bc63</a> Method</dd>
+</dl>
+<pre><code>git log -1</code></pre></details>
+</details></td></tr>
+<tr id="grid-bc63-77b2"><td><a class="id" href="T/77b2">77b2</a></td><th scope="row" class="task d1"><span class="sr">level 2: </span>tablo <span class="fold">(4<span class="sr"> rows not drawn</span>)</span></th><td class="cell fold"></td><td class="cell"><span aria-hidden="true">🟢</span><span class="sr">nominal</span></td><td class="cell hist"><span aria-hidden="true">—</span><span class="sr">the gate does not apply</span><span class="sr">, historical</span></td><td class="cell fold"></td><td class="status"><details class="detail" id="grid-bc63-n3"><summary>2026-09-30<span class="sr"> note and provenance of 77b2</span></summary>
+<p class="note">Mockup waits</p><p class="muted">Snapshot of <a class="id" href="T/b2c1">b2c1</a> tablo at pin <code>00f8f68</code>, which stands at <span aria-hidden="true">📝</span> defined there.</p>
+<details class="prov" id="grid-bc63-p3" hx-get="P/prov-77b2" hx-trigger="toggle once" hx-target="find .fold-body" hx-swap="innerHTML"><summary>Provenance</summary><div class="fold-body"><a href="A/prov-77b2">Show this in the page</a></div></details>
+</details></td></tr>
+</tbody>
+</table>
+</div>
+</details>
+
+</main>

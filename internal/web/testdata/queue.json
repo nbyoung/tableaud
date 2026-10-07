@@ -1,0 +1,328 @@
+{
+ "View": "queue",
+ "Body": {
+  "Person": "noreply@anthropic.com",
+  "Total": 6,
+  "Kinds": [
+   {
+    "Anchor": "k-review",
+    "Ord": 1,
+    "Title": "Reviews owed",
+    "Name": "reviews owed",
+    "Count": 0,
+    "Why": "No status carries the reason review at a junction this person reviews.",
+    "Items": null
+   },
+   {
+    "Anchor": "k-auth",
+    "Ord": 2,
+    "Title": "Authorisations owed",
+    "Name": "authorisations owed",
+    "Count": 0,
+    "Why": "No task is proposed in a subtree this person has authority over.",
+    "Items": null
+   },
+   {
+    "Anchor": "k-ready",
+    "Ord": 3,
+    "Title": "Work ready",
+    "Name": "work ready",
+    "Count": 5,
+    "Why": "",
+    "Items": [
+     {
+      "Shown": [
+       {
+        "Anchor": "ready-c2ad",
+        "Task": {
+         "ID": "c2ad",
+         "Title": "T c2ad",
+         "Href": "T/c2ad"
+        },
+        "Mine": false,
+        "Gate": {
+         "Glyph": "📌",
+         "Name": "mockup"
+        },
+        "Agent": {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        "Model": "claude-opus",
+        "Since": "2026-09-29",
+        "Cause": "",
+        "Age": "",
+        "Fold": {
+         "ID": "d-ready-c2ad",
+         "Class": "detail",
+         "Open": true,
+         "Src": "",
+         "Alt": ""
+        },
+        "Body": {
+         "Criteria": "A non-technical mockup of the outcome exists",
+         "GateName": "Mockup",
+         "Gate": {
+          "Glyph": "📌",
+          "Name": "mockup"
+         },
+         "Contributor": "noreply@anthropic.com",
+         "Model": "claude-opus",
+         "ContribBy": {
+          "ID": "437e",
+          "Title": "Tableaux tooling",
+          "Href": "T/437e"
+         },
+         "Reviewer": "noreply@anthropic.com",
+         "ReviewerBy": null,
+         "Self": true,
+         "References": null,
+         "Requires": [
+          {
+           "Task": {
+            "ID": "e9c6",
+            "Title": "Abstract views",
+            "Href": "T/e9c6"
+           },
+           "Project": "",
+           "ReadAt": "",
+           "From": {
+            "Glyph": "📐",
+            "Name": "design"
+           },
+           "To": {
+            "Glyph": "📌",
+            "Name": "mockup"
+           },
+           "Text": "The abstract definition",
+           "Status": null,
+           "Condition": "met"
+          }
+         ],
+         "Unblocks": null,
+         "Status": {
+          "Gate": {
+           "Glyph": "📝",
+           "Name": "defined"
+          },
+          "State": {
+           "Glyph": "🟢",
+           "Name": "nominal"
+          },
+          "Reason": null,
+          "Note": "Mockup waits",
+          "Date": "2026-09-30",
+          "Recorder": "noreply@anthropic.com",
+          "From": null,
+          "Snapshot": null
+         },
+         "Commit": "1a17bfc",
+         "BriefCommand": "tabloio queue --person noreply@anthropic.com --brief c2ad mockup",
+         "Brief": {
+          "Fold": {
+           "ID": "prov-ready-c2ad",
+           "Class": "prov",
+           "Open": true,
+           "Src": "",
+           "Alt": ""
+          },
+          "ID": "brief-c2ad",
+          "Text": "Brief: c2ad at mockup\n<stands alone>",
+          "Rows": 2
+         }
+        }
+       },
+       {
+        "Anchor": "ready-99f0",
+        "Task": {
+         "ID": "99f0",
+         "Title": "T 99f0",
+         "Href": "T/99f0"
+        },
+        "Mine": false,
+        "Gate": {
+         "Glyph": "📌",
+         "Name": "mockup"
+        },
+        "Agent": {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        "Model": "claude-opus",
+        "Since": "2026-09-29",
+        "Cause": "",
+        "Age": "",
+        "Fold": {
+         "ID": "d-ready-99f0",
+         "Class": "detail",
+         "Open": false,
+         "Src": "P/d-ready-99f0",
+         "Alt": "A/d-ready-99f0"
+        },
+        "Body": null
+       },
+       {
+        "Anchor": "ready-05a9",
+        "Task": {
+         "ID": "05a9",
+         "Title": "T 05a9",
+         "Href": "T/05a9"
+        },
+        "Mine": false,
+        "Gate": {
+         "Glyph": "📌",
+         "Name": "mockup"
+        },
+        "Agent": {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        "Model": "claude-opus",
+        "Since": "2026-09-29",
+        "Cause": "",
+        "Age": "",
+        "Fold": {
+         "ID": "d-ready-05a9",
+         "Class": "detail",
+         "Open": false,
+         "Src": "P/d-ready-05a9",
+         "Alt": "A/d-ready-05a9"
+        },
+        "Body": null
+       },
+       {
+        "Anchor": "ready-a9ce",
+        "Task": {
+         "ID": "a9ce",
+         "Title": "T a9ce",
+         "Href": "T/a9ce"
+        },
+        "Mine": false,
+        "Gate": {
+         "Glyph": "📌",
+         "Name": "mockup"
+        },
+        "Agent": {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        "Model": "claude-opus",
+        "Since": "2026-09-29",
+        "Cause": "",
+        "Age": "",
+        "Fold": {
+         "ID": "d-ready-a9ce",
+         "Class": "detail",
+         "Open": false,
+         "Src": "P/d-ready-a9ce",
+         "Alt": "A/d-ready-a9ce"
+        },
+        "Body": null
+       }
+      ],
+      "Rest": [
+       {
+        "Anchor": "ready-bb7c",
+        "Task": {
+         "ID": "bb7c",
+         "Title": "T bb7c",
+         "Href": "T/bb7c"
+        },
+        "Mine": false,
+        "Gate": {
+         "Glyph": "📌",
+         "Name": "mockup"
+        },
+        "Agent": {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        "Model": "claude-opus",
+        "Since": "2026-09-29",
+        "Cause": "",
+        "Age": "",
+        "Fold": {
+         "ID": "d-ready-bb7c",
+         "Class": "detail",
+         "Open": false,
+         "Src": "P/d-ready-bb7c",
+         "Alt": "A/d-ready-bb7c"
+        },
+        "Body": null
+       }
+      ],
+      "Fold": {
+       "ID": "run-ready-1",
+       "Class": "fold",
+       "Open": false,
+       "Src": "",
+       "Alt": ""
+      },
+      "Alike": "at mockup, model claude-opus, 2026-09-29"
+     }
+    ]
+   },
+   {
+    "Anchor": "k-reaff",
+    "Ord": 4,
+    "Title": "Reaffirmations",
+    "Name": "reaffirmations",
+    "Count": 0,
+    "Why": "This person recorded no status.",
+    "Items": null
+   },
+   {
+    "Anchor": "k-waiting",
+    "Ord": 5,
+    "Title": "Work waiting",
+    "Name": "work waiting",
+    "Count": 1,
+    "Why": "",
+    "Items": [
+     {
+      "Shown": [
+       {
+        "Anchor": "waiting-efff",
+        "Task": {
+         "ID": "efff",
+         "Title": "T efff",
+         "Href": "T/efff"
+        },
+        "Mine": false,
+        "Gate": {
+         "Glyph": "📌",
+         "Name": "mockup"
+        },
+        "Agent": {
+         "Glyph": "🤖",
+         "Name": "an agent contributes"
+        },
+        "Model": "",
+        "Since": "2026-09-29",
+        "Cause": "waits for e9c6 at design",
+        "Age": "6 days",
+        "Fold": {
+         "ID": "d-waiting-efff",
+         "Class": "detail",
+         "Open": false,
+         "Src": "P/d-ready-efff",
+         "Alt": "A/d-ready-efff"
+        },
+        "Body": null
+       }
+      ],
+      "Rest": null,
+      "Fold": {
+       "ID": "",
+       "Class": "",
+       "Open": false,
+       "Src": "",
+       "Alt": ""
+      },
+      "Alike": ""
+     }
+    ]
+   }
+  ]
+ }
+}
