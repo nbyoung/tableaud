@@ -255,3 +255,21 @@ func TestFoldRuns(t *testing.T) {
 		t.Errorf("FoldRuns wrote to its input: %v", in)
 	}
 }
+
+// TestFuncs checks the three functions the templates add: add, plural and depth.
+func TestFuncs(t *testing.T) {
+	add := web.Funcs["add"].(func(int, int) int)
+	plural := web.Funcs["plural"].(func(int, string, string) string)
+	depth := web.Funcs["depth"].(func(int) string)
+	if add(0, 1) != 1 || add(4, 1) != 5 {
+		t.Error("add")
+	}
+	if plural(1, "task", "tasks") != "task" || plural(0, "task", "tasks") != "tasks" || plural(2, "task", "tasks") != "tasks" {
+		t.Error("plural")
+	}
+	for d, want := range map[int]string{-1: "d0", 0: "d0", 1: "d1", 8: "d8", 9: "d8", 40: "d8"} {
+		if got := depth(d); got != want {
+			t.Errorf("depth(%d) = %s, want %s", d, got, want)
+		}
+	}
+}

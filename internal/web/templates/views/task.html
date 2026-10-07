@@ -1,5 +1,165 @@
-{{/* A placeholder: a template task replaces this file. */}}
-{{define "view"}}<h1>{{.View.Title}}</h1>
-<pre>{{json .Data}}</pre>
-{{end}}
-{{define "context"}}{{end}}
+{{define "view"}}{{template "main" .}}{{end}}
+{{define "context"}}{{template "params" .}}{{end}}
+{{define "body"}}{{with .Body}}
+<section aria-labelledby="t-{{.Task.ID}}">
+<h2 id="t-{{.Task.ID}}">{{template "task" .Task}}</h2>
+{{if .Proposed}}<p class="empty"><span class="proposed">Proposed</span>: no authority has accepted this task.</p>
+{{end}}<dl class="fields glance">
+<dt>Task</dt><dd>{{template "task" .Task}}</dd>
+<dt>Assignee</dt><dd>{{template "person" .Assignee}}</dd>
+<dt>Parent</dt><dd>{{with .Parent}}{{template "task" .}}, order {{$.Body.Order}}{{else}}None; the task is the root{{end}}</dd>
+<dt>Status</dt><dd>{{template "status" .Status}}{{with .Status.From}}, rolled up from {{template "task" .}}{{end}}{{with .Status.Snapshot}}, {{template "sym" .Mark}}, <code>{{.URL}}</code>{{end}}</dd>
+<dt>Note</dt><dd>{{if .Status.Note}}{{.Status.Note}}{{else}}None{{end}}</dd>
+<dt>Recorded</dt><dd>{{if .Status.Recorder}}{{.Status.Date}} by {{.Status.Recorder}}{{else if .Status.Date}}{{.Status.Date}}, the oldest date among its children; a roll-up has no recorder{{else}}Never; the task has no status file{{end}}</dd>
+</dl>
+{{template "fold" .StatusProv.Fold}}<summary>Status commit</summary>{{if .StatusProv.Fold.Src}}{{template "lazy" .StatusProv.Fold}}{{else}}{{template "part/status" .StatusProv}}{{end}}</details>
+
+{{template "fold" .About.Fold}}<summary>Description</summary>
+<p>{{.About.Description}}</p>
+{{if .About.References}}<p>References:</p>
+{{template "references" .About.References}}{{end}}
+{{template "fold" .About.FileFold}}<summary>Task file</summary><p>The task file is <code>{{.About.File}}</code>.</p></details>
+</details>
+
+{{template "fold" .Place.Fold}}<summary>Place in the tree</summary>
+<dl class="fields">
+<dt>Path</dt><dd>{{range $i, $t := .Place.Path}}{{if $i}} › {{end}}{{template "task" $t}}{{end}}</dd>
+<dt>Order</dt><dd>{{if .Parent}}{{.Order}} of {{.Place.Siblings}} under {{template "task" .Parent}}{{else}}None; the task is the root{{end}}</dd>
+<dt>Children</dt><dd>{{if .Place.Children}}{{range $i, $c := .Place.Children}}{{if $i}}; {{end}}{{template "task" $c.Task}} at {{template "status" $c.Status}}{{end}}{{else}}None; the task is a leaf and keeps its own status{{end}}</dd>
+<dt>Authorities</dt><dd>{{if .Place.Authorities}}{{range $i, $a := .Place.Authorities}}{{if $i}}; then {{end}}{{template "person" $a.Person}}{{range $j, $t := $a.By}}{{if $j}},{{end}} by {{template "task" $t}}{{end}}{{end}}, nearest first{{else}}None above; the owner alone authorises the root{{end}}</dd>
+<dt>Authorised</dt><dd>{{if .Place.Authorised}}Yes{{else}}<span class="proposed">No, proposed</span>{{end}}</dd>
+</dl>
+{{template "fold" .Place.Prov.Fold}}<summary>Authorisation commit</summary>{{if .Place.Prov.Fold.Src}}{{template "lazy" .Place.Prov.Fold}}{{else}}{{template "part/authorisation" .Place.Prov}}{{end}}</details>
+</details>
+
+{{template "fold" .Requires.Fold}}<summary>Requires</summary>
+{{if .Requires.Total}}<p>The task requires {{.Requires.Total}} {{plural .Requires.Total "task" "tasks"}}.</p>
+<div class="scroll">
+<table>
+<caption>The requirements of {{.Task.ID}}, with their conditions</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Edge</th><th scope="col">What passes</th><th scope="col">Its status</th><th scope="col">Condition</th></tr></thead>
+<tbody>
+{{range .Requires.Rows.Shown}}<tr><th scope="row">{{template "task" .Task}}{{if .Project}} in <code>{{.Project}}</code> at <code>{{.ReadAt}}</code>{{end}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{with .Status}}{{template "status" .}}{{end}}</td><td>{{.Condition}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{template "fold" .Requires.Prov}}<summary>Where the conditions read from</summary>{{if .Requires.Prov.Src}}{{template "lazy" .Requires.Prov}}{{else}}{{template "part/edges" .Requires}}{{end}}</details>
+{{else}}<p class="empty">The task requires nothing.</p>
+{{end}}</details>
+
+{{template "fold" .Dependents.Fold}}<summary>Dependents</summary>
+{{if .Dependents.Total}}<p>{{.Dependents.Total}} {{plural .Dependents.Total "task requires" "tasks require"}} {{.Task.ID}}.</p>
+<div class="scroll">
+<table>
+<caption>The tasks that require {{.Task.ID}}, folded where rows repeat</caption>
+<thead><tr><th scope="col">Task</th><th scope="col">Edge</th><th scope="col">What passes</th><th scope="col">Condition</th></tr></thead>
+<tbody>
+{{range .Dependents.Rows.Shown}}<tr><th scope="row">{{template "task" .Task}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{.Condition}}</td></tr>
+{{end}}{{with .Dependents.Rows}}{{if .Rest}}<tr><td colspan="4">{{template "fold" .Fold}}<summary>… and {{len .Rest}} more {{.Alike}}</summary>
+<ul class="tree">
+{{range .Rest}}<li>{{template "task" .Task}}</li>
+{{end}}</ul>
+</details></td></tr>
+{{end}}{{end}}</tbody>
+</table>
+</div>
+{{template "fold" .Dependents.Prov}}<summary>Where the dependents read from</summary>{{if .Dependents.Prov.Src}}{{template "lazy" .Dependents.Prov}}{{else}}{{template "part/edges" .Dependents}}{{end}}</details>
+{{else}}<p class="empty">No task requires {{.Task.ID}}.</p>
+{{end}}</details>
+
+{{template "fold" .Junctions.Fold}}<summary>Junctions</summary>
+<div class="scroll">
+<table>
+<caption>Every junction of {{.Task.ID}}, resolved</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col" class="gate">Marks</th><th scope="col">Contributor</th><th scope="col">Model</th><th scope="col">Reviewer</th><th scope="col">Stands</th></tr></thead>
+<tbody>
+{{range .Junctions.Rows}}<tr{{if .Exempt}} class="na"{{else if .Here}} class="here"{{end}}>{{template "junction-cells" .}}<td>{{.Stands}}{{if .Here}}; the status stands here{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+<p class="key">{{range $i, $s := .Junctions.Key}}{{if $i}} · {{end}}{{template "sym" $s}}{{end}}.</p>
+{{range .Junctions.Rows}}{{if .Refs}}<p>References at {{template "sym" .Gate}}:</p>
+{{template "references" .Refs}}{{end}}{{end}}
+{{template "fold" .Junctions.Sources.Fold}}<summary>Where each junction field comes from</summary>{{if .Junctions.Sources.Fold.Src}}{{template "lazy" .Junctions.Sources.Fold}}{{else}}{{template "part/sources" .Junctions.Sources}}{{end}}</details>
+{{template "fold" .Junctions.Reviews.Fold}}<summary>Reviews</summary>{{if .Junctions.Reviews.Fold.Src}}{{template "lazy" .Junctions.Reviews.Fold}}{{else}}{{template "part/reviews" .Junctions.Reviews}}{{end}}</details>
+{{template "fold" .Junctions.Models.Fold}}<summary>Models</summary>{{if .Junctions.Models.Fold.Src}}{{template "lazy" .Junctions.Models.Fold}}{{else}}{{template "part/models" .Junctions.Models}}{{end}}</details>
+</details>
+
+{{template "fold" .Events.Fold}}<summary>Newest events</summary>{{if .Events.Fold.Src}}{{template "lazy" .Events.Fold}}{{else}}{{template "part/events" .Events}}{{end}}</details>
+</section>
+{{end}}{{end}}
+
+{{define "part/status"}}{{if .Commit}}<p>The status file is <code>{{.File}}</code>. Its deciding commit is {{if .Reaffirmed}}the newest commit that carries <code>Reaffirmed:</code> for the task{{else}}the newest commit that changes the file{{end}}.</p>
+<dl class="fields">
+{{template "commit" .Commit}}</dl>
+{{else}}<p>The task has no status file of its own: {{if .File}}no commit records one{{else}}its status derives from its children{{end}}.</p>
+{{end}}{{with .Snapshot}}<p>The state, the note and the date come from the subproject <code>{{.URL}}</code>, task {{template "task" .Task}}, read at <code>{{.Pin}}</code>, {{.Form}}; the task stands at {{template "sym" .Gate}} there.</p>
+{{end}}{{template "commands" .Commands}}{{end}}
+
+{{define "part/authorisation"}}<p>The deciding commit is the newest commit on the first-parent history of the trunk that changes the task file or carries an <code>Authorised:</code> trailer for the task.</p>
+{{with .Commit}}<dl class="fields">
+{{template "commit" .}}<dt>Accepts by</dt><dd>{{$.Way}}</dd>
+<dt>The authority is</dt><dd>{{$.By}}</dd>
+</dl>
+{{else}}<p class="empty">No commit on the trunk decides: the ref lies off the trunk, so the task reads as proposed.</p>
+{{end}}{{template "commands" .Commands}}{{end}}
+
+{{define "part/edges"}}<p>Each entry sits under <code>requires</code> in:</p>
+<ul class="notes">
+{{range .Files}}<li><code>{{.}}</code></li>
+{{end}}</ul>
+{{template "commands" .Commands}}{{end}}
+
+{{define "part/sources"}}<p>A junction resolves field by field: from the task's own entry, then from its ancestors' entries nearest first, then from the plain default. The tool looks in this order:</p>
+<ol>
+{{range .Chain}}<li>{{template "task" .Task}}, <code>{{.File}}</code>: {{if .States}}states {{range $i, $g := .States}}{{if $i}}, {{end}}{{$g.Name}}{{end}}{{else}}states no junction{{end}}.</li>
+{{end}}<li>The plain default: the assignee does the work, and nobody reviews it.</li>
+</ol>
+<div class="scroll">
+<table>
+<caption>Each resolved field and the task whose entry supplies it</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Supplied by</th></tr></thead>
+<tbody>
+{{range .Rows}}<tr>{{if .Span}}<th scope="row" rowspan="{{.Span}}">{{template "sym" .Gate}}</th>{{end}}<td>{{.Field}}</td><td>{{if .Mine}}<strong class="mine">{{.Value}}</strong>{{else}}{{.Value}}{{end}}</td><td>{{with .By}}{{template "task" .}}{{else}}No entry; {{.Default}}{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>{{end}}
+
+{{define "part/reviews"}}{{if .Rows}}<div class="scroll">
+<table>
+<caption>The reviewed junctions the status passes, and what accepts each</caption>
+<thead><tr><th scope="col">Gate</th><th scope="col">Reviewer</th><th scope="col">Accepted by</th></tr></thead>
+<tbody>
+{{range .Rows}}<tr><th scope="row">{{template "sym" .Gate}}</th><td>{{template "person" .Reviewer}}</td><td>{{if .ByAuth}}The authorisation, {{end}}{{with .Commit}}<code>{{.Hash}}</code> {{.Subject}}, {{.Date}}{{else}}No commit{{end}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{else}}<p class="empty">The status passes no reviewed junction.</p>
+{{end}}{{template "commands" .Commands}}{{end}}
+
+{{define "part/models"}}{{if .Rows}}<div class="scroll">
+<table>
+<caption>The Model trailer of each commit at a junction, against the model the junction states</caption>
+<thead><tr><th scope="col">Commit</th><th scope="col">Junction</th><th scope="col">The junction states</th><th scope="col"><code>Model:</code> trailer</th><th scope="col">Reading</th></tr></thead>
+<tbody>
+{{range .Rows}}<tr><th scope="row"><code>{{.Commit.Hash}}</code></th><td>{{template "sym" .Gate}}</td><td><code>{{.Stated}}</code></td><td>{{if .Trailer}}<code>{{.Trailer}}</code>{{else}}none{{end}}</td><td>{{.Reading}}</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{else}}<p class="empty">No commit stands at a junction that states a model.</p>
+{{end}}{{end}}
+
+{{define "part/events"}}{{if .Rows}}<p>The task has {{.Total}} {{plural .Total "event" "events"}}. The newest {{len .Rows}}, newest first:</p>
+<div class="scroll">
+<table>
+<caption>The newest events of the task</caption>
+<thead><tr><th scope="col">Date</th><th scope="col">Commit</th><th scope="col">By</th><th scope="col">Event</th><th scope="col">What it records</th></tr></thead>
+<tbody>
+{{range .Rows}}{{template "event-row" .}}
+{{end}}{{if .Earlier}}<tr><td colspan="5" class="fold">… and {{.Earlier}} earlier</td></tr>
+{{end}}</tbody>
+</table>
+</div>
+{{else}}<p class="empty">The task has no event at this ref.</p>
+{{end}}{{if .History}}<p><a href="{{.History}}">The history view lists every event of the task</a>.</p>
+{{end}}{{template "commands" .Commands}}{{end}}

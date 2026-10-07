@@ -1,0 +1,190 @@
+{
+ "View": "gates",
+ "Body": {
+  "Gates": [
+   {
+    "Anchor": "gate-undefined",
+    "Sym": {
+     "Glyph": "❔",
+     "Name": "undefined"
+    },
+    "Key": "undefined",
+    "Title": "Undefined",
+    "Text": "No one has started",
+    "Severity": 0,
+    "Reserved": false,
+    "Fold": {
+     "ID": "d-gate-undefined",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   },
+   {
+    "Anchor": "gate-design",
+    "Sym": {
+     "Glyph": "📐",
+     "Name": "design"
+    },
+    "Key": "design",
+    "Title": "Design",
+    "Text": "A model and sufficient tests exist",
+    "Severity": 0,
+    "Reserved": false,
+    "Fold": {
+     "ID": "d-gate-design",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   },
+   {
+    "Anchor": "gate-mockup",
+    "Sym": {
+     "Glyph": "📌",
+     "Name": "mockup"
+    },
+    "Key": "mockup",
+    "Title": "Mockup",
+    "Text": "A mockup exists",
+    "Severity": 0,
+    "Reserved": false,
+    "Fold": {
+     "ID": "d-gate-mockup",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   }
+  ],
+  "States": [
+   {
+    "Anchor": "state-nominal",
+    "Sym": {
+     "Glyph": "🟢",
+     "Name": "nominal"
+    },
+    "Key": "nominal",
+    "Title": "",
+    "Text": "The work is proceeding as expected",
+    "Severity": 1,
+    "Reserved": false,
+    "Fold": {
+     "ID": "d-state-nominal",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   }
+  ],
+  "Reasons": [
+   {
+    "Anchor": "reason-review",
+    "Sym": {
+     "Glyph": "👓",
+     "Name": "review"
+    },
+    "Key": "review",
+    "Title": "",
+    "Text": "The work waits for its reviewer",
+    "Severity": 0,
+    "Reserved": true,
+    "Fold": {
+     "ID": "d-reason-review",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   }
+  ],
+  "Marks": [
+   {
+    "Anchor": "mark-agent",
+    "Sym": {
+     "Glyph": "🤖",
+     "Name": "an agent contributes"
+    },
+    "Key": "",
+    "Title": "An agent contributes",
+    "Text": "Plain; the junction states a model",
+    "Severity": 0,
+    "Reserved": false,
+    "Fold": {
+     "ID": "d-mark-agent",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   },
+   {
+    "Anchor": "mark-exempt",
+    "Sym": {
+     "Glyph": "—",
+     "Name": "the gate does not apply"
+    },
+    "Key": "",
+    "Title": "The gate does not apply",
+    "Text": "",
+    "Severity": 0,
+    "Reserved": false,
+    "Fold": {
+     "ID": "d-mark-exempt",
+     "Class": "detail",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    }
+   }
+  ],
+  "Version": "0.3.1",
+  "Files": [
+   {
+    "Path": ".tableaux/gates.yaml",
+    "Commit": {
+     "Hash": "e91ba68",
+     "Full": "e91ba680000",
+     "Subject": "Mark four gates",
+     "Date": "2026-10-02",
+     "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+     "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+     "Trailers": [
+      "Model: claude-opus-5-5"
+     ]
+    }
+   },
+   {
+    "Path": ".tableaux/version.yaml",
+    "Commit": {
+     "Hash": "d95294b",
+     "Full": "d95294b0000",
+     "Subject": "Raise the language",
+     "Date": "2026-10-02",
+     "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+     "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+     "Trailers": [
+      "Model: claude-opus-5-5"
+     ]
+    }
+   }
+  ],
+  "Trunk": "main",
+  "Prov": {
+   "ID": "prov-legend",
+   "Class": "prov",
+   "Open": false,
+   "Src": "",
+   "Alt": ""
+  },
+  "Commands": [
+   "git show 3cdae52:.tableaux/gates.yaml",
+   "git log -1 --format='%h <%ae>' 3cdae52 -- .tableaux/gates.yaml"
+  ],
+  "Task": null
+ }
+}
