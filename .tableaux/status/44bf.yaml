@@ -1,3 +1,3 @@
-gate: implementation
+gate: unit
 state: nominal
-note: the first part of design/438a/server.md stands on fixtures with T1 to T4, T6 to T12 and the DefaultUnfolded case of T5, the unit gate runs them, and the three adapters, the parts of both tableaux, blockage and queue, T13 and the adapter cases of T5 and T6 wait for tablo's 886d
+note: T1 to T4, T6 to T12 and the DefaultUnfolded case of T5 pass on the seven fixtures through go test; the adapter cases of T5, the address arithmetic of T6 and T13 skip until tablo 886d; integrate needs the three adapters, their entries, the parts and those tests
