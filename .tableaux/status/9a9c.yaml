@@ -1,3 +1,3 @@
-gate: design
+gate: implementation
 state: nominal
-note: design/9a9c.md is on the trunk with the owner's decisions of 2026-10-06; implementation waits for the server (49ce) at implementation
+note: the history and audit templates stand on four fixtures with T1 to T5, T8, T9, T11 and T12, the unit gate runs them, and the two adapters, the parts day, sub, commit and rule and T6, T7, T10 and T13 wait for tablo's 8ed1 and dada
