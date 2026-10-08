@@ -1,6 +1,6 @@
 # Design db74: the model
 
-The declarations of [`db74`](../db74.md), as one file. It lands as `internal/web/disclose.go`, bodies included: a throwaway copy of the branch, whose code is `main` at `b63b682`, compiles it, passes `go vet` and `golangci-lint run` with it, and answers every case of [`cases.json`](cases.json) from it. The revision of 2026-10-07 changes `roleOf`, `ByRole.Opens`, `openerOf`, `Share` and one line of `ColumnsOf`, and adds `SeenBy`, `AsSelf`, `Resolved` and `AuditFocus`. The design's body lists the edits of files that stand, which complete the model: among them the fields `Params.SeenBy`, `Params.Minimum` and `Page.Seen`, which this file reads.
+The declarations of [`db74`](../db74.md), as one file. It lands as `internal/web/disclose.go`, bodies included: a throwaway copy of the branch, whose code is `main` at `b63b682`, compiles it, passes `go vet` and `golangci-lint run` with it, and answers every case of [`cases.json`](cases.json) from it. The revision of 2026-10-07 changes `roleOf`, `ByRole.Opens`, `openerOf`, `Share` and one line of `ColumnsOf`, and adds `SeenBy`, `AsSelf`, `Unheld`, `Resolved` and `AuditFocus`. The design's body lists the edits of files that stand, which complete the model: among them the fields `Params.SeenBy`, `Params.Minimum` and `Page.Seen`, which this file reads, and the change of `Page.Title`.
 
 ```go
 package web
@@ -37,6 +37,13 @@ func (p *Page) AsSelf() string {
 		return ""
 	}
 	return p.Self("as_seen_by", "", "part", "")
+}
+
+// Unheld reports whether as_seen_by names a person other than the viewer who
+// holds no role in the project. The frame then says so in words and on the
+// highlight tint; a viewer who holds no role is an observer with neither.
+func (p *Page) Unheld() bool {
+	return p.AsSelf() != "" && p.SeenBy().Role() == "observer"
 }
 
 // roleOf returns the role in force on a page: the role the address states,
