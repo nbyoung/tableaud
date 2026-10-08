@@ -1,3 +1,3 @@
-gate: implementation
+gate: unit
 state: nominal
-note: the structural templates stand on fixtures with T1 to T3, T5, T6, T8 and T9 and the unit gate runs them; the two adapters, their entries, the Parts, the removal of source.Request.Proposed and T4, T7, T10 to T12 (which skip) wait for tablo's task 493e
+note: T1 to T3, T5, T6, T8 and T9 pass on the four fixtures through go test; T4, T7 and T10 to T12 exist and skip until tablo 493e brings the data of the two adapters; integrate needs the adapters, their entries, the parts and those tests

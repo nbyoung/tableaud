@@ -1,3 +1,3 @@
-gate: implementation
+gate: unit
 state: nominal
-note: steps 1 to 4 of design/49ce.md stand on the weather-station fixture, with T1 to T24 written (T24 skips without node); the unit gate runs them; the tablo adapter, the require line and T25 wait for tablo's release with the views, a cross-project requirement the plan still lacks
+note: T1 to T24 pass on the weather-station fixture through go test with the daemon, the watcher and the frame; T24 runs the script column rule under node and skips without it, so it ran with node 24.21.0 on the path since this host has none; T25 waits at integrate for tablo release; integrate needs the tablo adapter and the require line
