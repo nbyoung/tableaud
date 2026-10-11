@@ -817,3 +817,45 @@ func TestRunFixture(t *testing.T) {
 		}
 	}
 }
+
+// TestRunFrame covers T10 of design 5a2f: every page of the bundle holds the
+// color-scheme meta before the style sheet and the skip link, and the three
+// list pages hold no tabindex.
+func TestRunFrame(t *testing.T) {
+	o := options(t)
+	if _, err := Run(context.Background(), sourcetest.New(), o); err != nil {
+		t.Fatal(err)
+	}
+	n := 0
+	for _, p := range tree(t, o.Out) {
+		if !strings.HasSuffix(p, ".html") {
+			continue
+		}
+		b, err := os.ReadFile(filepath.Join(o.Out, filepath.FromSlash(p)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		n++
+		page := string(b)
+		scheme := strings.Index(page, `<meta name="color-scheme" content="light dark">`)
+		sheet := strings.Index(page, `<link rel="stylesheet"`)
+		if scheme < 0 || sheet < 0 || scheme > sheet {
+			t.Errorf("%s: the color-scheme meta stands at %d and the style sheet at %d", p, scheme, sheet)
+		}
+		if !strings.Contains(page, `<a class="skip" href="#main">`) {
+			t.Errorf("%s: no skip link", p)
+		}
+	}
+	if n == 0 {
+		t.Fatal("no page")
+	}
+	for _, p := range []string{"task.html", "queue.html", "context.html"} {
+		b, err := os.ReadFile(filepath.Join(o.Out, p))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(b), "tabindex") {
+			t.Errorf("%s holds a tabindex", p)
+		}
+	}
+}
