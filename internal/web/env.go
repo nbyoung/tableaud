@@ -167,7 +167,8 @@ func (e Env) Fold(class, id, part, key string) Fold {
 // levelOf returns the level a page opens at: the level the address states,
 // else glance for the export and for an observer, provenance for the owner on
 // the history and the audit, and detail for every other role (VIEWS.md,
-// Levels). The role is the one the address states, else the viewer's first.
+// Levels). The role is roleOf's: the one the address states, else the first
+// of the person the page is seen by.
 func levelOf(p *Page) Level {
 	switch p.Params.Level {
 	case "glance":
@@ -177,10 +178,7 @@ func levelOf(p *Page) Level {
 	case "provenance":
 		return Provenance
 	}
-	role := p.Params.Role
-	if role == "" {
-		role = p.Viewer.Role()
-	}
+	role := roleOf(p)
 	switch {
 	case !p.Scripts, role == "observer":
 		return Glance
@@ -195,7 +193,7 @@ func levelOf(p *Page) Level {
 func legendOf(any) *Legend { return NewLegend(nil, nil, nil, nil) }
 
 // envOf returns the Env of one rendering of p in a shape: Legend from
-// legendOf, Person from Params.Person, Open as ByLevel(levelOf(p)), or
+// legendOf, Person from Params.Person, Open as openerOf(p) gives it, or
 // openAll{} for a Part; Inline when p.Scripts is false, or when the shape is
 // Document and Params.Part is set.
 func envOf(p *Page, shape Shape) Env {
@@ -203,7 +201,7 @@ func envOf(p *Page, shape Shape) Env {
 		Page:   p,
 		Legend: legendOf(p.Legend),
 		Person: p.Params.Person,
-		Open:   ByLevel(levelOf(p)),
+		Open:   openerOf(p),
 		Inline: !p.Scripts || (shape == Document && p.Params.Part != ""),
 	}
 	if shape == Part {

@@ -38,10 +38,11 @@ type Page struct {
 	Params  Params
 	Project *source.Project // nil only when the project did not load
 	Viewer  source.Viewer
-	Data    any           // tablo's data for View at Params, every level in it
-	Legend  any           // tablo's gate definition at the same revision
-	Body    any           // the view's model; Render fills it from the view's adapter; nil draws the placeholder
-	Raw     template.HTML // markup the caller drew for <main>, in place of the view: the export's lists of tasks and people
+	Seen    *source.Viewer // the person as_seen_by names, with the roles tablo finds for the email; nil where the address names none
+	Data    any            // tablo's data for View at Params, every level in it
+	Legend  any            // tablo's gate definition at the same revision
+	Body    any            // the view's model; Render fills it from the view's adapter; nil draws the placeholder
+	Raw     template.HTML  // markup the caller drew for <main>, in place of the view: the export's lists of tasks and people
 	Link    Linker
 	Live    *Live      // the poll; nil when --poll is 0 and on the export
 	Scripts bool       // false on the export
