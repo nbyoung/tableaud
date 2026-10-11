@@ -15,7 +15,7 @@
 {{end}}{{if .Sections}}
 <h2 id="carries">What each carries</h2>
 <p>A junction is <strong>next</strong> when it is the task's next applicable gate, passed when the status stands at or after it, and later otherwise.</p>
-{{range .Sections}}{{template "fold" .Fold}}<summary>{{.Email}} <span class="tally">· {{.Kind}} · {{.Row.Assigned}} {{plural .Row.Assigned "task" "tasks"}} assigned · {{.Row.Contributes}} to contribute next · {{.Row.Reviews}} to review next</span></summary>
+{{range .Sections}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">{{.Email}} <span class="tally">· {{.Kind}} · {{.Row.Assigned}} {{plural .Row.Assigned "task" "tasks"}} assigned · {{.Row.Contributes}} to contribute next · {{.Row.Reviews}} to review next</span></summary>
 <h3>Tasks assigned: {{len .Assigned}}</h3>
 {{if .Assigned}}<div class="scroll">
 <table>
@@ -26,7 +26,7 @@
 {{end}}</tbody>
 </table>
 </div>
-{{template "fold" .AssignedProv}}<summary>Provenance: the file behind each assignment</summary><p><code>assignee</code> in each task's own file, <code>.tableaux/tasks/ID.yaml</code>.</p></details>
+{{template "fold" .AssignedProv}}<summary id="{{.AssignedProv.ID}}-s">Provenance: the file behind each assignment</summary><p><code>assignee</code> in each task's own file, <code>.tableaux/tasks/ID.yaml</code>.</p></details>
 {{else}}<p class="empty">No task names {{.Email}} as its assignee.</p>
 {{end}}<h3>Contributes: {{.Contributes.Total}} {{plural .Contributes.Total "junction" "junctions"}}, {{.Contributes.Next}} next</h3>
 {{if .Contributes.Groups}}{{range .Contributes.Groups}}{{template "assignment-group" .}}{{end}}{{else}}<p class="empty">{{.Email}} contributes at no junction.</p>
@@ -53,14 +53,14 @@
 
 {{define "assignment-counts"}}<td class="num">{{.Standing}}</td><td class="num">{{.Contributes}}</td><td class="num">{{.ContribNext}}</td><td class="num">{{.Reviews}}</td><td class="num">{{.ReviewsNext}}</td>{{end}}
 
-{{define "assignment-group"}}{{template "fold" .Fold}}<summary>{{template "sym" .Gate}} <span class="tally">· {{.Total}} {{plural .Total "junction" "junctions"}} · {{.Next}} next</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/group" .}}{{end}}</details>
+{{define "assignment-group"}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">{{template "sym" .Gate}} <span class="tally">· {{.Total}} {{plural .Total "junction" "junctions"}} · {{.Next}} next</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/group" .}}{{end}}</details>
 {{end}}
 
 {{define "part/group"}}{{if .Reviews}}{{template "assignment-reviewed" .Rows.Shown}}{{else}}{{template "assignment-contributed" .Rows.Shown}}{{end}}
-{{if .Rows.Rest}}{{template "fold" .Rows.Fold}}<summary>… and {{len .Rows.Rest}} more {{.Rows.Alike}}</summary>
+{{if .Rows.Rest}}{{template "fold" .Rows.Fold}}<summary id="{{.Rows.Fold.ID}}-s">… and {{len .Rows.Rest}} more {{.Rows.Alike}}</summary>
 {{if .Reviews}}{{template "assignment-reviewed" .Rows.Rest}}{{else}}{{template "assignment-contributed" .Rows.Rest}}{{end}}
 </details>
-{{end}}{{template "fold" .Prov}}<summary>Provenance: the file and the ancestor behind these positions</summary>
+{{end}}{{template "fold" .Prov}}<summary id="{{.Prov.ID}}-s">Provenance: the file and the ancestor behind these positions</summary>
 <div class="scroll">
 <table>
 <caption>The entry that supplies each field</caption>
