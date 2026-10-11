@@ -207,18 +207,26 @@ func TestStyleSheet(t *testing.T) {
 	}
 	written := map[string]string{} // class -> a fixture that writes it
 	views := map[string]bool{}
-	for _, f := range loadFixtures(t) {
-		views[f.View.Name] = true
-		root := mustParse(t, render(t, web.Document, f.page()))
+	scan := func(name string, p *web.Page) {
+		root := mustParse(t, render(t, web.Document, p))
 		root.walk(func(n *Node) bool {
 			for _, c := range strings.Fields(n.Attr["class"]) {
 				if _, ok := written[c]; !ok {
-					written[c] = f.Name
+					written[c] = name
 				}
 			}
 			return true
 		})
 	}
+	for _, f := range loadFixtures(t) {
+		views[f.View.Name] = true
+		scan(f.Name, f.page())
+	}
+	// One page more: the frame seen by a person who holds no role writes the
+	// class norole (design db74, decision 10).
+	unheld := fixtureNamed(t, "tableau").page()
+	unheld.Params.SeenBy = "zed@example.org"
+	scan("the frame as seen by a person with no role", unheld)
 	for c, f := range written {
 		if !styled[c] && !slices.Contains([]string{"d0", "note", "v-tableau"}, c) {
 			t.Errorf("the class %q, written by %s, has no rule", c, f)

@@ -6,7 +6,7 @@
 {{range .Kinds}}<h3 id="{{.Anchor}}">{{.Ord}}. {{.Title}}: {{if .Count}}{{.Count}}{{else}}none{{end}}</h3>
 {{if .Count}}<ol class="items">
 {{range .Items}}{{range .Shown}}{{template "item" .}}
-{{end}}{{if .Rest}}<li class="run">{{template "fold" .Fold}}<summary><span class="fold">… and {{len .Rest}} more {{.Alike}}</span></summary>
+{{end}}{{if .Rest}}<li class="run">{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s"><span class="fold">… and {{len .Rest}} more {{.Alike}}</span></summary>
 <ol class="items">
 {{range .Rest}}{{template "item" .}}
 {{end}}</ol>
@@ -16,7 +16,7 @@
 {{end}}{{end}}{{end}}{{end}}
 
 {{define "item"}}<li id="{{.Anchor}}"><span class="q-task{{if .Mine}} mine{{end}}">{{template "task" .Task}}{{if .Cause}}; <span class="q-cause">{{.Cause}}</span>{{end}}</span> <span class="q-gate">{{template "sym" .Gate}}</span> <span class="q-model">{{with .Agent}}<span aria-hidden="true">{{.Glyph}}</span> <span class="sr">{{.Name}} on model </span>{{end}}{{if .Model}}<code>{{.Model}}</code>{{end}}</span> <span class="q-since">{{if .Age}}{{.Age}}{{else}}<span class="sr">status of </span>{{.Since}}{{end}}</span>
-{{template "fold" .Fold}}<summary>Detail<span class="sr"> of {{.Task.ID}} at {{.Gate.Name}}</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/item" .Body}}{{end}}</details></li>{{end}}
+{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">Detail<span class="sr"> of {{.Task.ID}} at {{.Gate.Name}}</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/item" .Body}}{{end}}</details></li>{{end}}
 
 {{define "part/item"}}<dl class="fields">
 <dt>Gate</dt><dd>{{template "sym" .Gate}}, {{.GateName}}: {{.Criteria}}</dd>
@@ -28,7 +28,7 @@
 <dt>Status</dt><dd>{{template "status" .Status}}, {{.Status.Date}}, {{.Status.Recorder}}, <code>{{.Commit}}</code>{{if .Status.Note}}: {{.Status.Note}}{{end}}</dd>
 <dt>Brief</dt><dd><code>{{.BriefCommand}}</code></dd>
 </dl>
-{{with .Brief}}{{template "fold" .Fold}}<summary>Provenance: the brief</summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/brief" .}}{{end}}</details>{{end}}{{end}}
+{{with .Brief}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">Provenance: the brief</summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/brief" .}}{{end}}</details>{{end}}{{end}}
 
 {{define "part/brief"}}<label class="brief" for="{{.ID}}">The brief, as plain text</label>
 <textarea class="brief" id="{{.ID}}" readonly rows="{{.Rows}}" cols="80" wrap="off" spellcheck="false">{{.Text}}</textarea>{{end}}

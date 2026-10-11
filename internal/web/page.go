@@ -38,10 +38,11 @@ type Page struct {
 	Params  Params
 	Project *source.Project // nil only when the project did not load
 	Viewer  source.Viewer
-	Data    any           // tablo's data for View at Params, every level in it
-	Legend  any           // tablo's gate definition at the same revision
-	Body    any           // the view's model; Render fills it from the view's adapter; nil draws the placeholder
-	Raw     template.HTML // markup the caller drew for <main>, in place of the view: the export's lists of tasks and people
+	Seen    *source.Viewer // the person as_seen_by names, with the roles tablo finds for the email; nil where the address names none
+	Data    any            // tablo's data for View at Params, every level in it
+	Legend  any            // tablo's gate definition at the same revision
+	Body    any            // the view's model; Render fills it from the view's adapter; nil draws the placeholder
+	Raw     template.HTML  // markup the caller drew for <main>, in place of the view: the export's lists of tasks and people
 	Link    Linker
 	Live    *Live      // the poll; nil when --poll is 0 and on the export
 	Scripts bool       // false on the export
@@ -49,7 +50,8 @@ type Page struct {
 	Version string     // the tableaud version, for the footer
 }
 
-// To returns the address of another view: the sticky parameters of p, then
+// To returns the address of another view: the sticky parameters of p (the
+// project, the ref, the person the page is seen by and the role), then
 // the name and value pairs given, as in To("task", "task", "9f31"). It returns
 // the empty string when the view is unknown, a pair is malformed, the pairs
 // name a project other than the one p is in, or they name a task and a person
@@ -61,6 +63,7 @@ func (p *Page) To(view string, pairs ...string) string {
 	if _, to, ok := strings.Cut(sticky.Ref, ".."); ok {
 		sticky.Ref = to
 	}
+	sticky.SeenBy = p.Params.SeenBy
 	sticky.Role = p.Params.Role
 	return p.link(view, sticky, pairs)
 }
@@ -171,6 +174,10 @@ func (p *Page) InForce() []Param {
 			if q.Stale > 0 && q.Stale != 7 {
 				add(name, strconv.Itoa(q.Stale))
 			}
+		case "minimum":
+			if q.Minimum != "" {
+				add(name, q.Minimum)
+			}
 		case "brief":
 			if q.Brief != "" {
 				add(name, q.Brief)
@@ -180,13 +187,18 @@ func (p *Page) InForce() []Param {
 	return out
 }
 
-// Title returns the <title>: "VIEW · PROJECT".
+// Title returns the <title>: "VIEW · PROJECT", and " · as seen by EMAIL" after
+// it where the address names a person other than the viewer.
 func (p *Page) Title() string {
 	if p.View.Title == "" {
 		return "tableaud"
 	}
+	t := p.View.Title
 	if p.Project != nil && p.Project.Title != "" {
-		return p.View.Title + " · " + p.Project.Title
+		t += " · " + p.Project.Title
 	}
-	return p.View.Title
+	if p.AsSelf() != "" {
+		t += " · as seen by " + p.Params.SeenBy
+	}
+	return t
 }

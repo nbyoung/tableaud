@@ -9,27 +9,27 @@
 <caption>A tableau shows one column per gate, in this order, under the gate's symbol. A task's status names the gate the task has last completed.</caption>
 <thead><tr><th scope="col" class="num">#</th><th scope="col" class="gate">Symbol</th><th scope="col">Gate, with its criteria</th><th scope="col">Key</th></tr></thead>
 <tbody>
-<tr id="gate-undefined"><td class="num">1</td><td class="cell"><span aria-hidden="true">❔</span></td><th scope="row"><details class="detail" id="d-gate-undefined" open><summary>Undefined</summary><p>No one has started</p></details></th><td><code>undefined</code></td></tr>
-<tr id="gate-design"><td class="num">2</td><td class="cell"><span aria-hidden="true">📐</span></td><th scope="row"><details class="detail" id="d-gate-design" open><summary>Design</summary><p>A model and sufficient tests exist</p></details></th><td><code>design</code></td></tr>
-<tr id="gate-mockup"><td class="num">3</td><td class="cell"><span aria-hidden="true">📌</span></td><th scope="row"><details class="detail" id="d-gate-mockup" open><summary>Mockup</summary><p>A mockup exists</p></details></th><td><code>mockup</code></td></tr>
+<tr id="gate-undefined"><td class="num">1</td><td class="cell"><span aria-hidden="true">❔</span></td><th scope="row"><details class="detail" id="d-gate-undefined" open><summary id="d-gate-undefined-s">Undefined</summary><p>No one has started</p></details></th><td><code>undefined</code></td></tr>
+<tr id="gate-design"><td class="num">2</td><td class="cell"><span aria-hidden="true">📐</span></td><th scope="row"><details class="detail" id="d-gate-design" open><summary id="d-gate-design-s">Design</summary><p>A model and sufficient tests exist</p></details></th><td><code>design</code></td></tr>
+<tr id="gate-mockup"><td class="num">3</td><td class="cell"><span aria-hidden="true">📌</span></td><th scope="row"><details class="detail" id="d-gate-mockup" open><summary id="d-gate-mockup-s">Mockup</summary><p>A mockup exists</p></details></th><td><code>mockup</code></td></tr>
 </tbody>
 </table>
 </div>
-<details class="prov" id="prov-gates"><summary>Source of the gates</summary><p><code>.tableaux/gates.yaml</code>, which <code>e91ba68</code> last changed on 2026-10-02; see <a href="#provenance">Provenance</a>.</p></details>
+<details class="prov" id="prov-gates"><summary id="prov-gates-s">Source of the gates</summary><p><code>.tableaux/gates.yaml</code>, which <code>e91ba68</code> last changed on 2026-10-02; see <a href="#provenance">Provenance</a>.</p></details>
 </section>
 
 <section id="states" aria-labelledby="states-h">
 <h2 id="states-h">States</h2>
 <div class="scroll">
 <table class="legend">
-<caption>A state says how a task stands towards its next gate. A parent takes the state of its most severe child, and a state of severity 0 steps aside.</caption>
+<caption>A state says how a task stands towards its next gate. A parent takes the state of its most severe child, and a state of severity 0 steps aside. In a tableau a line under a state ranks its severity: none for the lowest, a dashed line for the second, a heavy line from the third on.</caption>
 <thead><tr><th scope="col" class="gate">Symbol</th><th scope="col">State, with its severity and synopsis</th></tr></thead>
 <tbody>
-<tr id="state-nominal"><td class="cell"><span aria-hidden="true">🟢</span></td><th scope="row"><details class="detail" id="d-state-nominal" open><summary><code>nominal</code></summary><dl class="fields"><dt>Severity</dt><dd>1</dd><dt>Synopsis</dt><dd>The work is proceeding as expected</dd></dl></details></th></tr>
+<tr id="state-nominal"><td class="cell"><span aria-hidden="true">🟢</span></td><th scope="row"><details class="detail" id="d-state-nominal" open><summary id="d-state-nominal-s"><code>nominal</code></summary><dl class="fields"><dt>Severity</dt><dd>1</dd><dt>Synopsis</dt><dd>The work is proceeding as expected</dd></dl></details></th></tr>
 </tbody>
 </table>
 </div>
-<details class="prov" id="prov-states"><summary>Source of the states</summary><p><code>.tableaux/gates.yaml</code>, which <code>e91ba68</code> last changed on 2026-10-02; see <a href="#provenance">Provenance</a>.</p></details>
+<details class="prov" id="prov-states"><summary id="prov-states-s">Source of the states</summary><p><code>.tableaux/gates.yaml</code>, which <code>e91ba68</code> last changed on 2026-10-02; see <a href="#provenance">Provenance</a>.</p></details>
 </section>
 
 <section id="reasons" aria-labelledby="reasons-h">
@@ -39,11 +39,11 @@
 <caption>A reason explains a state, and its symbol stands beside the state's symbol.</caption>
 <thead><tr><th scope="col" class="gate">Symbol</th><th scope="col">Reason, with its synopsis</th></tr></thead>
 <tbody>
-<tr id="reason-review"><td class="cell"><span aria-hidden="true">👓</span></td><th scope="row"><details class="detail" id="d-reason-review" open><summary><code>review</code></summary><p>The work waits for its reviewer</p><p>The method reserves <code>review</code>: the contributor has handed the next junction's work to its reviewer, and the work queue lists the review as owed.</p></details></th></tr>
+<tr id="reason-review"><td class="cell"><span aria-hidden="true">👓</span></td><th scope="row"><details class="detail" id="d-reason-review" open><summary id="d-reason-review-s"><code>review</code></summary><p>The work waits for its reviewer</p><p>The method reserves <code>review</code>: the contributor has handed the next junction's work to its reviewer, and the work queue lists the review as owed.</p></details></th></tr>
 </tbody>
 </table>
 </div>
-<details class="prov" id="prov-reasons"><summary>Source of the reasons</summary><p><code>.tableaux/gates.yaml</code>, which <code>e91ba68</code> last changed on 2026-10-02; see <a href="#provenance">Provenance</a>.</p></details>
+<details class="prov" id="prov-reasons"><summary id="prov-reasons-s">Source of the reasons</summary><p><code>.tableaux/gates.yaml</code>, which <code>e91ba68</code> last changed on 2026-10-02; see <a href="#provenance">Provenance</a>.</p></details>
 </section>
 
 <section id="junction-marks" aria-labelledby="marks-h">
@@ -53,17 +53,17 @@
 <caption>A junction is the meeting of a task and a gate, one cell of a tableau. The marks belong to the method, not to this project.</caption>
 <thead><tr><th scope="col" class="gate">Mark</th><th scope="col">Meaning, with the junction that shows it</th></tr></thead>
 <tbody>
-<tr id="mark-agent"><td class="cell"><span aria-hidden="true">🤖</span></td><th scope="row"><details class="detail" id="d-mark-agent" open><summary>An agent contributes</summary><p>Plain; the junction states a model</p></details></th></tr>
-<tr id="mark-exempt"><td class="cell"><span aria-hidden="true">—</span></td><th scope="row"><details class="detail" id="d-mark-exempt" open><summary>The gate does not apply</summary></details></th></tr>
+<tr id="mark-agent"><td class="cell"><span aria-hidden="true">🤖</span></td><th scope="row"><details class="detail" id="d-mark-agent" open><summary id="d-mark-agent-s">An agent contributes</summary><p>Plain; the junction states a model</p></details></th></tr>
+<tr id="mark-exempt"><td class="cell"><span aria-hidden="true">—</span></td><th scope="row"><details class="detail" id="d-mark-exempt" open><summary id="d-mark-exempt-s">The gate does not apply</summary></details></th></tr>
 </tbody>
 </table>
 </div>
-<details class="prov" id="prov-marks"><summary>Source of the junction marks</summary><p><code>README.md</code>, Junctions, at language 0.3.1; no project file states the marks.</p></details>
+<details class="prov" id="prov-marks"><summary id="prov-marks-s">Source of the junction marks</summary><p><code>README.md</code>, Junctions, at language 0.3.1; no project file states the marks.</p></details>
 </section>
 
 <section id="provenance" aria-labelledby="prov-h">
 <h2 id="prov-h">Provenance</h2>
-<details class="prov" id="prov-legend"><summary>The language version, the trunk and the commits behind the legend</summary>
+<details class="prov" id="prov-legend"><summary id="prov-legend-s">The language version, the trunk and the commits behind the legend</summary>
 <div class="scroll">
 <table>
 <caption>What the project states about its language</caption>

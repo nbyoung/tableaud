@@ -348,7 +348,7 @@ func TestStatusExpandLinks(t *testing.T) {
 			if len(links) != 1 || links[0].Attr["href"] != r.Expand.Href || links[0].Attr["hx-boost"] != "true" || !slices.Equal(statusHx(links[0]), []string{"hx-boost"}) {
 				t.Errorf("%s: the expand link is %v", r.Task.ID, links)
 			}
-			if want := strconv.Itoa(r.Beneath) + " rows beneath"; r.Beneath != 1 && links[0].text(false) != want {
+			if want := strconv.Itoa(r.Beneath) + " rows beneath " + r.Task.Title + ", " + r.Task.ID; r.Beneath != 1 && links[0].text(false) != want {
 				t.Errorf("%s: the expand link reads %q, want %q", r.Task.ID, links[0].text(false), want)
 			}
 		}
@@ -365,7 +365,7 @@ func TestStatusExpandLinks(t *testing.T) {
 	c := clone(t, m)
 	c.Grid.Rows[0].Collapse, c.Grid.Rows[0].Expand = c.Grid.Rows[0].Expand, nil
 	links := row(c, statusDoc(t, pageOf(f.View, c))).byClass("a", "fold")
-	if len(links) != 1 || links[0].Attr["hx-boost"] != "true" || links[0].text(false) != "fold the 31 rows beneath" {
+	if len(links) != 1 || links[0].Attr["hx-boost"] != "true" || links[0].text(false) != "fold the 31 rows beneath Tableaux tooling, 437e" {
 		t.Errorf("the collapse link is %v", links)
 	}
 
@@ -1288,4 +1288,53 @@ func TestStatusExpandThenCollapse(t *testing.T) {
 // corpus entry weather-station at main. It waits for tablo's view types.
 func TestStatusAdaptersAgreeWithTablo(t *testing.T) {
 	t.Skip("waits for tablo's view types (task 886d): adapt_tableau.go, adapt_blockage.go, adapt_queue.go and their entries of the adapters map land with them")
+}
+
+// TestStatusCellRank covers T6 of design 5a2f on fixtures: a cell with Rank 0
+// or 1 writes no s2 or s3 class, a cell with Rank 2 writes s2 and a cell with
+// Rank 3 writes s3; the key under each tableau carries the sentence that says
+// what the line means.
+func TestStatusCellRank(t *testing.T) {
+	for _, name := range []string{"tableau", "contextual"} {
+		f := statusFixtureNamed(t, name)
+		for rank, want := range []string{"", "", "s2", "s3"} {
+			var m any
+			var cells []*web.Cell
+			if name == "tableau" {
+				m = clone(t, f.Model.(*web.TableauView))
+			} else {
+				m = clone(t, f.Model.(*web.ContextualView))
+			}
+			for _, g := range statusGrids(m) {
+				for i := range g.Rows {
+					for j := range g.Rows[i].Cells {
+						g.Rows[i].Cells[j].Rank = rank
+						cells = append(cells, &g.Rows[i].Cells[j])
+					}
+				}
+			}
+			root := statusDoc(t, pageOf(f.View, m))
+			for _, g := range statusGrids(m) {
+				for _, r := range g.Rows {
+					for _, c := range statusRowCells(t, root, g, r) {
+						has := func(class string) bool { return c.hasClass(class) }
+						if has("s2") != (want == "s2") || has("s3") != (want == "s3") {
+							t.Errorf("%s: rank %d writes the class %q", name, rank, c.Attr["class"])
+						}
+					}
+				}
+			}
+			if len(cells) == 0 {
+				t.Fatalf("%s: no cell", name)
+			}
+		}
+		text := statusDoc(t, f.page()).byClass("p", "key")
+		found := false
+		for _, p := range text {
+			found = found || strings.Contains(p.text(true), "dashed or a heavy line under")
+		}
+		if !found {
+			t.Errorf("%s: the key lacks the sentence on the line under a state", name)
+		}
+	}
 }

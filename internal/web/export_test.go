@@ -6,6 +6,8 @@ var (
 	LevelOf  = levelOf
 	EnvOf    = envOf
 	LegendOf = legendOf
+	OpenerOf = openerOf
+	RoleOf   = roleOf
 	Adapters = adapters
 )
 

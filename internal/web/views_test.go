@@ -442,3 +442,30 @@ func TestContextLine(t *testing.T) {
 func TestAdaptersAgreeWithTablo(t *testing.T) {
 	t.Skip("waits for tablo's view types (task 493e): adapt_gate.go, adapt_task.go and the two entries of the adapters map land with them")
 }
+
+// TestGateStateRank covers T6 of design 5a2f on the gate fixtures: the row of a
+// state in the legend writes s2 or s3 on the symbol's cell by its Rank and
+// none at 0 or 1, and the caption of the states says what the line means.
+func TestGateStateRank(t *testing.T) {
+	for _, name := range []string{"gate", "gate-glance"} {
+		f := fixtureNamed(t, name)
+		for rank, want := range []string{"", "", "s2", "s3"} {
+			m := clone(t, f.Model.(*web.GateView))
+			for i := range m.States {
+				m.States[i].Rank = rank
+			}
+			root := mustParse(t, render(t, web.Document, pageOf(f.View, m)))
+			for _, r := range m.States {
+				cell := root.byID(r.Anchor).find("td")[0]
+				if cell.hasClass("s2") != (want == "s2") || cell.hasClass("s3") != (want == "s3") {
+					t.Errorf("%s: rank %d writes the class %q on %s", name, rank, cell.Attr["class"], r.Anchor)
+				}
+			}
+		}
+		root := mustParse(t, render(t, web.Document, f.page()))
+		caps := root.byID("states").find("caption")
+		if len(caps) != 1 || !strings.Contains(caps[0].text(true), "a line under a state ranks its severity: none for the lowest, a dashed line for the second, a heavy line from the third on") {
+			t.Errorf("%s: the caption of the states lacks the sentence on the line", name)
+		}
+	}
+}

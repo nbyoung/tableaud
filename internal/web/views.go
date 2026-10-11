@@ -8,17 +8,17 @@ type View struct {
 	Title    string   // "Global tableau"
 	Label    string   // the nav entry: "Tableau"
 	Question string   // the question of VIEWS.md, which a page writes under the title
-	Params   []string // the query names the view reads beside the five shared ones
+	Params   []string // the query names the view reads beside the six shared ones
 	Parts    []string // the fragments a template task serves; empty until its adapter lands
 }
 
-// Shared lists the five query names every view reads.
-var Shared = []string{"project", "ref", "role", "level", "part"}
+// Shared lists the six query names every view reads.
+var Shared = []string{"project", "ref", "as_seen_by", "role", "level", "part"}
 
 // Order lists every query name in the order a canonical address writes them.
 var Order = []string{
-	"project", "ref", "task", "person", "role", "level", "window", "columns",
-	"historical", "open", "proposed", "stale", "brief", "part",
+	"project", "ref", "task", "person", "as_seen_by", "role", "level", "window", "columns",
+	"historical", "open", "proposed", "stale", "minimum", "brief", "part",
 }
 
 // Views lists the ten views in the order of the mockups' nav.
@@ -31,7 +31,7 @@ var Views = []View{
 	{Name: "assignment", Title: "Task assignment", Label: "Assignment", Question: "What does each person carry?", Params: []string{"person", "task"}},
 	{Name: "authority", Title: "Authority delegation", Label: "Authority", Question: "Who may accept what?", Params: []string{"task", "person", "proposed"}},
 	{Name: "history", Title: "History", Label: "History", Question: "What happened, when, and who did it?", Params: []string{"task", "person"}},
-	{Name: "audit", Title: "Audit", Label: "Audit", Question: "Where do files and history disagree?", Params: []string{"task", "person", "stale"}},
+	{Name: "audit", Title: "Audit", Label: "Audit", Question: "Where do files and history disagree?", Params: []string{"task", "person", "stale", "minimum"}},
 	{Name: "gates", Title: "Gate definition", Label: "Gates", Question: "What do the columns and symbols mean?", Params: []string{"task"}},
 }
 

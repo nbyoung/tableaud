@@ -49,6 +49,19 @@ func TestParseQuery(t *testing.T) {
 		{"tableau", "person=Ben%20%3Cben@example.org%3E", "person"},
 		{"tableau", "person=ben", "person"},
 		{"tableau", "person=" + strings.Repeat("a", 250) + "@example.org", "person"},
+		{"tableau", "as_seen_by=ben@example.org", ""},
+		{"gates", "as_seen_by=ben@example.org", ""},
+		{"tableau", "as_seen_by=", "as_seen_by"},
+		{"tableau", "as_seen_by=ben", "as_seen_by"},
+		{"tableau", "as_seen_by=Ben%20%3Cben@example.org%3E", "as_seen_by"},
+		{"tableau", "as_seen_by=ben@example.org&as_seen_by=dan@example.org", "as_seen_by"},
+		{"audit", "minimum=error", ""},
+		{"audit", "minimum=warning", ""},
+		{"audit", "minimum=information", ""},
+		{"audit", "minimum=info", "minimum"},
+		{"audit", "minimum=", "minimum"},
+		{"audit", "minimum=error&minimum=warning", "minimum"},
+		{"tableau", "minimum=bogus", ""}, // a name the view does not read is not checked
 		{"tableau", "role=reviewer&level=provenance", ""},
 		{"tableau", "window=00", ""},
 		{"tableau", "window=+3", "window"},
@@ -110,6 +123,18 @@ func TestParseQuery(t *testing.T) {
 	p, _ = parse(t, "tableau", "task=9f31&stale=3&brief=9f31:x&proposed=on")
 	if !reflect.DeepEqual(p, web.NewParams()) {
 		t.Errorf("names the view does not read left marks: %+v", p)
+	}
+	p, _ = parse(t, "tableau", "as_seen_by=ben@example.org&role=owner")
+	if p.SeenBy != "ben@example.org" || p.Role != "owner" {
+		t.Errorf("as_seen_by: %+v", p)
+	}
+	for query, want := range map[string]string{"minimum=error": "error", "minimum=information": "information", "minimum=warning": "", "": ""} {
+		if p, _ = parse(t, "audit", query); p.Minimum != want {
+			t.Errorf("%s: minimum %q, want %q", query, p.Minimum, want)
+		}
+	}
+	if p, _ = parse(t, "tableau", "minimum=error"); p.Minimum != "" {
+		t.Errorf("a view that does not read minimum keeps %q", p.Minimum)
 	}
 	p, _ = parse(t, "audit", "stale=30")
 	if p.Stale != 30 {
@@ -213,5 +238,31 @@ func TestPartKey(t *testing.T) {
 	}
 	if got, want := pg.Self("part", ""), "/task?task=9f31"; got != want {
 		t.Errorf("Self part removed: %s, want %s", got, want)
+	}
+}
+
+// TestQueryWritesTheNewNames covers the canonical order of as_seen_by and
+// minimum: as_seen_by after person and before role, minimum after stale, and
+// the default minimum writes nothing.
+func TestQueryWritesTheNewNames(t *testing.T) {
+	v, _ := web.Lookup("audit")
+	p := web.NewParams()
+	p.Task, p.Person, p.SeenBy, p.Role, p.Stale, p.Minimum = "4e2b", "ada@example.org", "ben@example.org", "owner", 30, "information"
+	want := "task=4e2b&person=ada@example.org&as_seen_by=ben@example.org&role=owner&stale=30&minimum=information"
+	if got := serve.Query(v, p); got != want {
+		t.Errorf("%s, want %s", got, want)
+	}
+	back, err := serve.ParseQuery(v, mustQuery(t, want))
+	if err != nil || !reflect.DeepEqual(back, p) {
+		t.Errorf("round trip: %+v, %v", back, err)
+	}
+	p.Minimum = ""
+	if got := serve.Query(v, p); strings.Contains(got, "minimum") {
+		t.Errorf("the default minimum is written: %s", got)
+	}
+	tv, _ := web.Lookup("tableau")
+	p.Minimum = "error"
+	if got := serve.Query(tv, p); strings.Contains(got, "minimum") || !strings.Contains(got, "as_seen_by=ben@example.org") {
+		t.Errorf("a view that does not read minimum writes %s", got)
 	}
 }

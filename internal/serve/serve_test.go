@@ -873,3 +873,190 @@ func TestMethods(t *testing.T) {
 		t.Error("a refused method reached tablo")
 	}
 }
+
+// observerOnly is a Source whose Describe answers observer alone for a person
+// who holds no role, as tablo does (design db74, A12).
+type observerOnly struct{ *sourcetest.Fixture }
+
+func (o observerOnly) Describe(ctx context.Context, project, ref, viewer string) (source.Project, source.Viewer, error) {
+	p, v, err := o.Fixture.Describe(ctx, project, ref, viewer)
+	if err == nil && len(v.Roles) == 0 {
+		v.Roles = []string{"observer"}
+	}
+	return p, v, err
+}
+
+// TestLandingOfAnObserverAndOfAPersonSeenBy covers T10 and the landing of T18: a
+// viewer whose roles are observer alone lands on the tableau, and the person
+// as_seen_by names lands in the viewer's place, with the name kept.
+func TestLandingOfAnObserverAndOfAPersonSeenBy(t *testing.T) {
+	for _, c := range []struct {
+		viewer, target, want string
+	}{
+		{"zed@example.org", "/", "/tableau"},
+		{sourcetest.Owner, "/?as_seen_by=" + sourcetest.Contributor, "/context?as_seen_by=ben@example.org"},
+		{sourcetest.Contributor, "/?as_seen_by=" + sourcetest.Owner, "/tableau?as_seen_by=ada@example.org"},
+		{sourcetest.Owner, "/?as_seen_by=zed@example.org&role=reviewer", "/tableau?as_seen_by=zed@example.org&role=reviewer"},
+		{"", "/?as_seen_by=" + sourcetest.Contributor, "/context?as_seen_by=ben@example.org"},
+	} {
+		s := newRig(t, func(cfg *serve.Config) {
+			cfg.Viewer = c.viewer
+			cfg.Source = observerOnly{sourcetest.New()}
+		})
+		r := get(s, c.target)
+		if r.Code != 303 || r.Header().Get("Location") != c.want {
+			t.Errorf("%q from %q: %d %q, want %q", c.target, c.viewer, r.Code, r.Header().Get("Location"), c.want)
+		}
+	}
+}
+
+// TestServerHoldsNoChoice covers T11: one address asked with and without a
+// Cookie and an Accept-Language header yields the same body and the same tag.
+func TestServerHoldsNoChoice(t *testing.T) {
+	s := newRig(t, func(c *serve.Config) { c.Viewer = sourcetest.Owner })
+	for _, target := range []string{"/tableau?open=", "/context?as_seen_by=ben@example.org", "/audit?minimum=error"} {
+		plain := get(s, target)
+		marked := get(s, target, func(r *http.Request) {
+			r.Header.Set("Cookie", "tableaud.columns.tableau=design")
+			r.Header.Set("Accept-Language", "de-CH, fr;q=0.7")
+		})
+		if plain.Code != 200 || plain.Body.String() != marked.Body.String() || plain.Header().Get("ETag") != marked.Header().Get("ETag") {
+			t.Errorf("%s: the answer depends on a cookie or a language", target)
+		}
+	}
+}
+
+// TestPersonSeenBy covers T18: tablo hears the right person, and the frame
+// names both.
+func TestPersonSeenBy(t *testing.T) {
+	s := newRig(t, func(c *serve.Config) { c.Viewer = sourcetest.Owner })
+	var asked []source.Request
+	s.fix.Hook = func(_ context.Context, r source.Request) error {
+		if r.View != "" {
+			asked = append(asked, r)
+		}
+		return nil
+	}
+	for _, c := range []struct {
+		target, person string
+	}{
+		{"/context?as_seen_by=ben@example.org", "ben@example.org"},
+		{"/queue?as_seen_by=ben@example.org", "ben@example.org"},
+		{"/context?as_seen_by=ben@example.org&person=dan@example.org", "dan@example.org"},
+		{"/context?as_seen_by=ben@example.org&task=4e2b", ""},
+		{"/queue?as_seen_by=ben@example.org&task=4e2b", ""},
+		{"/tableau?as_seen_by=ben@example.org", ""},
+		{"/context", ""},
+	} {
+		asked = nil
+		r := get(s, c.target)
+		if r.Code != 200 || len(asked) != 1 {
+			t.Errorf("%s: %d, %d requests", c.target, r.Code, len(asked))
+			continue
+		}
+		if asked[0].Person != c.person || asked[0].Viewer != sourcetest.Owner {
+			t.Errorf("%s: tablo is asked for %q as viewer %q, want %q as %q", c.target, asked[0].Person, asked[0].Viewer, c.person, sourcetest.Owner)
+		}
+	}
+
+	r := get(s, "/context?as_seen_by=ben@example.org&open=a1c0")
+	body := r.Body.String()
+	for _, want := range []string{
+		"viewer ada@example.org, owner",
+		"<strong>as seen by ben@example.org, contributor</strong>",
+		`<a id="as-self" href="/context?open=a1c0">see it as yourself</a>`,
+		`href="/queue?as_seen_by=ben@example.org"`,
+		"<title>Contextual tableau · ",
+		" · as seen by ben@example.org</title>",
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("the frame lacks %q", want)
+		}
+	}
+	if strings.Contains(body, `id="share"`) || strings.Contains(body, "norole") {
+		t.Error("the frame of a person who holds a role offers the second link or the highlight")
+	}
+	// As the viewer, the frame names one person and adds nothing.
+	body = get(s, "/context?as_seen_by=ada@example.org").Body.String()
+	if strings.Contains(body, "as seen by") || strings.Contains(body, "as-self") {
+		t.Error("as_seen_by the viewer draws a notice")
+	}
+	// Without it, the second link stands.
+	body = get(s, "/context").Body.String()
+	if !strings.Contains(body, `<a id="share" href="/context?as_seen_by=ada@example.org">`) {
+		t.Errorf("no second link:\n%s", body)
+	}
+	// A malformed value and a name given twice are a 400.
+	for _, target := range []string{"/tableau?as_seen_by=ben", "/tableau?as_seen_by=ben@example.org&as_seen_by=dan@example.org", "/tableau?as_seen_by="} {
+		if r := get(s, target); r.Code != 400 {
+			t.Errorf("%s: %d", target, r.Code)
+		}
+	}
+	// An error page names no borrowed page.
+	r = get(s, "/tableau?as_seen_by=ben@example.org&ref=nosuch")
+	if r.Code != 404 || strings.Contains(r.Body.String(), "as seen by") {
+		t.Errorf("an error page: %d, names the borrowed page: %v", r.Code, strings.Contains(r.Body.String(), "as seen by"))
+	}
+}
+
+// TestFrameOfAPersonWithNoRole covers T20: the frame highlights a person who
+// holds no role when as_seen_by names them, and a viewer who holds none is an
+// observer with no highlight.
+func TestFrameOfAPersonWithNoRole(t *testing.T) {
+	s := newRig(t, func(c *serve.Config) { c.Viewer = sourcetest.Owner })
+	body := get(s, "/tableau?as_seen_by=zed@example.org").Body.String()
+	for _, want := range []string{
+		`<p class="context norole">`,
+		"<strong>as seen by zed@example.org, who holds no role in this project</strong>",
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("the frame lacks %q", want)
+		}
+	}
+	body = get(s, "/tableau?as_seen_by="+sourcetest.Contributor).Body.String()
+	if strings.Contains(body, "norole") || strings.Contains(body, "who holds no role") {
+		t.Error("a person who holds a role is highlighted")
+	}
+	z := newRig(t, func(c *serve.Config) { c.Viewer = "zed@example.org" })
+	body = get(z, "/tableau").Body.String()
+	if !strings.Contains(body, "viewer zed@example.org, observer") || strings.Contains(body, "norole") {
+		t.Error("a viewer with no role is highlighted or unnamed")
+	}
+}
+
+// TestMinimum covers T19's address: minimum=information reaches
+// Request.Minimum and the canonical address after stale; minimum=warning
+// writes nothing; any other word is a 400.
+func TestMinimum(t *testing.T) {
+	s := newRig(t, func(c *serve.Config) { c.Viewer = sourcetest.Owner })
+	var asked []source.Request
+	s.fix.Hook = func(_ context.Context, r source.Request) error {
+		if r.View == "audit" {
+			asked = append(asked, r)
+		}
+		return nil
+	}
+	for _, c := range []struct {
+		target, minimum, canonical string
+	}{
+		{"/audit?minimum=information&stale=3", "information", "/audit?stale=3&minimum=information"},
+		{"/audit?minimum=error", "error", "/audit?minimum=error"},
+		{"/audit?minimum=warning&stale=3", "", "/audit?stale=3"},
+		{"/audit", "", "/audit"},
+	} {
+		asked = nil
+		r := get(s, c.target)
+		if r.Code != 200 || len(asked) != 1 || asked[0].Minimum != c.minimum {
+			t.Errorf("%s: %d, requests %+v", c.target, r.Code, asked)
+			continue
+		}
+		if m := footerLink.FindStringSubmatch(r.Body.String()); m == nil || html.UnescapeString(m[1]) != c.canonical {
+			t.Errorf("%s: the canonical address is %v, want %s", c.target, m, c.canonical)
+		}
+	}
+	for _, target := range []string{"/audit?minimum=info", "/audit?minimum=", "/audit?minimum=error&minimum=error"} {
+		if r := get(s, target); r.Code != 400 {
+			t.Errorf("%s: %d", target, r.Code)
+		}
+	}
+}

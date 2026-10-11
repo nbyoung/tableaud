@@ -57,15 +57,16 @@ type Request struct {
 	Columns              []string
 	Historical, Proposed bool
 	BriefTask, BriefGate string
+	Minimum              string    // the audit's lowest severity: "error" or "information"; empty for the default, warning
 	Today                time.Time // the audit's clock; zero for every other view
 }
 
 // Key spells r as one string, equal for equal requests, for a cache.
 func (r Request) Key() string {
-	return fmt.Sprintf("%s\x00%s\x00%s\x00%s\x00%s\x00%s\x00%d\x00%d\x00%s\x00%t\x00%t\x00%s\x00%s\x00%s",
+	return fmt.Sprintf("%s\x00%s\x00%s\x00%s\x00%s\x00%s\x00%d\x00%d\x00%s\x00%t\x00%t\x00%s\x00%s\x00%s\x00%s",
 		r.View, r.Project, r.Ref, r.Task, r.Person, r.Viewer, r.Window, r.Stale,
 		strings.Join(r.Columns, ","), r.Historical, r.Proposed, r.BriefTask, r.BriefGate,
-		r.Today.Format(time.DateOnly))
+		r.Today.Format(time.DateOnly), r.Minimum)
 }
 
 // Result is tablo's answer. The server never looks inside Data or Legend.

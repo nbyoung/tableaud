@@ -12,16 +12,16 @@
 <dt>Note</dt><dd>{{if .Status.Note}}{{.Status.Note}}{{else}}None{{end}}</dd>
 <dt>Recorded</dt><dd>{{if .Status.Recorder}}{{.Status.Date}} by {{.Status.Recorder}}{{else if .Status.Date}}{{.Status.Date}}, the oldest date among its children; a roll-up has no recorder{{else}}Never; the task has no status file{{end}}</dd>
 </dl>
-{{template "fold" .StatusProv.Fold}}<summary>Status commit</summary>{{if .StatusProv.Fold.Src}}{{template "lazy" .StatusProv.Fold}}{{else}}{{template "part/status" .StatusProv}}{{end}}</details>
+{{template "fold" .StatusProv.Fold}}<summary id="{{.StatusProv.Fold.ID}}-s">Status commit</summary>{{if .StatusProv.Fold.Src}}{{template "lazy" .StatusProv.Fold}}{{else}}{{template "part/status" .StatusProv}}{{end}}</details>
 
-{{template "fold" .About.Fold}}<summary>Description</summary>
+{{template "fold" .About.Fold}}<summary id="{{.About.Fold.ID}}-s">Description</summary>
 <p>{{.About.Description}}</p>
 {{if .About.References}}<p>References:</p>
 {{template "references" .About.References}}{{end}}
-{{template "fold" .About.FileFold}}<summary>Task file</summary><p>The task file is <code>{{.About.File}}</code>.</p></details>
+{{template "fold" .About.FileFold}}<summary id="{{.About.FileFold.ID}}-s">Task file</summary><p>The task file is <code>{{.About.File}}</code>.</p></details>
 </details>
 
-{{template "fold" .Place.Fold}}<summary>Place in the tree</summary>
+{{template "fold" .Place.Fold}}<summary id="{{.Place.Fold.ID}}-s">Place in the tree</summary>
 <dl class="fields">
 <dt>Path</dt><dd>{{range $i, $t := .Place.Path}}{{if $i}} › {{end}}{{template "task" $t}}{{end}}</dd>
 <dt>Order</dt><dd>{{if .Parent}}{{.Order}} of {{.Place.Siblings}} under {{template "task" .Parent}}{{else}}None; the task is the root{{end}}</dd>
@@ -29,10 +29,10 @@
 <dt>Authorities</dt><dd>{{if .Place.Authorities}}{{range $i, $a := .Place.Authorities}}{{if $i}}; then {{end}}{{template "person" $a.Person}}{{range $j, $t := $a.By}}{{if $j}},{{end}} by {{template "task" $t}}{{end}}{{end}}, nearest first{{else}}None above; the owner alone authorises the root{{end}}</dd>
 <dt>Authorised</dt><dd>{{if .Place.Authorised}}Yes{{else}}<span class="proposed">No, proposed</span>{{end}}</dd>
 </dl>
-{{template "fold" .Place.Prov.Fold}}<summary>Authorisation commit</summary>{{if .Place.Prov.Fold.Src}}{{template "lazy" .Place.Prov.Fold}}{{else}}{{template "part/authorisation" .Place.Prov}}{{end}}</details>
+{{template "fold" .Place.Prov.Fold}}<summary id="{{.Place.Prov.Fold.ID}}-s">Authorisation commit</summary>{{if .Place.Prov.Fold.Src}}{{template "lazy" .Place.Prov.Fold}}{{else}}{{template "part/authorisation" .Place.Prov}}{{end}}</details>
 </details>
 
-{{template "fold" .Requires.Fold}}<summary>Requires</summary>
+{{template "fold" .Requires.Fold}}<summary id="{{.Requires.Fold.ID}}-s">Requires</summary>
 {{if .Requires.Total}}<p>The task requires {{.Requires.Total}} {{plural .Requires.Total "task" "tasks"}}.</p>
 <div class="scroll">
 <table>
@@ -43,11 +43,11 @@
 {{end}}</tbody>
 </table>
 </div>
-{{template "fold" .Requires.Prov}}<summary>Where the conditions read from</summary>{{if .Requires.Prov.Src}}{{template "lazy" .Requires.Prov}}{{else}}{{template "part/edges" .Requires}}{{end}}</details>
+{{template "fold" .Requires.Prov}}<summary id="{{.Requires.Prov.ID}}-s">Where the conditions read from</summary>{{if .Requires.Prov.Src}}{{template "lazy" .Requires.Prov}}{{else}}{{template "part/edges" .Requires}}{{end}}</details>
 {{else}}<p class="empty">The task requires nothing.</p>
 {{end}}</details>
 
-{{template "fold" .Dependents.Fold}}<summary>Dependents</summary>
+{{template "fold" .Dependents.Fold}}<summary id="{{.Dependents.Fold.ID}}-s">Dependents</summary>
 {{if .Dependents.Total}}<p>{{.Dependents.Total}} {{plural .Dependents.Total "task requires" "tasks require"}} {{.Task.ID}}.</p>
 <div class="scroll">
 <table>
@@ -55,7 +55,7 @@
 <thead><tr><th scope="col">Task</th><th scope="col">Edge</th><th scope="col">What passes</th><th scope="col">Condition</th></tr></thead>
 <tbody>
 {{range .Dependents.Rows.Shown}}<tr><th scope="row">{{template "task" .Task}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{.Condition}}</td></tr>
-{{end}}{{with .Dependents.Rows}}{{if .Rest}}<tr><td colspan="4">{{template "fold" .Fold}}<summary>… and {{len .Rest}} more {{.Alike}}</summary>
+{{end}}{{with .Dependents.Rows}}{{if .Rest}}<tr><td colspan="4">{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">… and {{len .Rest}} more {{.Alike}}</summary>
 <ul class="tree">
 {{range .Rest}}<li>{{template "task" .Task}}</li>
 {{end}}</ul>
@@ -63,11 +63,11 @@
 {{end}}{{end}}</tbody>
 </table>
 </div>
-{{template "fold" .Dependents.Prov}}<summary>Where the dependents read from</summary>{{if .Dependents.Prov.Src}}{{template "lazy" .Dependents.Prov}}{{else}}{{template "part/edges" .Dependents}}{{end}}</details>
+{{template "fold" .Dependents.Prov}}<summary id="{{.Dependents.Prov.ID}}-s">Where the dependents read from</summary>{{if .Dependents.Prov.Src}}{{template "lazy" .Dependents.Prov}}{{else}}{{template "part/edges" .Dependents}}{{end}}</details>
 {{else}}<p class="empty">No task requires {{.Task.ID}}.</p>
 {{end}}</details>
 
-{{template "fold" .Junctions.Fold}}<summary>Junctions</summary>
+{{template "fold" .Junctions.Fold}}<summary id="{{.Junctions.Fold.ID}}-s">Junctions</summary>
 <div class="scroll">
 <table>
 <caption>Every junction of {{.Task.ID}}, resolved</caption>
@@ -80,12 +80,12 @@
 <p class="key">{{range $i, $s := .Junctions.Key}}{{if $i}} · {{end}}{{template "sym" $s}}{{end}}.</p>
 {{range .Junctions.Rows}}{{if .Refs}}<p>References at {{template "sym" .Gate}}:</p>
 {{template "references" .Refs}}{{end}}{{end}}
-{{template "fold" .Junctions.Sources.Fold}}<summary>Where each junction field comes from</summary>{{if .Junctions.Sources.Fold.Src}}{{template "lazy" .Junctions.Sources.Fold}}{{else}}{{template "part/sources" .Junctions.Sources}}{{end}}</details>
-{{template "fold" .Junctions.Reviews.Fold}}<summary>Reviews</summary>{{if .Junctions.Reviews.Fold.Src}}{{template "lazy" .Junctions.Reviews.Fold}}{{else}}{{template "part/reviews" .Junctions.Reviews}}{{end}}</details>
-{{template "fold" .Junctions.Models.Fold}}<summary>Models</summary>{{if .Junctions.Models.Fold.Src}}{{template "lazy" .Junctions.Models.Fold}}{{else}}{{template "part/models" .Junctions.Models}}{{end}}</details>
+{{template "fold" .Junctions.Sources.Fold}}<summary id="{{.Junctions.Sources.Fold.ID}}-s">Where each junction field comes from</summary>{{if .Junctions.Sources.Fold.Src}}{{template "lazy" .Junctions.Sources.Fold}}{{else}}{{template "part/sources" .Junctions.Sources}}{{end}}</details>
+{{template "fold" .Junctions.Reviews.Fold}}<summary id="{{.Junctions.Reviews.Fold.ID}}-s">Reviews</summary>{{if .Junctions.Reviews.Fold.Src}}{{template "lazy" .Junctions.Reviews.Fold}}{{else}}{{template "part/reviews" .Junctions.Reviews}}{{end}}</details>
+{{template "fold" .Junctions.Models.Fold}}<summary id="{{.Junctions.Models.Fold.ID}}-s">Models</summary>{{if .Junctions.Models.Fold.Src}}{{template "lazy" .Junctions.Models.Fold}}{{else}}{{template "part/models" .Junctions.Models}}{{end}}</details>
 </details>
 
-{{template "fold" .Events.Fold}}<summary>Newest events</summary>{{if .Events.Fold.Src}}{{template "lazy" .Events.Fold}}{{else}}{{template "part/events" .Events}}{{end}}</details>
+{{template "fold" .Events.Fold}}<summary id="{{.Events.Fold.ID}}-s">Newest events</summary>{{if .Events.Fold.Src}}{{template "lazy" .Events.Fold}}{{else}}{{template "part/events" .Events}}{{end}}</details>
 </section>
 {{end}}{{end}}
 

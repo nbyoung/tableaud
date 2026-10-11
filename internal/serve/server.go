@@ -163,7 +163,11 @@ func (s *Server) request(v web.View, p web.Params, email string) source.Request 
 		View: v.Name, Project: p.Project, Ref: s.ref(p), Task: p.Task, Person: p.Person, Viewer: email,
 		Window: p.Window, Stale: p.Stale, Columns: p.Columns, Historical: p.Historical, Proposed: p.Proposed,
 	}
+	if req.Person == "" && p.Task == "" && (v.Name == "context" || v.Name == "queue") {
+		req.Person = p.SeenBy // the person a page is seen by owns the corner and the queue
+	}
 	req.BriefTask, req.BriefGate, _ = strings.Cut(p.Brief, ":")
+	req.Minimum = p.Minimum
 	if v.Name == "audit" {
 		n := s.cfg.Now().UTC()
 		req.Today = time.Date(n.Year(), n.Month(), n.Day(), 0, 0, 0, 0, time.UTC)
@@ -172,10 +176,11 @@ func (s *Server) request(v web.View, p web.Params, email string) source.Request 
 }
 
 // sticky returns the parameters a link from this page to another carries:
-// the project, the ref (a range carries its end) and the role.
+// the project, the ref (a range carries its end), the person the page is seen
+// by and the role.
 func sticky(p web.Params) web.Params {
 	q := web.NewParams()
-	q.Project, q.Ref, q.Role = p.Project, p.Ref, p.Role
+	q.Project, q.Ref, q.SeenBy, q.Role = p.Project, p.Ref, p.SeenBy, p.Role
 	if _, to, ok := strings.Cut(q.Ref, ".."); ok {
 		q.Ref = to
 	}
@@ -189,7 +194,8 @@ func (s *Server) redirect(w http.ResponseWriter, r *http.Request, to string) {
 
 // landing leads "/" to the viewer's page: the owner to the global tableau, any
 // other viewer with a role to the contextual tableau, an observer to the
-// global tableau.
+// global tableau. Where the address names a person with as_seen_by, that person
+// lands in the viewer's place.
 func (s *Server) landing(w http.ResponseWriter, r *http.Request) {
 	email := s.viewer(r)
 	p, err := ParseQuery(web.View{}, r.URL.Query())
@@ -197,16 +203,20 @@ func (s *Server) landing(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, r, web.View{}, web.NewParams(), email, err)
 		return
 	}
+	who := email
+	if p.SeenBy != "" {
+		who = p.SeenBy
+	}
 	to := "tableau"
-	if email != "" {
+	if who != "" {
 		ctx, cancel := context.WithTimeout(r.Context(), s.cfg.Timeout)
 		defer cancel()
-		_, viewer, err := s.cfg.Source.Describe(ctx, p.Project, s.ref(p), email)
+		_, person, err := s.cfg.Source.Describe(ctx, p.Project, s.ref(p), who)
 		if err != nil {
 			s.fail(w, r, web.View{}, p, email, err)
 			return
 		}
-		if len(viewer.Roles) > 0 && viewer.Roles[0] != "owner" {
+		if role := person.Role(); role != "owner" && role != "observer" {
 			to = "context"
 		}
 	}
@@ -221,7 +231,7 @@ func (s *Server) view(w http.ResponseWriter, r *http.Request, v web.View) {
 		s.fail(w, r, v, web.NewParams(), email, err)
 		return
 	}
-	if v.Name == "context" && p.Task == "" && p.Person == "" && email == "" {
+	if v.Name == "context" && p.Task == "" && p.Person == "" && email == "" && p.SeenBy == "" {
 		s.redirect(w, r, s.link.Page(web.Link{View: "tableau", Params: sticky(p)})) // an observer has no corner
 		return
 	}
@@ -247,13 +257,23 @@ func (s *Server) view(w http.ResponseWriter, r *http.Request, v web.View) {
 		s.redirect(w, r, s.link.Page(web.Link{View: v.Name, Params: p}))
 		return
 	}
+	var seen *source.Viewer
+	if p.SeenBy != "" && p.SeenBy != email {
+		_, person, err := s.cfg.Source.Describe(ctx, p.Project, s.ref(p), p.SeenBy)
+		if err != nil {
+			s.fail(w, r, v, p, email, err)
+			return
+		}
+		person.Email = p.SeenBy
+		seen = &person
+	}
 	res, err := s.fetch(ctx, digest, s.request(v, p, email))
 	if err != nil {
 		s.fail(w, r, v, p, email, err)
 		return
 	}
 	pg := s.page(v, p, email)
-	pg.Project, pg.Viewer, pg.Data, pg.Legend = &res.Project, res.Viewer, res.Data, res.Legend
+	pg.Project, pg.Viewer, pg.Data, pg.Legend, pg.Seen = &res.Project, res.Viewer, res.Data, res.Legend, seen
 	if s.cfg.Poll > 0 {
 		pg.Live = s.live(v, p, email, digest, true)
 	}

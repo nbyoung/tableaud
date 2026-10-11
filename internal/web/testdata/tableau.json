@@ -70,7 +70,8 @@
        "Syms": null,
        "Folded": true,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       },
       {
        "Syms": [
@@ -81,7 +82,8 @@
        ],
        "Folded": false,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 1
       },
       {
        "Syms": [
@@ -96,13 +98,15 @@
        ],
        "Folded": false,
        "Hist": false,
-       "Mine": true
+       "Mine": true,
+       "Rank": 0
       },
       {
        "Syms": null,
        "Folded": true,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       }
      ],
      "Status": {
@@ -158,13 +162,15 @@
        "Syms": null,
        "Folded": true,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       },
       {
        "Syms": null,
        "Folded": false,
        "Hist": true,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       },
       {
        "Syms": [
@@ -179,13 +185,15 @@
        ],
        "Folded": false,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 3
       },
       {
        "Syms": null,
        "Folded": true,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       }
      ],
      "Status": {
@@ -319,18 +327,20 @@
        "Syms": null,
        "Folded": true,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       },
       {
        "Syms": [
         {
-         "Glyph": "🟢",
-         "Name": "nominal"
+         "Glyph": "🟡",
+         "Name": "at_risk"
         }
        ],
        "Folded": false,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 2
       },
       {
        "Syms": [
@@ -341,13 +351,15 @@
        ],
        "Folded": false,
        "Hist": true,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       },
       {
        "Syms": null,
        "Folded": true,
        "Hist": false,
-       "Mine": false
+       "Mine": false,
+       "Rank": 0
       }
      ],
      "Status": {

@@ -12,6 +12,8 @@ import (
 // Window is -1 and Stale is 7 when the address states neither.
 type Params struct {
 	Project, Ref, Task, Person, Role, Level string
+	SeenBy                                  string // as_seen_by: the person whose arrangement the page draws
+	Minimum                                 string // the audit's lowest severity: "error" or "information"; "" for the default, warning
 	Window, Stale                           int
 	Columns, Open                           []string
 	OpenSet                                 bool // open= is present, even empty
@@ -66,6 +68,8 @@ func (p *Params) set(name, value string) error {
 		p.Task = value
 	case "person":
 		p.Person = value
+	case "as_seen_by":
+		p.SeenBy = value
 	case "role":
 		p.Role = value
 	case "level":
@@ -95,6 +99,15 @@ func (p *Params) set(name, value string) error {
 				return fmt.Errorf("stale %q: %w", value, err)
 			}
 			p.Stale = n
+		}
+	case "minimum":
+		switch value {
+		case "", "warning":
+			p.Minimum = ""
+		case "error", "information":
+			p.Minimum = value
+		default:
+			return fmt.Errorf("minimum %q: not error, warning or information", value)
 		}
 	case "historical", "proposed":
 		if value != "" && value != "on" {

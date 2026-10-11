@@ -22,7 +22,7 @@
 {{end}}</section>
 {{if .Groups}}<section aria-labelledby="findings">
 <h2 id="findings">Findings, by the action that resolves them</h2>
-{{range .Groups}}{{template "fold" .Fold}}<summary><span class="sev {{.Severity}}">{{.Severity}}</span> {{.Action}} · {{.Rule}} · {{len .Rows}} {{plural (len .Rows) "finding" "findings"}} <span class="muted">· {{.Resolver.Email}} resolves</span></summary>
+{{range .Groups}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s"><span class="sev {{.Severity}}">{{.Severity}}</span> {{.Action}} · {{.Rule}} · {{len .Rows}} {{plural (len .Rows) "finding" "findings"}} <span class="muted">· {{.Resolver.Email}} resolves</span></summary>
 <div class="scroll">
 <table>
 <caption>{{.Rule}}: {{.Title}}</caption>
@@ -32,7 +32,7 @@
 {{end}}</tbody>
 </table>
 </div>
-{{template "fold" .Prov}}<summary>Provenance: the rule, the commits and the commands</summary>{{if .Prov.Src}}{{template "lazy" .Prov}}{{else}}{{template "part/rule" .}}{{end}}</details>
+{{template "fold" .Prov}}<summary id="{{.Prov.ID}}-s">Provenance: the rule, the commits and the commands</summary>{{if .Prov.Src}}{{template "lazy" .Prov}}{{else}}{{template "part/rule" .}}{{end}}</details>
 </details>
 {{end}}</section>
 {{end}}{{end}}{{end}}
