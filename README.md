@@ -32,6 +32,8 @@ tableaud serve --as ben@example.org --ref main
 tableaud export --out public/ --ref main   # a static bundle for CI to publish
 ```
 
+The browser stores the column choices under the address the daemon serves at, so two projects served in turn on one port share them; `--addr` gives each project its own.
+
 ## Plan
 
 The project's plan is the Tableaux project in [`.tableaux/`](.tableaux/). The
