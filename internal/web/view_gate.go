@@ -26,6 +26,7 @@ type LegendRow struct {
 	Severity int    // a state's severity
 	Reserved bool   // the reason the method reserves
 	Fold     Fold   // class "detail"
+	Rank     int    // a state's severity rank, 0 to 3, as SeverityRank gives it
 }
 
 // FileFact is the commit that last changed one project file.

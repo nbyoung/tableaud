@@ -69,6 +69,7 @@ type Cell struct {
 	Folded bool // the cell of a folded column
 	Hist   bool // a historical junction
 	Mine   bool // the marked person acts here
+	Rank   int  // the severity rank of the state the cell holds, 0 to 3; 0 where it holds none
 }
 
 // RowProv is the provenance of a row's cells.

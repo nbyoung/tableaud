@@ -273,3 +273,24 @@ func TestFuncs(t *testing.T) {
 		}
 	}
 }
+
+// TestSeverityRank covers T5 of design 5a2f: the rank of a severity among
+// those of one gate definition, and the rank a legend gives a state key.
+func TestSeverityRank(t *testing.T) {
+	all := []int{0, 1, 2, 3, 0}
+	for s, want := range map[int]int{0: 0, 1: 1, 2: 2, 3: 3} {
+		if got := web.SeverityRank(s, all); got != want {
+			t.Errorf("%d: %d", s, got)
+		}
+	}
+	if got := web.SeverityRank(10, []int{1, 5, 7, 10}); got != 3 {
+		t.Error(got)
+	}
+	if got := web.SeverityRank(5, []int{5, 5, 0}); got != 1 {
+		t.Error(got)
+	}
+	l := web.NewLegend(nil, nil, nil, nil).WithSeverities(map[string]int{"nominal": 1, "at_risk": 2, "stalled": 3, "complete": 0})
+	if l.Rank("at_risk") != 2 || l.Rank("complete") != 0 || l.Rank("none") != 0 {
+		t.Error("rank")
+	}
+}

@@ -14,13 +14,17 @@ const (
 // one from the gate definition view at the commit in view.
 type Legend struct {
 	gates, states, reasons, marks map[string]Sym
+	severities                    map[string]int
 }
 
 // NewLegend returns a legend from four lists of key and glyph. A gate, a
 // state and a reason take their key as text name; a mark takes its meaning.
 // Each mark is its key, its glyph and its meaning.
 func NewLegend(gates, states, reasons [][2]string, marks [][3]string) *Legend {
-	l := &Legend{map[string]Sym{}, map[string]Sym{}, map[string]Sym{}, map[string]Sym{}}
+	l := &Legend{
+		gates: map[string]Sym{}, states: map[string]Sym{}, reasons: map[string]Sym{}, marks: map[string]Sym{},
+		severities: map[string]int{},
+	}
 	for _, g := range gates {
 		l.gates[g[0]] = Sym{Glyph: g[1], Name: g[0]}
 	}
@@ -34,6 +38,47 @@ func NewLegend(gates, states, reasons [][2]string, marks [][3]string) *Legend {
 		l.marks[m[0]] = Sym{Glyph: m[1], Name: m[2]}
 	}
 	return l
+}
+
+// SeverityRank returns the rank of the severity s among all, the severities
+// of every state of one gate definition: 0 for a severity of 0, which roll-up
+// sets aside; else one more than the count of distinct non-zero severities
+// below s, and at most 3. A page draws a rank, never a severity.
+func SeverityRank(s int, all []int) int {
+	if s == 0 {
+		return 0
+	}
+	below := map[int]bool{}
+	for _, a := range all {
+		if a != 0 && a < s {
+			below[a] = true
+		}
+	}
+	return min(len(below)+1, 3)
+}
+
+// WithSeverities records the severity of each state key, from the gate
+// definition, and returns the legend.
+func (l *Legend) WithSeverities(by map[string]int) *Legend {
+	l.severities = make(map[string]int, len(by))
+	for k, v := range by {
+		l.severities[k] = v
+	}
+	return l
+}
+
+// Rank returns the severity rank of a state key, as SeverityRank gives it
+// over the recorded severities; 0 for a key the legend lacks.
+func (l *Legend) Rank(state string) int {
+	s, ok := l.severities[state]
+	if !ok {
+		return 0
+	}
+	all := make([]int, 0, len(l.severities))
+	for _, v := range l.severities {
+		all = append(all, v)
+	}
+	return SeverityRank(s, all)
 }
 
 // Gate returns the symbol of a gate key. A key the legend lacks returns a
