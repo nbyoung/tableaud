@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -40,6 +41,13 @@ type discloseCases struct {
 		Open     []string
 		Drawn    []string
 		Controls map[string][2]string
+	}
+	Share []struct {
+		View   string
+		Query  string
+		Viewer string
+		Roles  []string
+		Want   string
 	}
 	Authority []struct {
 		Name   string
@@ -583,5 +591,186 @@ func TestColumnsFormMarkup(t *testing.T) {
 	}
 	if bad := checkAccess(root); len(bad) > 0 {
 		t.Errorf("checkAccess: %q", bad)
+	}
+}
+
+// framed returns a seenPage with the project and a body, ready to render.
+func framed(t *testing.T, view, query, viewer string, roles, seen []string) *web.Page {
+	t.Helper()
+	p := seenPage(t, view, query, viewer, roles, seen, false)
+	p.Project = &source.Project{Title: "Weather station", Root: "a1c0", Ref: "main", Commit: "edb30d2baa5e", Date: "2026-09-17"}
+	p.Version = "test"
+	return p
+}
+
+// TestShare covers T17: the address Share gives for each case; then each
+// address, read by a viewer with no role as seen by the first viewer, has the
+// same role in force, level and opener, an empty Share, a Self equal to that
+// address and an AsSelf without as_seen_by.
+func TestShare(t *testing.T) {
+	for _, c := range loadDiscloseCases(t).Share {
+		p := seenPage(t, c.View, c.Query, c.Viewer, c.Roles, nil, false)
+		got := p.Share()
+		if got != c.Want {
+			t.Errorf("%s?%s for %q: Share %q, want %q", c.View, c.Query, c.Viewer, got, c.Want)
+			continue
+		}
+		if got == "" {
+			continue
+		}
+		u, err := url.Parse(got)
+		if err != nil {
+			t.Fatal(err)
+		}
+		r := seenPage(t, c.View, u.RawQuery, "zed@example.org", nil, c.Roles, false)
+		if r.Params.SeenBy != c.Viewer || r.Seen == nil {
+			t.Errorf("%s: the receiver is seen by %q", got, r.Params.SeenBy)
+			continue
+		}
+		if web.RoleOf(r) != web.RoleOf(p) || web.LevelOf(r) != web.LevelOf(p) || !reflect.DeepEqual(web.OpenerOf(r), web.OpenerOf(p)) {
+			t.Errorf("%s: role %q level %d opener %#v, want %q %d %#v", got, web.RoleOf(r), web.LevelOf(r), web.OpenerOf(r), web.RoleOf(p), web.LevelOf(p), web.OpenerOf(p))
+		}
+		if r.Share() != "" || r.Self() != got || strings.Contains(r.AsSelf(), "as_seen_by") {
+			t.Errorf("%s: Share %q, Self %q, AsSelf %q", got, r.Share(), r.Self(), r.AsSelf())
+		}
+	}
+	// No second link without scripts, on an error page, or for a viewer with no email.
+	p := seenPage(t, "tableau", "", "ada@example.org", []string{"owner"}, nil, true)
+	if p.Share() != "" {
+		t.Errorf("the export offers %q", p.Share())
+	}
+	p = seenPage(t, "tableau", "", "ada@example.org", []string{"owner"}, nil, false)
+	p.Err = &web.PageError{Status: 404}
+	if p.Share() != "" || p.Levels() != nil {
+		t.Error("an error page offers a level or a second link")
+	}
+}
+
+// TestFrameControls covers T9: a page holds p.levels with four links of the ids
+// level-0 to level-3, one aria-current="true", no hx- attribute and still one
+// aria-current="page"; a#share stands only where Share is not empty; a page
+// without scripts and an error page hold neither.
+func TestFrameControls(t *testing.T) {
+	owner := []string{"owner"}
+	p := framed(t, "tableau", "level=detail&columns=defined", "ada@example.org", owner, nil)
+	root := mustParse(t, render(t, web.Document, p))
+	levels := root.byClass("p", "levels")
+	if len(levels) != 1 || levels[0].ancestor("header") == nil {
+		t.Fatalf("the level control is %v", levels)
+	}
+	links := levels[0].find("a")
+	if len(links) != 4 {
+		t.Fatalf("%d level links", len(links))
+	}
+	for i, want := range []struct{ label, href string }{
+		{"level by role", "/tableau?columns=defined"},
+		{"level glance", "/tableau?level=glance&columns=defined"},
+		{"level detail", "/tableau?level=detail&columns=defined"},
+		{"level provenance", "/tableau?level=provenance&columns=defined"},
+	} {
+		a := links[i]
+		if a.Attr["id"] != "level-"+strconv.Itoa(i) || a.text(false) != want.label || a.Attr["href"] != want.href || len(statusHx(a)) > 0 {
+			t.Errorf("level link %d is %v", i, a.Attr)
+		}
+		if _, current := a.Attr["aria-current"]; current != (i == 2) || (current && a.Attr["aria-current"] != "true") {
+			t.Errorf("level link %d: aria-current %q", i, a.Attr["aria-current"])
+		}
+	}
+	if n := strings.Count(render(t, web.Document, p), `aria-current="page"`); n != 1 {
+		t.Errorf("%d aria-current=page", n)
+	}
+	share := root.byID("share")
+	if share == nil || share.Tag != "a" || share.Attr["href"] != p.Share() || len(statusHx(share)) > 0 || share.ancestor("footer") == nil {
+		t.Errorf("the second link is %v", share)
+	}
+	if bad := checkAccess(root); len(bad) > 0 {
+		t.Errorf("checkAccess: %q", bad)
+	}
+	// A page that states as_seen_by offers none.
+	q := framed(t, "tableau", "as_seen_by=ada@example.org", "ada@example.org", owner, nil)
+	if mustParse(t, render(t, web.Document, q)).byID("share") != nil {
+		t.Error("a page that states as_seen_by offers the second link")
+	}
+	// The export and an error page hold neither control.
+	x := framed(t, "tableau", "", "", nil, nil)
+	x.Scripts = false
+	e := framed(t, "tableau", "", "ada@example.org", owner, nil)
+	e.Err = &web.PageError{Status: 404, Text: "Not Found", Message: "x"}
+	for name, pg := range map[string]*web.Page{"the export": x, "an error page": e} {
+		doc := mustParse(t, render(t, web.Document, pg))
+		if len(doc.byClass("p", "levels")) != 0 || doc.byID("share") != nil || doc.byID("as-self") != nil {
+			t.Errorf("%s holds a control of the frame", name)
+		}
+	}
+}
+
+// TestFrameNamesBothPeople covers the frame of T18 and T20 that lies in package
+// web: the notice, the link to the viewer's own page, the highlight of a person
+// who holds no role, and the title (T21).
+func TestFrameNamesBothPeople(t *testing.T) {
+	owner := []string{"owner"}
+	line := func(p *web.Page) *Node {
+		t.Helper()
+		l := mustParse(t, render(t, web.Document, p)).byClass("p", "context")
+		if len(l) != 1 {
+			t.Fatalf("%d context lines", len(l))
+		}
+		return l[0]
+	}
+	p := framed(t, "context", "as_seen_by=ben@example.org&open=a1c0", "ada@example.org", owner, []string{"assignee", "contributor"})
+	l := line(p)
+	strong := l.find("strong")
+	if len(strong) != 1 || strong[0].text(false) != "as seen by ben@example.org, assignee" || l.hasClass("norole") {
+		t.Errorf("the notice is %v in %q", strong, l.text(false))
+	}
+	if !strings.Contains(l.text(false), "viewer ada@example.org, owner · as seen by") {
+		t.Errorf("the context line is %q", l.text(false))
+	}
+	as := l.find("a")
+	if len(as) != 1 || as[0].Attr["id"] != "as-self" || as[0].Attr["href"] != "/context?open=a1c0" || as[0].text(false) != "see it as yourself" {
+		t.Errorf("the link to the viewer's own page is %v", as)
+	}
+	if got, want := p.Title(), "Contextual tableau · Weather station · as seen by ben@example.org"; got != want {
+		t.Errorf("the title is %q, want %q", got, want)
+	}
+	if q := mustParse(t, render(t, web.Document, p)).find("title"); len(q) != 1 || q[0].text(false) != p.Title() {
+		t.Errorf("the served title is %v", q)
+	}
+	nav := mustParse(t, render(t, web.Document, p)).find("nav")[0].find("a")
+	for _, a := range nav {
+		if !strings.Contains(a.Attr["href"], "as_seen_by=ben@example.org") {
+			t.Errorf("the nav entry %s forgets who sees the page: %s", a.text(false), a.Attr["href"])
+		}
+	}
+
+	// A person who holds no role: the words and the highlight.
+	z := framed(t, "tableau", "as_seen_by=zed@example.org", "ada@example.org", owner, nil)
+	l = line(z)
+	strong = l.find("strong")
+	if !l.hasClass("norole") || len(strong) != 1 || strong[0].text(false) != "as seen by zed@example.org, who holds no role in this project" {
+		t.Errorf("the frame of a person with no role is %v", l.Attr)
+	}
+	// A viewer who holds none: an observer, no highlight.
+	v := framed(t, "tableau", "", "zed@example.org", nil, nil)
+	l = line(v)
+	if l.hasClass("norole") || len(l.find("strong")) != 0 || !strings.Contains(l.text(false), "viewer zed@example.org, observer") {
+		t.Errorf("the frame of a viewer with no role is %q", l.text(false))
+	}
+	// as_seen_by the viewer, or none: the plain title and no notice.
+	for _, query := range []string{"", "as_seen_by=ada@example.org"} {
+		s := framed(t, "tableau", query, "ada@example.org", owner, nil)
+		if got := s.Title(); got != "Global tableau · Weather station" {
+			t.Errorf("%q: the title is %q", query, got)
+		}
+		if l := line(s); len(l.find("strong")) != 0 || len(l.find("a")) != 0 {
+			t.Errorf("%q: a notice stands in %q", query, l.text(false))
+		}
+	}
+	// An error page carries neither the notice nor the words in the title.
+	e := framed(t, "tableau", "as_seen_by=ben@example.org", "ada@example.org", owner, nil)
+	e.Err = &web.PageError{Status: 404, Text: "Not Found", Message: "x"}
+	doc := mustParse(t, render(t, web.Document, e))
+	if len(doc.byClass("p", "context")[0].find("strong")) != 0 || strings.Contains(e.Title(), "as seen by") {
+		t.Error("an error page names the borrowed page")
 	}
 }

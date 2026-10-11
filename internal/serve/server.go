@@ -173,10 +173,11 @@ func (s *Server) request(v web.View, p web.Params, email string) source.Request 
 }
 
 // sticky returns the parameters a link from this page to another carries:
-// the project, the ref (a range carries its end) and the role.
+// the project, the ref (a range carries its end), the person the page is seen
+// by and the role.
 func sticky(p web.Params) web.Params {
 	q := web.NewParams()
-	q.Project, q.Ref, q.Role = p.Project, p.Ref, p.Role
+	q.Project, q.Ref, q.SeenBy, q.Role = p.Project, p.Ref, p.SeenBy, p.Role
 	if _, to, ok := strings.Cut(q.Ref, ".."); ok {
 		q.Ref = to
 	}

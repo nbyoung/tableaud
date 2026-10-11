@@ -292,6 +292,37 @@ func (p *Page) Opened(ids []string) string {
 	return p.Link.Page(Link{View: p.View.Name, Params: q})
 }
 
+// Levels returns the four entries of the level control: "by role", the
+// address that states no level, then the three levels. The entry the address
+// states is Current. A page with no scripts or with an error has none.
+func (p *Page) Levels() []NavItem {
+	if !p.Scripts || p.Err != nil {
+		return nil
+	}
+	items := []NavItem{{Href: p.Self("level", ""), Label: "by role", Current: p.Params.Level == ""}}
+	for _, l := range []string{"glance", "detail", "provenance"} {
+		items = append(items, NavItem{Href: p.Self("level", l), Label: l, Current: p.Params.Level == l})
+	}
+	return items
+}
+
+// Share returns the address that opens this page for another viewer as this
+// viewer sees it: the page's own address with as_seen_by the viewer, and with
+// role only when the role in force is not the viewer's first. It returns the
+// empty string where the address states as_seen_by already, since the page's
+// own address is then that link; for a viewer with no email; on a page with
+// no scripts; and on an error page.
+func (p *Page) Share() string {
+	if !p.Scripts || p.Err != nil || p.Params.SeenBy != "" || p.Viewer.Email == "" {
+		return ""
+	}
+	role := roleOf(p)
+	if role == p.Viewer.Role() {
+		role = ""
+	}
+	return p.Self("part", "", "as_seen_by", p.Viewer.Email, "role", role)
+}
+
 // GateChoice is one gate of the project as the column choice reads it, in
 // gate order: its key, whether the page shows its column, and the count of
 // tasks whose current gate it is.

@@ -54,19 +54,23 @@
     </ul>
   </nav>
   {{- with .Project}}
-  <p class="context">{{.Title}} · {{if .Worktree}}the working tree on {{end}}<code>{{.Ref}}</code> at <code>{{.Short}}</code>, {{.Date}} · {{template "viewer" $}}{{if not $.Err}}{{template "context" $}}{{end}}</p>
+  <p class="context{{if $.Unheld}} norole{{end}}">{{.Title}} · {{if .Worktree}}the working tree on {{end}}<code>{{.Ref}}</code> at <code>{{.Short}}</code>, {{.Date}} · {{template "viewer" $}}{{if not $.Err}}{{template "context" $}}{{end}}</p>
+  {{- end}}
+  {{- with .Levels}}
+  <p class="levels">Level:{{range $i, $l := .}}{{if $i}} ·{{end}} <a id="level-{{$i}}" href="{{$l.Href}}"{{if $l.Current}} aria-current="true"{{end}}><span class="sr">level </span>{{$l.Label}}</a>{{end}}</p>
   {{- end}}
 </header>
 <main id="main" class="{{if .Err}}error{{else}}v-{{.View.Name}}{{end}}">
 {{- if .Err}}{{template "error" .}}{{else}}{{template "view" .}}{{end}}
 </main>
 <footer class="site">
-  <p>tableaud {{.Version}}{{if not .Err}} · <a href="{{.Self}}">the link to this page</a>{{end}}</p>
+  <p>tableaud {{.Version}}{{if not .Err}} · <a href="{{.Self}}">the link to this page</a>{{end}}{{with .Share}} · <a id="share" href="{{.}}">the link that opens it as you see it</a>{{end}}</p>
 </footer>
 </div>
 {{end}}
 
-{{define "viewer"}}{{with .Viewer}}{{if .Email}}viewer {{.Email}}, {{.Role}}{{else}}viewer: an observer{{end}}{{end}}{{end}}
+{{define "viewer"}}{{with .Viewer}}{{if .Email}}viewer {{.Email}}, {{.Role}}{{else}}viewer: an observer{{end}}{{end}}
+  {{- with .AsSelf}} · <strong>as seen by {{$.SeenBy.Email}}, {{if $.Unheld}}who holds no role in this project{{else}}{{$.SeenBy.Role}}{{end}}</strong> · <a id="as-self" href="{{.}}">see it as yourself</a>{{end}}{{end}}
 
 {{/* An error is a page in the same frame, so the nav still leads somewhere and
      the live poll heals it when the repository does. */}}

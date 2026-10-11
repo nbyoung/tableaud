@@ -113,8 +113,14 @@ table.tableau th.task { position: sticky; left: 0; }
 table.tableau tbody th.task { background: var(--bg); }
 table.tableau tr:target > th.task { background: var(--mark); }
 @media (forced-colors: active) {
-  .mine, .proposed, tr:target > td, tr:target > th, li:target, details:target > summary { outline: 1px solid; }
+  .mine, .proposed, tr:target > td, tr:target > th, li:target, details:target > summary, .context.norole { outline: 1px solid; }
 }
+
+/* progressive disclosure: the rules of design db74, for the frame */
+p.levels { color: var(--muted); font-size: .875rem; margin: .25rem 0 0; }
+p.levels a[aria-current="true"] { color: var(--fg); font-weight: 600; text-decoration: none; }
+.context strong { color: var(--fg); }
+.context.norole { background: var(--mark); --muted: var(--fg); }
 
 /* gates */
 .v-gates table.legend th.gate { width: 4.5rem; }
