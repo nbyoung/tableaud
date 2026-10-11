@@ -171,6 +171,10 @@ func (p *Page) InForce() []Param {
 			if q.Stale > 0 && q.Stale != 7 {
 				add(name, strconv.Itoa(q.Stale))
 			}
+		case "minimum":
+			if q.Minimum != "" {
+				add(name, q.Minimum)
+			}
 		case "brief":
 			if q.Brief != "" {
 				add(name, q.Brief)

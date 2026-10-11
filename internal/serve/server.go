@@ -164,6 +164,7 @@ func (s *Server) request(v web.View, p web.Params, email string) source.Request 
 		Window: p.Window, Stale: p.Stale, Columns: p.Columns, Historical: p.Historical, Proposed: p.Proposed,
 	}
 	req.BriefTask, req.BriefGate, _ = strings.Cut(p.Brief, ":")
+	req.Minimum = p.Minimum
 	if v.Name == "audit" {
 		n := s.cfg.Now().UTC()
 		req.Today = time.Date(n.Year(), n.Month(), n.Day(), 0, 0, 0, 0, time.UTC)

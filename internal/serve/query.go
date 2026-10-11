@@ -94,6 +94,13 @@ func ParseQuery(v web.View, q url.Values) (web.Params, error) {
 		}
 		p.Person = s
 	}
+	if s, ok := one("as_seen_by"); ok {
+		a, err := mail.ParseAddress(s)
+		if err != nil || a.Name != "" || a.Address != s || len(s) > 254 {
+			return p, bad("as_seen_by", "%q is not an email address", s)
+		}
+		p.SeenBy = s
+	}
 	if v.Name == "context" && p.Task != "" && p.Person != "" {
 		return p, bad("task and person", "the contextual tableau takes one of them")
 	}
@@ -178,6 +185,15 @@ func ParseQuery(v web.View, q url.Values) (web.Params, error) {
 		}
 		p.Stale = n
 	}
+	if s, ok := one("minimum"); ok {
+		switch s {
+		case "error", "information":
+			p.Minimum = s
+		case "warning":
+		default:
+			return p, bad("minimum", "%q is not error, warning or information", s)
+		}
+	}
 	if s, ok := one("brief"); ok {
 		task, gate, found := strings.Cut(s, ":")
 		if !found || !reTask.MatchString(task) || !reGate.MatchString(gate) {
@@ -247,6 +263,9 @@ func Query(v web.View, p web.Params) string {
 	if p.Person != "" {
 		add("person", p.Person)
 	}
+	if p.SeenBy != "" {
+		add("as_seen_by", p.SeenBy)
+	}
 	if p.Role != "" {
 		add("role", p.Role)
 	}
@@ -271,6 +290,9 @@ func Query(v web.View, p web.Params) string {
 	}
 	if p.Stale > 0 && p.Stale != 7 {
 		add("stale", strconv.Itoa(p.Stale))
+	}
+	if p.Minimum != "" {
+		add("minimum", p.Minimum)
 	}
 	if p.Brief != "" {
 		add("brief", p.Brief)
