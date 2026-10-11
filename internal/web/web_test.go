@@ -325,3 +325,98 @@ func TestColumnRule(t *testing.T) {
 		}
 	}
 }
+
+// TestScriptNamesTheMarkup covers the first half of T12: the script stays under
+// eighty lines and holds defaultChecked, input[name="columns"], form.columns
+// and a[data-columns], the names the markup of the column form writes.
+func TestScriptNamesTheMarkup(t *testing.T) {
+	b, err := fs.ReadFile(web.Static, "static/tableaud.js")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"defaultChecked", `input[name="columns"]`, "form.columns", "a[data-columns]"} {
+		if !strings.Contains(string(b), want) {
+			t.Errorf("tableaud.js lacks %s", want)
+		}
+	}
+	f := fixtureNamed(t, "tableau")
+	root := mustParse(t, render(t, web.Document, f.page()))
+	forms := root.byClass("form", "columns")
+	if len(forms) != 1 {
+		t.Fatalf("%d column forms", len(forms))
+	}
+	boxes := 0
+	for _, in := range forms[0].find("input") {
+		if in.Attr["name"] == "columns" && in.Attr["type"] == "checkbox" {
+			boxes++
+		}
+	}
+	if boxes == 0 {
+		t.Error("the markup writes no input named columns")
+	}
+	m := clone(t, f.Model.(*web.TableauView))
+	m.Grid.Control.Reset = &web.Control{Href: "V/tableau", Swap: true}
+	root = mustParse(t, render(t, web.Document, pageOf(f.View, m)))
+	found := 0
+	for _, a := range root.find("a") {
+		if v, ok := a.Attr["data-columns"]; ok && v == "" {
+			found++
+		}
+	}
+	if found != 1 {
+		t.Errorf("%d links with data-columns", found)
+	}
+}
+
+// submitScript drives the listeners of tableaud.js with a stub of the page and
+// prints the writes to the store as a JSON array.
+const submitScript = `
+const listeners = {}, log = [];
+global.document = {
+  addEventListener: (type, fn) => { listeners[type] = fn; },
+  querySelectorAll: () => [],
+};
+global.location = { pathname: '/tableau', search: '', hash: '', replace: () => {} };
+global.window = { localStorage: {
+  getItem: () => null,
+  setItem: (k, v) => log.push(['set', k, v]),
+  removeItem: (k) => log.push(['remove', k]),
+} };
+require(process.argv[2]);
+const box = (value, checked, defaultChecked) => ({ value, checked, defaultChecked });
+const form = (boxes) => ({ matches: (s) => s === 'form.columns', querySelectorAll: () => boxes });
+const submit = (boxes) => listeners.submit({ target: form(boxes) });
+submit([box('a', true, true), box('b', true, true)]);                 // unchanged: nothing
+submit([box('a', true, true), box('b', false, true)]);                // a box cleared: a
+submit([box('a', true, false), box('b', true, true)]);                // a box set: a,b
+submit([box('a', false, true), box('b', false, true)]);               // none set: the default window
+listeners.submit({ target: { matches: () => false } });               // another form: nothing
+listeners.click({ target: { closest: () => ({ getAttribute: () => '' }) } });  // the reset link
+listeners.click({ target: { closest: () => null } });                 // no link: nothing
+process.stdout.write(JSON.stringify(log));
+`
+
+// TestSubmitStoresOnlyAChoice covers the second half of T12: the submit
+// listener stores the list of the boxes only when a reader changed a box, and
+// the reset link clears the store. It runs the script under node where the
+// host has it.
+func TestSubmitStoresOnlyAChoice(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Skip("node is not installed; the listener stands unproven until CI runs this test")
+	}
+	dir := t.TempDir()
+	runner := filepath.Join(dir, "run.js")
+	if err := os.WriteFile(runner, []byte(submitScript), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	script, _ := filepath.Abs("static/tableaud.js")
+	out, err := exec.Command(node, runner, script).CombinedOutput()
+	if err != nil {
+		t.Fatalf("node: %v\n%s", err, out)
+	}
+	const want = `[["set","tableaud.columns.tableau","a"],["set","tableaud.columns.tableau","a,b"],["remove","tableaud.columns.tableau"],["remove","tableaud.columns.tableau"]]`
+	if string(out) != want {
+		t.Errorf("the store saw %s, want %s", out, want)
+	}
+}

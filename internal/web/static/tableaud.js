@@ -47,10 +47,14 @@
     if (control) { keep(control.getAttribute('data-columns')); }
   }, true);
   document.addEventListener('submit', function (event) {
-    var form = event.target;
-    if (form.matches && form.matches('form.columns')) {
-      keep(new FormData(form).getAll('columns').join(','));
+    var form = event.target, list = [], changed = false;
+    if (!form.matches || !form.matches('form.columns')) { return; }
+    var boxes = form.querySelectorAll('input[name="columns"]');
+    for (var i = 0; i < boxes.length; i++) {
+      if (boxes[i].checked) { list.push(boxes[i].value); }
+      if (boxes[i].checked !== boxes[i].defaultChecked) { changed = true; }
     }
+    if (changed) { keep(list.join(',')); } // boxes left as the page drew them make no choice
   }, true);
 
   // Job 2. A swap of #page, by the live poll or by a control, keeps each fold
