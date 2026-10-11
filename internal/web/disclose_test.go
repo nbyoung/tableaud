@@ -743,6 +743,12 @@ func TestFrameNamesBothPeople(t *testing.T) {
 		}
 	}
 
+	for _, pg := range []*web.Page{p, framed(t, "tableau", "as_seen_by=zed@example.org", "ada@example.org", owner, nil)} {
+		if bad := checkAccess(mustParse(t, render(t, web.Document, pg))); len(bad) > 0 {
+			t.Errorf("checkAccess on %s: %q", pg.Self(), bad)
+		}
+	}
+
 	// A person who holds no role: the words and the highlight.
 	z := framed(t, "tableau", "as_seen_by=zed@example.org", "ada@example.org", owner, nil)
 	l = line(z)
@@ -773,4 +779,32 @@ func TestFrameNamesBothPeople(t *testing.T) {
 	if len(doc.byClass("p", "context")[0].find("strong")) != 0 || strings.Contains(e.Title(), "as seen by") {
 		t.Error("an error page names the borrowed page")
 	}
+}
+
+// TestAdaptersCallDisclosure covers A7 and A8 of design db74: the status
+// adapters call Unfold, Entry and ColumnsOf and name the focus of the queue and
+// the blockage tree from the person a page is seen by; the authority, the
+// assignment and the audit adapters call Focus with AuthorityFocus, the
+// assignment's ids and AuditFocus. It waits for tablo's view types.
+func TestAdaptersCallDisclosure(t *testing.T) {
+	t.Skip("waits for tablo's view types (tasks 886d, 493e): the adapters of 44bf, e2b6 and 9a9c call Unfold, Entry, ColumnsOf and Focus when they land")
+}
+
+// TestAuditMinimumControl covers the control of the audit's minimum, which
+// 9a9c's adapter draws: the three counts as the three links, the current one
+// marked with aria-current="true". It waits for tablo's dada and the audit's
+// adapter.
+func TestAuditMinimumControl(t *testing.T) {
+	t.Skip("waits for tablo's view types (task dada): the audit adapter draws the three counts as links to Page.Self(minimum, ...)")
+}
+
+// TestDisclosureAgreesWithTablo covers T14: over the corpus entry
+// weather-station at main, the owner's /tableau draws a1c0, 4e2b, 7b2e and
+// 3c5d; Ben's /context draws all six rows in its wider grid, 4e2b and c07d in
+// its first, and opens d-wider; the form lists every gate; the authority tree
+// opens T6's ids for each of the three people; the owner's
+// /context?as_seen_by=ben@example.org draws Ben's page. It waits for tablo's
+// view types.
+func TestDisclosureAgreesWithTablo(t *testing.T) {
+	t.Skip("waits for tablo's view types (tasks 886d, 493e, dada): the adapters of 44bf, e2b6 and 9a9c land with them")
 }
