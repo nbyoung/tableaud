@@ -1,6 +1,8 @@
 package web
 
 import (
+	"slices"
+
 	"github.com/nbyoung/tableaud/internal/source"
 )
 
@@ -124,6 +126,169 @@ func (e Env) Focus(ids ...string) Env {
 		e.Open = r
 	}
 	return e
+}
+
+// Entry returns the rows a grid opens on when the address states no open set.
+// top is the first row of the grid: the root, or the task of the task form;
+// spine lists the ancestors of the person's tasks, for the person form.
+//
+// The global tableau opens on the root and its children, and on every row
+// when the address states the level detail or provenance; in the export it
+// draws the branches. The task form opens on the task and its children. The
+// person form opens at the parents of the person's tasks: the whole spine.
+func Entry(p *Page, top string, spine []string) Unfolded {
+	if p.View.Name == "context" {
+		if p.Params.Task == "" {
+			return Unfolded{IDs: spine}
+		}
+		return Unfolded{IDs: []string{top}}
+	}
+	l := Glance
+	if p.Params.Level != "" {
+		l = levelOf(p)
+	}
+	u := DefaultUnfolded(l, top)
+	u.Branches = !p.Scripts
+	return u
+}
+
+// TreeRow is one row of a grid as the open set reads it: its id and its
+// parent's. A row whose parent stands in no row of the grid is a top row.
+type TreeRow struct{ ID, Parent string }
+
+// Unfolding is the open state of one grid: which rows it draws, and the
+// address of each next state.
+type Unfolding struct {
+	page     *Page
+	rows     []TreeRow
+	parent   map[string]string // of each row whose parent is a row
+	kids     map[string]int    // the rows directly beneath each row
+	open     map[string]bool
+	entry    []string // the entry state, sorted
+	branches bool
+}
+
+// Unfold resolves the open state of the grid whose rows stand in display
+// order: the open set of the address when it states one, else entry. An id
+// that names no parent of the grid drops out, and so does a parent beneath a
+// closed one, so that a state has one spelling. With entry.Branches the grid
+// draws its first row and that row's children, whatever the address states.
+func Unfold(p *Page, rows []TreeRow, entry Unfolded) *Unfolding {
+	u := &Unfolding{page: p, rows: rows, parent: map[string]string{}, kids: map[string]int{}, branches: entry.Branches}
+	ids := map[string]bool{}
+	for _, r := range rows {
+		ids[r.ID] = true
+	}
+	for _, r := range rows {
+		if r.Parent != "" && ids[r.Parent] {
+			u.parent[r.ID] = r.Parent
+			u.kids[r.Parent]++
+		}
+	}
+	resolve := func(f Unfolded) map[string]bool {
+		set := map[string]bool{}
+		for _, r := range rows { // display order: a parent stands before its rows
+			if u.kids[r.ID] == 0 || (!f.All && !slices.Contains(f.IDs, r.ID)) {
+				continue
+			}
+			if up, ok := u.parent[r.ID]; !ok || set[up] {
+				set[r.ID] = true
+			}
+		}
+		return set
+	}
+	u.entry = sorted(resolve(entry))
+	switch {
+	case u.branches:
+		u.open = map[string]bool{}
+		if len(rows) > 0 {
+			u.open[rows[0].ID] = true
+		}
+	case p.Params.OpenSet || len(p.Params.Open) > 0:
+		u.open = resolve(Unfolded{IDs: p.Params.Open})
+	default:
+		u.open = resolve(entry)
+	}
+	return u
+}
+
+func sorted(set map[string]bool) []string {
+	out := make([]string, 0, len(set))
+	for id := range set {
+		out = append(out, id)
+	}
+	slices.Sort(out)
+	return out
+}
+
+// Draws reports whether the grid draws the row: every ancestor of it is open.
+func (u *Unfolding) Draws(id string) bool {
+	up, ok := u.parent[id]
+	return !ok || u.open[up]
+}
+
+// Open returns the open parents, sorted by id.
+func (u *Unfolding) Open() []string { return sorted(u.open) }
+
+// Controls returns the control of a row's fold: expand, the address that
+// draws the rows beneath it, or collapse, the address that folds them and
+// every open row beneath; both nil for a row with no row beneath it in the
+// grid. A state equal to the entry state takes the address without an open
+// set. With branches, a child of the first row that has rows beneath it takes
+// the anchor of its branch as expand, and no other row takes a control. On a
+// page with no scripts and no branches no row takes a control.
+func (u *Unfolding) Controls(id string) (expand, collapse *Control) {
+	if u.kids[id] == 0 {
+		return nil, nil
+	}
+	if u.branches {
+		if len(u.rows) > 0 && u.parent[id] == u.rows[0].ID {
+			return &Control{Href: "#branch-" + id}, nil
+		}
+		return nil, nil
+	}
+	if !u.page.Scripts {
+		return nil, nil
+	}
+	next := map[string]bool{}
+	for o := range u.open {
+		next[o] = true
+	}
+	if !u.open[id] {
+		next[id] = true
+		return u.control(next), nil
+	}
+	for o := range u.open {
+		for a, ok := o, true; ok; a, ok = u.parent[a] {
+			if a == id {
+				delete(next, o)
+				break
+			}
+		}
+	}
+	return nil, u.control(next)
+}
+
+func (u *Unfolding) control(set map[string]bool) *Control {
+	ids := sorted(set)
+	if slices.Equal(ids, u.entry) {
+		q := u.page.Params
+		q.Open, q.OpenSet, q.Part, q.Key = nil, false, "", ""
+		return &Control{Href: u.page.Link.Page(Link{View: u.page.View.Name, Params: q}), Swap: true}
+	}
+	return &Control{Href: u.page.Opened(ids), Swap: true}
+}
+
+// Opened returns the address of this page with exactly the rows of ids open.
+// No id is the address that states the empty set, open=, which Self cannot
+// write: Self("open", "") removes the name.
+func (p *Page) Opened(ids []string) string {
+	q := p.Params
+	q.Open = slices.Clone(ids)
+	slices.Sort(q.Open)
+	q.Open = slices.Compact(q.Open)
+	q.OpenSet, q.Part, q.Key = true, "", ""
+	return p.Link.Page(Link{View: p.View.Name, Params: q})
 }
 
 // Holder is one task as the focus of the authority tree reads it.

@@ -2,9 +2,11 @@ package web_test
 
 import (
 	"encoding/json"
+	"net/url"
 	"reflect"
 	"slices"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/nbyoung/tableaud/internal/source"
@@ -24,6 +26,19 @@ type discloseCases struct {
 		Focus  *[]string
 		Folds  [][2]string
 		Want   []bool
+	}
+	Trees  map[string][][2]string
+	Unfold []struct {
+		Name     string
+		View     string
+		Query    string
+		Export   bool
+		Tree     string
+		Top      string
+		Spine    []string
+		Open     []string
+		Drawn    []string
+		Controls map[string][2]string
 	}
 	Authority []struct {
 		Name   string
@@ -233,5 +248,197 @@ func TestMinimumInTheAddress(t *testing.T) {
 	}
 	if n := len(at(t, "audit", "").InForce()); n != 0 {
 		t.Errorf("the default audit shows %d parameters", n)
+	}
+}
+
+// treeRows returns the rows of a tree of the cases as the open set reads them.
+func treeRows(c discloseCases, name string) []web.TreeRow {
+	var rows []web.TreeRow
+	for _, r := range c.Trees[name] {
+		rows = append(rows, web.TreeRow{ID: r[0], Parent: r[1]})
+	}
+	return rows
+}
+
+// TestUnfold covers T3: Entry and Unfold over the trees of the weather
+// station: the entry on the three pages and at each stated level, a stated
+// set, open=, an id that is no parent, a parent beneath a closed one, the
+// other parameters kept, as_seen_by among them, the branches and a page
+// without scripts.
+func TestUnfold(t *testing.T) {
+	cases := loadDiscloseCases(t)
+	for _, c := range cases.Unfold {
+		p := seenPage(t, c.View, c.Query, "ada@example.org", []string{"owner"}, nil, c.Export)
+		rows := treeRows(cases, c.Tree)
+		u := web.Unfold(p, rows, web.Entry(p, c.Top, c.Spine))
+		if got := u.Open(); !slices.Equal(got, c.Open) && (len(got) > 0 || len(c.Open) > 0) {
+			t.Errorf("%s: open %v, want %v", c.Name, got, c.Open)
+		}
+		var drawn []string
+		controls := map[string][2]string{}
+		for _, r := range rows {
+			if u.Draws(r.ID) {
+				drawn = append(drawn, r.ID)
+			}
+			expand, collapse := u.Controls(r.ID)
+			if expand != nil && collapse != nil {
+				t.Errorf("%s: row %s has both controls", c.Name, r.ID)
+			}
+			var pair [2]string
+			for i, ctl := range []*web.Control{expand, collapse} {
+				if ctl == nil {
+					continue
+				}
+				pair[i] = ctl.Href
+				if ctl.Swap == strings.HasPrefix(ctl.Href, "#") {
+					t.Errorf("%s: row %s: control %q has Swap %v", c.Name, r.ID, ctl.Href, ctl.Swap)
+				}
+			}
+			if pair != ([2]string{}) {
+				controls[r.ID] = pair
+			}
+		}
+		if !slices.Equal(drawn, c.Drawn) {
+			t.Errorf("%s: drawn %v, want %v", c.Name, drawn, c.Drawn)
+		}
+		if len(controls) != len(c.Controls) || (len(controls) > 0 && !reflect.DeepEqual(controls, c.Controls)) {
+			t.Errorf("%s: controls %v, want %v", c.Name, controls, c.Controls)
+		}
+	}
+}
+
+// pageAt returns the page an address of the daemon names, for a viewer.
+func pageAt(t *testing.T, href string) *web.Page {
+	t.Helper()
+	u, err := url.Parse(href)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p := seenPage(t, strings.TrimPrefix(u.Path, "/"), u.RawQuery, "ada@example.org", []string{"owner"}, nil, false)
+	return p
+}
+
+// TestEveryStateHasOneAddress covers T4: from each case that offers controls, a
+// walk over every control, bounded at 4000 states. Each address parses, gives
+// under Unfold the open set its control computed, and an expand followed by
+// the collapse of the same row returns the address it left.
+func TestEveryStateHasOneAddress(t *testing.T) {
+	cases := loadDiscloseCases(t)
+	walked := 0
+	for _, c := range cases.Unfold {
+		if c.Export || len(c.Controls) == 0 {
+			continue
+		}
+		rows := treeRows(cases, c.Tree)
+		below := map[string][]string{} // the proper descendants of each row
+		parent := map[string]string{}
+		for _, r := range rows {
+			parent[r.ID] = r.Parent
+		}
+		for id := range parent {
+			for a := parent[id]; a != ""; a = parent[a] {
+				below[a] = append(below[a], id)
+			}
+		}
+		entry := func(p *web.Page) *web.Unfolding { return web.Unfold(p, rows, web.Entry(p, c.Top, c.Spine)) }
+		start := seenPage(t, c.View, c.Query, "ada@example.org", []string{"owner"}, nil, false)
+		seen := map[string]bool{start.Self(): true}
+		queue := []*web.Page{start}
+		for len(queue) > 0 && len(seen) < 4000 {
+			p := queue[0]
+			queue = queue[1:]
+			u := entry(p)
+			for _, r := range rows {
+				if !u.Draws(r.ID) {
+					continue
+				}
+				expand, collapse := u.Controls(r.ID)
+				for _, ctl := range []*web.Control{expand, collapse} {
+					if ctl == nil {
+						continue
+					}
+					next := pageAt(t, ctl.Href)
+					if next.Self() != ctl.Href {
+						t.Errorf("%s: %s is not canonical, %s", c.Name, ctl.Href, next.Self())
+					}
+					want := map[string]bool{}
+					for _, o := range u.Open() {
+						want[o] = true
+					}
+					if ctl == expand {
+						want[r.ID] = true
+					} else {
+						for _, d := range append([]string{r.ID}, below[r.ID]...) {
+							delete(want, d)
+						}
+					}
+					walked++
+					nu := entry(next)
+					got := map[string]bool{}
+					for _, o := range nu.Open() {
+						got[o] = true
+					}
+					if !reflect.DeepEqual(got, want) {
+						t.Errorf("%s: control %s opens %v, want %v", c.Name, ctl.Href, nu.Open(), want)
+					}
+					// The other control of the row, in the next state, returns here.
+					ne, nc := nu.Controls(r.ID)
+					back := nc
+					if ctl == collapse {
+						back = ne
+					}
+					if back == nil {
+						t.Errorf("%s: %s offers no way back at %s", c.Name, ctl.Href, r.ID)
+					} else if want := stateAddress(t, p, u, entry); ctl == expand && back.Href != want {
+						t.Errorf("%s: %s then the collapse of %s gives %s, not %s", c.Name, ctl.Href, r.ID, back.Href, want)
+					}
+					if !seen[ctl.Href] {
+						seen[ctl.Href] = true
+						queue = append(queue, next)
+					}
+				}
+			}
+		}
+	}
+	if walked == 0 {
+		t.Fatal("no control walked")
+	}
+}
+
+// stateAddress returns the canonical address of the state a page stands at:
+// the address without open for the entry state, else the one that lists the
+// open rows.
+func stateAddress(t *testing.T, p *web.Page, u *web.Unfolding, entry func(*web.Page) *web.Unfolding) string {
+	t.Helper()
+	bare := *p
+	bare.Params.Open, bare.Params.OpenSet = nil, false
+	if slices.Equal(u.Open(), entry(&bare).Open()) {
+		return p.Self("open", "", "part", "")
+	}
+	return p.Opened(u.Open())
+}
+
+// TestOpened covers T5: the empty set reads open=; the ids sort and lose
+// repeats; part goes; Self("open", "") gives the address without the name.
+func TestOpened(t *testing.T) {
+	p := at(t, "tableau", "open=a1c0&ref=main")
+	for _, c := range []struct {
+		ids  []string
+		want string
+	}{
+		{nil, "/tableau?ref=main&open="},
+		{[]string{"a1c0", "4e2b", "a1c0"}, "/tableau?ref=main&open=4e2b,a1c0"},
+	} {
+		if got := p.Opened(c.ids); got != c.want {
+			t.Errorf("Opened(%v) = %q, want %q", c.ids, got, c.want)
+		}
+	}
+	if got, want := p.Self("open", ""), "/tableau?ref=main"; got != want {
+		t.Errorf("Self(open, ) = %q, want %q", got, want)
+	}
+	q := at(t, "task", "task=9f31")
+	q.Params.Part = "status"
+	if got := q.Opened([]string{"9f31"}); strings.Contains(got, "part") {
+		t.Errorf("Opened keeps the part: %q", got)
 	}
 }
