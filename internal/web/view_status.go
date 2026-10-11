@@ -114,6 +114,7 @@ type ColumnsForm struct {
 	HistName     string
 	Hist         bool
 	Shown, Total int
+	Reset        *Control // the return to the default window; nil when the page shows it
 }
 
 // ColumnChoice is one gate in the column choice.

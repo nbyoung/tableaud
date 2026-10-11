@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/nbyoung/tableaud/internal/serve"
 	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
 )
@@ -440,5 +441,147 @@ func TestOpened(t *testing.T) {
 	q.Params.Part = "status"
 	if got := q.Opened([]string{"9f31"}); strings.Contains(got, "part") {
 		t.Errorf("Opened keeps the part: %q", got)
+	}
+}
+
+// choiceGates is the gate choice the tests of the column form state: four
+// gates, three shown.
+var choiceGates = []web.GateChoice{
+	{Key: "undefined", Shown: false, Count: 1},
+	{Key: "defined", Shown: true, Count: 4},
+	{Key: "mockup", Shown: true, Count: 9},
+	{Key: "integrate", Shown: true, Count: 2},
+}
+
+func choiceLegend() *web.Legend {
+	return web.NewLegend([][2]string{{"undefined", "❔"}, {"defined", "📝"}, {"mockup", "📌"}, {"integrate", "🔗"}}, nil, nil, nil)
+}
+
+// TestColumnsOf covers T7: the fields of the form as the table of the design
+// states them, for five addresses, one with as_seen_by; then the query a
+// browser builds from the form parses to the page's own parameters with the
+// checked list, and to the default window with no box set. Reset stands only
+// where the address states columns or window; the export has no form.
+func TestColumnsOf(t *testing.T) {
+	for _, c := range []struct {
+		view, query string
+		hidden      []web.Meta
+		reset       bool
+		resetHref   string
+	}{
+		{"tableau", "", nil, false, ""},
+		{"tableau", "ref=main&level=detail&open=a1c0", []web.Meta{{Name: "ref", Content: "main"}, {Name: "level", Content: "detail"}, {Name: "open", Content: "a1c0"}}, false, ""},
+		{"context", "person=ben@example.org&as_seen_by=ada@example.org&role=owner&columns=defined,mockup&historical=on",
+			[]web.Meta{{Name: "person", Content: "ben@example.org"}, {Name: "as_seen_by", Content: "ada@example.org"}, {Name: "role", Content: "owner"}},
+			true, "/context?person=ben@example.org&as_seen_by=ada@example.org&role=owner&historical=on"},
+		{"context", "task=4e2b&window=3&open=", []web.Meta{{Name: "task", Content: "4e2b"}, {Name: "open", Content: ""}}, true, "/context?task=4e2b&open="},
+		{"tableau", "project=p&ref=main&as_seen_by=ben@example.org&role=contributor&person=dan@example.org&historical=on",
+			[]web.Meta{{Name: "project", Content: "p"}, {Name: "ref", Content: "main"}, {Name: "person", Content: "dan@example.org"}, {Name: "as_seen_by", Content: "ben@example.org"}, {Name: "role", Content: "contributor"}},
+			false, ""},
+	} {
+		name := c.view + "?" + c.query
+		p := seenPage(t, c.view, c.query, "ada@example.org", []string{"owner"}, nil, false)
+		e := web.EnvOf(p, web.Document)
+		e.Legend = choiceLegend()
+		f := web.ColumnsOf(e, choiceGates)
+		if f == nil {
+			t.Fatalf("%s: no form", name)
+		}
+		if f.Fold.ID != "columns" || f.Fold.Class != "columns" || f.Fold.Open {
+			t.Errorf("%s: fold %+v", name, f.Fold)
+		}
+		if want := "/" + c.view; f.Action != want || f.Name != "columns" || f.HistName != "historical" {
+			t.Errorf("%s: action %q, names %q and %q", name, f.Action, f.Name, f.HistName)
+		}
+		if !slices.Equal(f.Hidden, c.hidden) && (len(f.Hidden) > 0 || len(c.hidden) > 0) {
+			t.Errorf("%s: hidden %v, want %v", name, f.Hidden, c.hidden)
+		}
+		if f.Total != 4 || f.Shown != 3 || len(f.Gates) != 4 || f.Hist != p.Params.Historical {
+			t.Errorf("%s: shown %d of %d, %d gates, hist %v", name, f.Shown, f.Total, len(f.Gates), f.Hist)
+		}
+		for i, g := range f.Gates {
+			if g.Key != choiceGates[i].Key || g.Checked != choiceGates[i].Shown || g.Count != choiceGates[i].Count || g.Sym.Glyph == "" {
+				t.Errorf("%s: gate %d is %+v", name, i, g)
+			}
+		}
+		if (f.Reset != nil) != c.reset || (f.Reset != nil && (f.Reset.Href != c.resetHref || !f.Reset.Swap)) {
+			t.Errorf("%s: reset %+v, want %v %q", name, f.Reset, c.reset, c.resetHref)
+		}
+
+		// The query a browser builds from the form.
+		v, _ := web.Lookup(c.view)
+		browser := func(boxes []string) web.Params {
+			q := url.Values{}
+			for _, h := range f.Hidden {
+				q.Add(h.Name, h.Content)
+			}
+			for _, b := range boxes {
+				q.Add(f.Name, b)
+			}
+			if f.Hist {
+				q.Set(f.HistName, "on")
+			}
+			got, err := serve.ParseQuery(v, q)
+			if err != nil {
+				t.Fatalf("%s: the form submits %v: %v", name, q, err)
+			}
+			return got
+		}
+		var checked []string
+		for _, g := range f.Gates {
+			if g.Checked {
+				checked = append(checked, g.Key)
+			}
+		}
+		want := p.Params
+		want.Columns, want.Window, want.Part, want.Key = checked, -1, "", ""
+		if got := browser(checked); !reflect.DeepEqual(got, want) {
+			t.Errorf("%s: the form submits %+v, want %+v", name, got, want)
+		}
+		want.Columns = nil
+		if got := browser(nil); !reflect.DeepEqual(got, want) {
+			t.Errorf("%s: with no box set the form submits %+v, want %+v", name, got, want)
+		}
+
+		// The export draws none.
+		x := *p
+		x.Scripts = false
+		if web.ColumnsOf(web.EnvOf(&x, web.Document), choiceGates) != nil {
+			t.Errorf("%s: the export has a column form", name)
+		}
+	}
+}
+
+// TestColumnsFormMarkup covers T8: the tableau fixture with a form from
+// ColumnsOf renders with one a[data-columns=""] that carries hx-boost and no
+// other hx- attribute, passes check, and with Reset nil renders the golden
+// page as it stands.
+func TestColumnsFormMarkup(t *testing.T) {
+	f := fixtureNamed(t, "tableau")
+	m := clone(t, f.Model.(*web.TableauView))
+	want := render(t, web.Document, f.page())
+	if got := render(t, web.Document, pageOf(f.View, m)); got != want {
+		t.Fatal("the clone of the fixture differs from the fixture")
+	}
+	if m.Grid.Control.Reset != nil {
+		t.Fatal("the fixture holds a Reset")
+	}
+	m.Grid.Control.Reset = &web.Control{Href: "V/tableau", Swap: true}
+	root := mustParse(t, render(t, web.Document, pageOf(f.View, m)))
+	if bad := check(root); len(bad) > 0 {
+		t.Errorf("check: %q", bad)
+	}
+	var links []*Node
+	for _, a := range root.find("a") {
+		if _, ok := a.Attr["data-columns"]; ok {
+			links = append(links, a)
+		}
+	}
+	if len(links) != 1 || links[0].Attr["data-columns"] != "" || links[0].Attr["hx-boost"] != "true" || !slices.Equal(statusHx(links[0]), []string{"hx-boost"}) ||
+		links[0].Attr["id"] != m.Grid.Control.Fold.ID+"-reset" || links[0].Parent.Tag != "form" {
+		t.Errorf("the reset link is %v", links)
+	}
+	if bad := checkAccess(root); len(bad) > 0 {
+		t.Errorf("checkAccess: %q", bad)
 	}
 }

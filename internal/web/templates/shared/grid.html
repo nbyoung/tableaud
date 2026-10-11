@@ -21,5 +21,7 @@
 {{end}}</fieldset>
 <label><input type="checkbox" id="{{.Fold.ID}}-historical" name="{{.HistName}}" value="on"{{if .Hist}} checked{{end}}> Show the marks of historical junctions</label>
 <button type="submit" id="{{.Fold.ID}}-submit">Show these columns</button>
+{{- with .Reset}}
+<a id="{{$.Fold.ID}}-reset" href="{{.Href}}" data-columns=""{{template "swap" .}}>Return to the default window</a>{{end}}
 </form>
 </details>{{end}}

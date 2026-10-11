@@ -2,6 +2,7 @@ package web
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/nbyoung/tableaud/internal/source"
 )
@@ -289,6 +290,57 @@ func (p *Page) Opened(ids []string) string {
 	q.Open = slices.Compact(q.Open)
 	q.OpenSet, q.Part, q.Key = true, "", ""
 	return p.Link.Page(Link{View: p.View.Name, Params: q})
+}
+
+// GateChoice is one gate of the project as the column choice reads it, in
+// gate order: its key, whether the page shows its column, and the count of
+// tasks whose current gate it is.
+type GateChoice struct {
+	Key   string
+	Shown bool
+	Count int
+}
+
+// ColumnsOf returns the column choice of a tableau page, for Grid.Control of
+// its first grid, or nil in the export, which draws none. The form asks the
+// view's own route; it keeps every parameter in force but columns, window,
+// historical and part, as_seen_by among them, and names its fields columns
+// and historical.
+func ColumnsOf(e Env, gates []GateChoice) *ColumnsForm {
+	p := e.Page
+	if !p.Scripts {
+		return nil
+	}
+	f := &ColumnsForm{
+		Fold:     e.Fold("columns", "columns", "", ""),
+		Action:   p.Link.Page(Link{View: p.View.Name, Params: NewParams()}),
+		Name:     "columns",
+		HistName: "historical",
+		Hist:     p.Params.Historical,
+		Total:    len(gates),
+	}
+	q := p.Params
+	for _, h := range []Meta{
+		{"project", q.Project}, {"ref", q.Ref}, {"task", q.Task}, {"person", q.Person},
+		{"as_seen_by", q.SeenBy}, {"role", q.Role}, {"level", q.Level},
+	} {
+		if h.Content != "" && p.View.Reads(h.Name) {
+			f.Hidden = append(f.Hidden, h)
+		}
+	}
+	if q.OpenSet || len(q.Open) > 0 {
+		f.Hidden = append(f.Hidden, Meta{"open", strings.Join(q.Open, ",")})
+	}
+	for _, g := range gates {
+		f.Gates = append(f.Gates, ColumnChoice{Sym: e.Legend.Gate(g.Key), Key: g.Key, Checked: g.Shown, Count: g.Count})
+		if g.Shown {
+			f.Shown++
+		}
+	}
+	if len(q.Columns) > 0 || q.Window >= 0 {
+		f.Reset = &Control{Href: p.Self("columns", "", "part", ""), Swap: true}
+	}
+	return f
 }
 
 // Holder is one task as the focus of the authority tree reads it.
