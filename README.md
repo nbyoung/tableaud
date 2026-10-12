@@ -67,7 +67,7 @@ scripts/vendor-htmx.sh   # fetches the pinned HTMX release
 .tableaux/               # the plan
 ```
 
-A prototype under `prototype/` is the function gate's demonstration. It goes when its task records `implementation`: the design's account of what it kept from the prototype and `git log -- prototype/<id>` keep what it showed, and the trunk builds what it ships. The layout at the top of `templates/base.html` serves the prototypes that still execute it and goes with the last of them.
+A prototype under `prototype/` is the function gate's demonstration. It goes when its task records `implementation`: the design's account of what it kept from the prototype and `git log -- prototype/<id>` keep what it showed, and the trunk builds what it ships.
 
 ## Build and test
 
