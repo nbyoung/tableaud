@@ -1,3 +1,3 @@
-gate: implementation
+gate: unit
 state: nominal
-note: SeverityRank, the legend's rank, the pages (ids, scroller, line under a state, sheet), access_test.go with T1 to T10 stand; the unit gate runs T1 to T10 under go test; T11 (the adapters set the rank) waits for tablo's 886d and 493e, and V1 to V11 wait for a person at validate
+note: T1 to T10 pass under go test (TestAccess, TestCheckAccessFindsFaults, TestSheetAccess, TestSeverityRank, TestStatusCellRank, TestGateStateRank, TestFocusHasAnElementToReturnTo, TestTemplatesKeepTheAccessRules, TestGolden, TestRunFrame) with the five checks and the race run; T11 (TestAdaptersSetTheRank, skipped) waits at the integrate gate for tablo 886d and 493e and the adapters of 44bf and e2b6 per decision 11; V1 to V11 wait for a person at validate
