@@ -3,8 +3,8 @@
 {{define "body"}}{{with .Body}}
 <section aria-labelledby="glance">
 <h2 id="glance">Counts</h2>
-{{if .Groups}}<p class="counts"><strong>{{if eq (len .Minimum) 3}}{{$m := .Minimum}}<a id="minimum-error" href="{{(index $m 0).Href}}"{{if (index $m 0).Current}} aria-current="true"{{end}}>{{.Errors}} {{plural .Errors "error" "errors"}}</a>, <a id="minimum-warning" href="{{(index $m 1).Href}}"{{if (index $m 1).Current}} aria-current="true"{{end}}>{{.Warnings}} {{plural .Warnings "warning" "warnings"}}</a>, <a id="minimum-information" href="{{(index $m 2).Href}}"{{if (index $m 2).Current}} aria-current="true"{{end}}>{{.Information}} {{plural .Information "item" "items"}} of information</a>{{else}}{{.Errors}} {{plural .Errors "error" "errors"}}, {{.Warnings}} {{plural .Warnings "warning" "warnings"}}, {{.Information}} {{plural .Information "item" "items"}} of information{{end}}</strong>.</p>
-<div class="scroll">
+{{if or .Errors .Warnings .Information}}<p class="counts"><strong>{{if eq (len .Minimum) 3}}{{$m := .Minimum}}<a id="minimum-error" href="{{(index $m 0).Href}}"{{if (index $m 0).Current}} aria-current="true"{{end}}>{{.Errors}} {{plural .Errors "error" "errors"}}</a>, <a id="minimum-warning" href="{{(index $m 1).Href}}"{{if (index $m 1).Current}} aria-current="true"{{end}}>{{.Warnings}} {{plural .Warnings "warning" "warnings"}}</a>, <a id="minimum-information" href="{{(index $m 2).Href}}"{{if (index $m 2).Current}} aria-current="true"{{end}}>{{.Information}} {{plural .Information "item" "items"}} of information</a>{{else}}{{.Errors}} {{plural .Errors "error" "errors"}}, {{.Warnings}} {{plural .Warnings "warning" "warnings"}}, {{.Information}} {{plural .Information "item" "items"}} of information{{end}}</strong>.</p>
+{{if .Groups}}<div class="scroll">
 <table>
 <caption>Findings by kind: errors first, then warnings, then information. Each kind links to its findings below.</caption>
 <thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Kind</th><th scope="col" class="num">Findings</th><th scope="col">Tasks</th><th scope="col">Resolver</th></tr></thead>
@@ -14,7 +14,8 @@
 </table>
 </div>
 <p><strong>Most to resolve:</strong> {{.Most}}, {{.MostCount}}.</p>
-{{else}}<p class="empty">No finding: files and history agree at this ref. A status counts as stale after {{.Stale}} days.</p>
+{{else}}<p class="empty">No finding at or above {{$min := "warning"}}{{range .Minimum}}{{if .Current}}{{$min = .Label}}{{end}}{{end}}{{$min}}.</p>
+{{end}}{{else}}<p class="empty">No finding: files and history agree at this ref. A status counts as stale after {{.Stale}} days.</p>
 {{end}}{{if .Silent}}<p class="muted">Silent:</p>
 <ul class="notes muted">
 {{range .Silent}}<li>{{.}}</li>

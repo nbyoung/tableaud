@@ -914,6 +914,45 @@ func TestAuditMinimumControl(t *testing.T) {
 	}
 }
 
+// TestAuditMinimumHidesEveryFinding checks the audit whose minimum hides every
+// finding: with warnings and no error, at minimum=error, the page keeps the
+// three counts as links, error current, says that no finding stands at or
+// above error, and never says that files and history agree.
+func TestAuditMinimumHidesEveryFinding(t *testing.T) {
+	audit := &view.Audit{Warnings: 2, Information: 1}
+	p := framed(t, "audit", "minimum=error", "ada@example.org", []string{"owner"}, nil)
+	p.Data = audit
+	doc := render(t, web.Document, p)
+	root := mustParse(t, doc)
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	counts := root.byClass("p", "counts")
+	if len(counts) != 1 {
+		t.Fatalf("%d p.counts", len(counts))
+	}
+	links := counts[0].find("a")
+	var current []string
+	for _, a := range links {
+		if a.Attr["aria-current"] == "true" {
+			current = append(current, a.Attr["id"])
+		}
+	}
+	if len(links) != 3 || !slices.Equal(current, []string{"minimum-error"}) {
+		t.Errorf("%d links, current %q", len(links), current)
+	}
+	var empty []string
+	for _, e := range root.byClass("p", "empty") {
+		empty = append(empty, e.text(true))
+	}
+	if !slices.Equal(empty, []string{"No finding at or above error."}) {
+		t.Errorf("the empty forms read %q", empty)
+	}
+	if strings.Contains(doc, "No finding: files and history agree") || root.byID("findings") != nil {
+		t.Error("the page says that files and history agree, or holds a findings section")
+	}
+}
+
 // TestDisclosureAgreesWithTablo covers T14: over tablo's golden data of
 // weather-station at main, the owner's /tableau draws a1c0, 4e2b, 7b2e and
 // 3c5d; Ben's /context draws all six rows in its wider grid, 4e2b and c07d in
