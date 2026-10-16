@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"net/url"
 	"reflect"
 	"regexp"
 	"slices"
@@ -11,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nbyoung/tablo/view"
 
 	"github.com/nbyoung/tableaud/internal/web"
 )
@@ -1269,25 +1272,207 @@ func TestStatusRoutesServeThePlaceholder(t *testing.T) {
 	}
 }
 
+// threeLevels is tablo's tableau of a tree of three levels: 1000 over 2000
+// and 3000, 2000 over 2001 and 2002, with one gate.
+func threeLevels() *view.Tableau {
+	row := func(id, under string, depth int, parent bool) view.GridRow {
+		return view.GridRow{
+			TaskRef: view.TaskRef{ID: id, Title: "T " + id}, Under: under, Depth: depth, Parent: parent,
+			Status: view.Status{Kind: "recorded", Gate: "design", State: "nominal"},
+			Cells:  []view.Cell{{Kind: "status", State: "nominal"}},
+		}
+	}
+	return &view.Tableau{
+		Legend: view.Legend{
+			Gates:  []view.Gate{{Key: "design", Symbol: "📐", Name: "Design"}},
+			States: []view.State{{Key: "nominal", Symbol: "🟢", Severity: 1}},
+		},
+		Columns: []view.Column{{Gates: []string{"design"}, Count: 5, ByGate: []int{5}}},
+		Rows:    []view.GridRow{row("1000", "", 0, true), row("2000", "1000", 1, true), row("2001", "2000", 2, false), row("2002", "2000", 2, false), row("3000", "1000", 1, false)},
+	}
+}
+
+// tableauAt returns the model of the global tableau of threeLevels at an
+// address of the daemon.
+func tableauAt(t *testing.T, query string) (*web.TableauView, *web.Page) {
+	t.Helper()
+	p := at(t, "tableau", query)
+	p.Scripts = true
+	return web.TableauFrom(threeLevels(), web.EnvOf(p, web.Document)), p
+}
+
+// drawn returns the ids of the rows a grid draws.
+func drawn(g web.Grid) []string {
+	var out []string
+	for _, r := range g.Rows {
+		out = append(out, r.Task.ID)
+	}
+	return out
+}
+
 // TestStatusUnfoldedFromAdapters covers the adapter cases of T5: the adapter
 // over a tree of three levels draws exactly the rows whose ancestors are
 // unfolded, a collapsed row's descendants leave the address, and the open set
-// of the address wins over DefaultUnfolded. It waits for tablo's view types.
+// of the address wins over DefaultUnfolded.
 func TestStatusUnfoldedFromAdapters(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 886d): adapt_tableau.go builds Unfolded from Params.Open, OpenSet and levelOf")
+	for _, c := range []struct {
+		query string
+		want  []string
+	}{
+		{"level=glance", []string{"1000", "2000", "3000"}},
+		{"level=detail", []string{"1000", "2000", "2001", "2002", "3000"}},
+		{"level=glance&open=1000,2000", []string{"1000", "2000", "2001", "2002", "3000"}},
+		{"level=detail&open=1000", []string{"1000", "2000", "3000"}},
+		{"level=detail&open=2000", []string{"1000"}},
+		{"open=", []string{"1000"}},
+	} {
+		m, _ := tableauAt(t, c.query)
+		if got := drawn(m.Grid); !slices.Equal(got, c.want) {
+			t.Errorf("%s: draws %q, want %q", c.query, got, c.want)
+		}
+		if m.Shown != len(c.want) || m.Total != 5 {
+			t.Errorf("%s: shown %d of %d", c.query, m.Shown, m.Total)
+		}
+	}
+	m, _ := tableauAt(t, "level=glance&open=1000,2000")
+	collapse := m.Grid.Rows[0].Collapse
+	if collapse == nil || strings.Contains(collapse.Href, "2000") {
+		t.Errorf("the collapse of 1000 keeps 2000: %+v", collapse)
+	}
+	if r := m.Grid.Rows[0]; r.Beneath != 4 || r.Expand != nil {
+		t.Errorf("1000: %d beneath, expand %+v", r.Beneath, r.Expand)
+	}
 }
 
-// TestStatusExpandThenCollapse covers the address arithmetic of T6: an Expand
-// link then the Collapse link of the row it draws return the first address. It
-// waits for tablo's view types.
+// TestStatusExpandThenCollapse covers the address arithmetic of T6: from a
+// canonical address, an Expand link then the Collapse link of the row it
+// draws return that address; in the export an Expand is the anchor of a
+// branch.
 func TestStatusExpandThenCollapse(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 886d): Expand and Collapse are built by adapt_tableau.go from Page.Self(\"open\", ...)")
+	for _, query := range []string{"", "level=glance", "level=detail&open=1000"} {
+		m, p := tableauAt(t, query)
+		first := p.Link.Page(web.Link{View: "tableau", Params: p.Params})
+		var expand *web.Control
+		for _, r := range m.Grid.Rows {
+			if r.Task.ID == "2000" {
+				expand = r.Expand
+			}
+		}
+		if expand == nil || !expand.Swap {
+			t.Fatalf("%s: 2000 has no expand", query)
+		}
+		u, err := url.Parse(expand.Href)
+		if err != nil {
+			t.Fatal(err)
+		}
+		m2, _ := tableauAt(t, u.RawQuery)
+		var collapse *web.Control
+		for _, r := range m2.Grid.Rows {
+			if r.Task.ID == "2000" {
+				collapse = r.Collapse
+			}
+		}
+		if collapse == nil || collapse.Href != first {
+			t.Errorf("%s: expand %q then collapse %+v, want %q", query, expand.Href, collapse, first)
+		}
+	}
+	p := at(t, "tableau", "")
+	p.Scripts = false
+	m := web.TableauFrom(threeLevels(), web.EnvOf(p, web.Document))
+	if len(m.Branches) != 1 || m.Branches[0].Task.ID != "2000" || m.Branches[0].Beneath != 2 || len(m.Branches[0].Grid.Rows) != 3 {
+		t.Fatalf("branches %+v", m.Branches)
+	}
+	for _, r := range m.Grid.Rows {
+		if r.Task.ID == "2000" && (r.Expand == nil || r.Expand.Href != "#branch-2000" || r.Expand.Swap) {
+			t.Errorf("the export's expand of 2000 is %+v", r.Expand)
+		}
+	}
+	if m.Grid.Control != nil {
+		t.Error("the export draws a column choice")
+	}
 }
 
-// TestStatusAdaptersAgreeWithTablo covers T13: the three adapters over the
-// corpus entry weather-station at main. It waits for tablo's view types.
+// TestStatusAdaptersAgreeWithTablo covers T13 over tablo's golden data of
+// weather-station at main: the global tableau shows six rows at detail and
+// 🔴⛔ named "stalled, blocked" at 9f31; Ben's contextual tableau draws his
+// own 4e2b and c07d first and all six rows with the spine and the siblings
+// in its wider grid, as tablo's 886d decision 2 rules; the blockage tree
+// keeps tablo's causes, largest first; and the queue of ada@example.org shows
+// four items in the order of VIEWS.md. tablo's golden data holds no queue of
+// ben@example.org, so his five empty kinds stand untested here.
 func TestStatusAdaptersAgreeWithTablo(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 886d): adapt_tableau.go, adapt_blockage.go, adapt_queue.go and their entries of the adapters map land with them")
+	var tab view.Tableau
+	tabloGolden(t, "tableau.detail", &tab)
+	root := adapted(t, "tableau", "detail", &tab, nil)
+	if n := len(root.byID("grid").find("tbody")[0].find("tr")); n != 6 {
+		t.Errorf("the tableau draws %d rows, want 6", n)
+	}
+	if got := root.byID("grid-9f31").text(false); !strings.Contains(got, "🔴⛔stalled, blocked") {
+		t.Errorf("9f31 reads %q", got)
+	}
+
+	var ctx view.Tableau
+	tabloGolden(t, "context-ben.detail", &ctx)
+	v, _ := web.Lookup("context")
+	p := pageOf(v, nil)
+	p.Params.Person = "ben@example.org"
+	m := web.ContextualFrom(&ctx, web.EnvOf(p, web.Document))
+	if got := drawn(m.Grid); !slices.Equal(got, []string{"4e2b", "c07d"}) || m.Wider == nil {
+		t.Fatalf("Ben's first grid draws %q", got)
+	}
+	if got := drawn(m.Wider.Grid); !slices.Equal(got, []string{"a1c0", "4e2b", "9f31", "c07d", "7b2e", "3c5d"}) {
+		t.Errorf("Ben's wider grid draws %q", got)
+	}
+	var siblings []string
+	for _, r := range m.Wider.Grid.Rows {
+		if r.Sibling {
+			siblings = append(siblings, r.Task.ID)
+		}
+	}
+	if !slices.Equal(siblings, []string{"9f31", "7b2e", "3c5d"}) || len(m.Blocks) != 2 {
+		t.Errorf("siblings %q, %d blocks", siblings, len(m.Blocks))
+	}
+	root = adapted(t, "context", "detail", &ctx, nil)
+	if root.byID("d-wider") == nil {
+		t.Error("the person form has no wider grid")
+	}
+
+	var bl view.Blockage
+	tabloGolden(t, "blockage.detail", &bl)
+	root = adapted(t, "blockage", "detail", &bl, nil)
+	var holds []string
+	for i := range bl.Causes {
+		li := root.byID("cause-" + strconv.Itoa(i+1))
+		if li == nil {
+			t.Fatalf("no cause-%d", i+1)
+		}
+		holds = append(holds, li.byClass("span", "holds")[0].text(false))
+	}
+	if !slices.Equal(holds, []string{"holds 3", "holds 2", "holds 1"}) {
+		t.Errorf("the causes hold %q", holds)
+	}
+	if root.byID("next-3c5d") == nil {
+		t.Error("3c5d has no line among the requirements not yet due")
+	}
+
+	var q view.Queue
+	tabloGolden(t, "queue-ada.glance", &q)
+	v, _ = web.Lookup("queue")
+	p = pageOf(v, nil)
+	p.Params.Person = "ada@example.org"
+	qm := web.QueueFrom(&q, web.EnvOf(p, web.Document))
+	var items []string
+	for _, k := range qm.Kinds {
+		for _, r := range k.Items {
+			for _, it := range r.Shown {
+				items = append(items, it.Anchor)
+			}
+		}
+	}
+	if want := []string{"auth-3c5d", "ready-7b2e", "reaff-9f31", "waiting-9f31"}; !slices.Equal(items, want) || qm.Total != 4 || len(qm.Kinds) != 5 {
+		t.Errorf("ada's queue holds %q, want %q", items, want)
+	}
+	adapted(t, "queue", "detail", &q, nil)
 }
 
 // TestStatusCellRank covers T6 of design 5a2f on fixtures: a cell with Rank 0

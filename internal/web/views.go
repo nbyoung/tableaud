@@ -23,10 +23,10 @@ var Order = []string{
 
 // Views lists the ten views in the order of the mockups' nav.
 var Views = []View{
-	{Name: "tableau", Title: "Global tableau", Label: "Tableau", Question: "How does the whole project stand?", Params: []string{"person", "window", "columns", "historical", "open"}},
-	{Name: "context", Title: "Contextual tableau", Label: "My corner", Question: "How does my corner stand?", Params: []string{"task", "person", "window", "columns", "historical", "open"}},
-	{Name: "queue", Title: "Contributor work queue", Label: "Queue", Question: "What do I do next?", Params: []string{"person", "task", "brief"}},
-	{Name: "blockage", Title: "Work-blockage tree", Label: "Blockage", Question: "What waits on what?", Params: []string{"task", "person"}},
+	{Name: "tableau", Title: "Global tableau", Label: "Tableau", Question: "How does the whole project stand?", Params: []string{"person", "window", "columns", "historical", "open"}, Parts: []string{"row"}},
+	{Name: "context", Title: "Contextual tableau", Label: "My corner", Question: "How does my corner stand?", Params: []string{"task", "person", "window", "columns", "historical", "open"}, Parts: []string{"row"}},
+	{Name: "queue", Title: "Contributor work queue", Label: "Queue", Question: "What do I do next?", Params: []string{"person", "task", "brief"}, Parts: []string{"item", "brief"}},
+	{Name: "blockage", Title: "Work-blockage tree", Label: "Blockage", Question: "What waits on what?", Params: []string{"task", "person"}, Parts: []string{"facts"}},
 	{Name: "task", Title: "Task definition", Label: "Task", Question: "What is this task and where does it stand?", Params: []string{"task", "person"}, Parts: []string{"status", "authorisation", "edges", "sources", "reviews", "models", "events"}},
 	{Name: "assignment", Title: "Task assignment", Label: "Assignment", Question: "What does each person carry?", Params: []string{"person", "task"}, Parts: []string{"group"}},
 	{Name: "authority", Title: "Authority delegation", Label: "Authority", Question: "Who may accept what?", Params: []string{"task", "person", "proposed"}, Parts: []string{"node", "deciding", "kids", "commits"}},

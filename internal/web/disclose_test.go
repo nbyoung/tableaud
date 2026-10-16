@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/nbyoung/tablo/view"
+
 	"github.com/nbyoung/tableaud/internal/serve"
 	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
@@ -781,13 +783,86 @@ func TestFrameNamesBothPeople(t *testing.T) {
 	}
 }
 
+// openFolds renders a page through its adapter with tablo's data and
+// returns the ids of the folds of a class that arrive open, in page order.
+func openFolds(t *testing.T, p *web.Page, data any, class string) []string {
+	t.Helper()
+	p.Data = data
+	root := mustParse(t, render(t, web.Document, p))
+	var out []string
+	for _, d := range root.find("details") {
+		if _, open := d.Attr["open"]; open && d.hasClass(class) {
+			out = append(out, d.Attr["id"])
+		}
+	}
+	return out
+}
+
 // TestAdaptersCallDisclosure covers A7 and A8 of design db74: the status
 // adapters call Unfold, Entry and ColumnsOf and name the focus of the queue and
-// the blockage tree from the person a page is seen by; the authority, the
-// assignment and the audit adapters call Focus with AuthorityFocus, the
-// assignment's ids and AuditFocus. It waits for tablo's view types.
+// the blockage tree from the person a page is seen by; the authority and the
+// assignment adapters call Focus with AuthorityFocus and the assignment's ids.
 func TestAdaptersCallDisclosure(t *testing.T) {
-	t.Skip("waits for tablo's view types (tasks 886d, 493e): the adapters of 44bf, e2b6 and 9a9c call Unfold, Entry, ColumnsOf and Focus when they land")
+	var tab view.Tableau
+	tabloGolden(t, "tableau.detail", &tab)
+	p := framed(t, "tableau", "", "ada@example.org", []string{"owner"}, nil)
+	m := web.TableauFrom(&tab, web.EnvOf(p, web.Document))
+	if got := drawn(m.Grid); !slices.Equal(got, []string{"a1c0", "4e2b", "7b2e", "3c5d"}) {
+		t.Errorf("the owner's tableau arrives on %q", got)
+	}
+	if m.Grid.Control == nil || m.Grid.Control.Total != 12 {
+		t.Errorf("the column choice is %+v", m.Grid.Control)
+	}
+
+	var q view.Queue
+	tabloGolden(t, "queue-ada.glance", &q)
+	p = framed(t, "queue", "", "ada@example.org", []string{"assignee"}, nil)
+	if got := openFolds(t, p, &q, "detail"); !slices.Equal(got, []string{"d-auth-3c5d"}) {
+		t.Errorf("ada's queue opens %q", got)
+	}
+	p = framed(t, "queue", "person=ada@example.org", "ben@example.org", []string{"assignee"}, nil)
+	if got := openFolds(t, p, &q, "detail"); len(got) != 0 {
+		t.Errorf("Ben opens %q of ada's queue", got)
+	}
+
+	var bl view.Blockage
+	tabloGolden(t, "blockage.detail", &bl)
+	p = framed(t, "blockage", "", "ben@example.org", []string{"assignee"}, nil)
+	if got := openFolds(t, p, &bl, "detail"); !slices.Equal(got, []string{"d-cause-3"}) {
+		t.Errorf("Ben's blockage tree opens %q", got)
+	}
+	p = framed(t, "blockage", "", "ada@example.org", []string{"authority"}, nil)
+	if got := openFolds(t, p, &bl, "detail"); !slices.Equal(got, []string{"d-cause-1", "h-1-9f31", "d-cause-2", "h-2-3c5d"}) {
+		t.Errorf("ada's blockage tree opens %q", got)
+	}
+
+	var d view.Delegation
+	tabloGolden(t, "authority.provenance", &d)
+	var holders []web.Holder
+	for _, c := range loadDiscloseCases(t).Authority[:3] {
+		holders = holders[:0]
+		for _, h := range c.Tasks {
+			holders = append(holders, web.Holder{ID: h[0], Parent: h[1], Assignee: h[2]})
+		}
+		p = framed(t, "authority", "", c.Viewer, []string{"authority"}, nil)
+		var got []string
+		for _, class := range []string{"detail", "kids"} {
+			got = append(got, openFolds(t, p, &d, class)...)
+		}
+		want := web.AuthorityFocus(holders, c.Viewer)
+		sort.Strings(got)
+		sort.Strings(want)
+		if !slices.Equal(got, want) {
+			t.Errorf("%s: the tree opens %q, want %q", c.Name, got, want)
+		}
+	}
+
+	p = framed(t, "assignment", "", "agent@x", []string{"contributor"}, nil)
+	got := openFolds(t, p, assignment("ada@x", "agent@x"), "detail")
+	got = append(got, openFolds(t, p, assignment("ada@x", "agent@x"), "group")...)
+	if want := []string{"p-agent-x", "g-ada-x-c-unit", "g-agent-x-c-unit"}; !slices.Equal(got, want) {
+		t.Errorf("the agent's assignment opens %q, want %q", got, want)
+	}
 }
 
 // TestAuditMinimumControl covers the control of the audit's minimum, which
