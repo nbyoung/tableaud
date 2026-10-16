@@ -877,9 +877,41 @@ func TestAdaptersCallDisclosure(t *testing.T) {
 
 // TestAuditMinimumControl covers the control of the audit's minimum, which
 // 9a9c's adapter draws: the three counts as the three links, the current one
-// marked with aria-current="true". It waits for a place in the model.
+// marked with aria-current="true", for the default minimum and for another.
 func TestAuditMinimumControl(t *testing.T) {
-	t.Skip("waits for a change of the model: AuditView holds no control for the three counts and audit.html draws them as text, so the audit adapter has nowhere to put the links to Page.Self(minimum, ...) (db74 decision 8)")
+	audit := &view.Audit{Errors: 1, Warnings: 2, Information: 0, Findings: []view.Finding{
+		{Key: "R9", Rule: "R9", Severity: "warning", Kind: "An unmet requirement", Act: "await", Resolver: "ada@example.org"},
+	}}
+	for _, c := range []struct{ query, current string }{{"", "warning"}, {"minimum=information", "information"}} {
+		p := framed(t, "audit", c.query, "ada@example.org", []string{"owner"}, nil)
+		p.Data = audit
+		root := mustParse(t, render(t, web.Document, p))
+		counts := root.byClass("p", "counts")
+		if len(counts) != 1 {
+			t.Fatalf("%q: %d p.counts", c.query, len(counts))
+		}
+		links := counts[0].find("a")
+		if len(links) != 3 {
+			t.Fatalf("%q: %d links in the counts", c.query, len(links))
+		}
+		texts := []string{"1 error", "2 warnings", "0 items of information"}
+		var current []string
+		for i, sev := range []string{"error", "warning", "information"} {
+			a := links[i]
+			if want := p.Self("minimum", sev, "part", ""); a.Attr["href"] != want || a.text(true) != texts[i] {
+				t.Errorf("%q: link %d is %q %q, want %q %q", c.query, i, a.Attr["href"], a.text(true), want, texts[i])
+			}
+			if v, ok := a.Attr["aria-current"]; ok {
+				if v != "true" {
+					t.Errorf("%q: aria-current=%q", c.query, v)
+				}
+				current = append(current, sev)
+			}
+		}
+		if !slices.Equal(current, []string{c.current}) {
+			t.Errorf("%q: current %q, want %q", c.query, current, c.current)
+		}
+	}
 }
 
 // TestDisclosureAgreesWithTablo covers T14: over tablo's golden data of

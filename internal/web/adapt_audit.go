@@ -43,11 +43,19 @@ var acts = map[string]string{
 // its rule, with "-2", "-3" for the rule's further resolvers; words the act
 // of each finding; and names the focus of the groups the person the page is
 // seen by resolves. The three counts and the person with the most to resolve
-// are tablo's.
+// are tablo's; the adapter links each count to the address with that
+// minimum.
 func AuditFrom(d *view.Audit, e Env) *AuditView {
 	v := &AuditView{Errors: d.Errors, Warnings: d.Warnings, Information: d.Information, Stale: e.Page.Params.Stale}
 	if v.Stale <= 0 {
 		v.Stale = 7
+	}
+	current := e.Page.Params.Minimum
+	if current == "" {
+		current = "warning"
+	}
+	for _, sev := range []string{"error", "warning", "information"} {
+		v.Minimum = append(v.Minimum, NavItem{Href: e.Page.Self("minimum", sev, "part", ""), Label: sev, Current: sev == current})
 	}
 	if d.Most != nil {
 		v.Most, v.MostCount = d.Most.Email, d.Most.Count

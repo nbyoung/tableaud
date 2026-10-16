@@ -3,7 +3,7 @@
 {{define "body"}}{{with .Body}}
 <section aria-labelledby="glance">
 <h2 id="glance">Counts</h2>
-{{if .Groups}}<p class="counts"><strong>{{.Errors}} {{plural .Errors "error" "errors"}}, {{.Warnings}} {{plural .Warnings "warning" "warnings"}}, {{.Information}} {{plural .Information "item" "items"}} of information</strong>.</p>
+{{if .Groups}}<p class="counts"><strong>{{if eq (len .Minimum) 3}}{{$m := .Minimum}}<a id="minimum-error" href="{{(index $m 0).Href}}"{{if (index $m 0).Current}} aria-current="true"{{end}}>{{.Errors}} {{plural .Errors "error" "errors"}}</a>, <a id="minimum-warning" href="{{(index $m 1).Href}}"{{if (index $m 1).Current}} aria-current="true"{{end}}>{{.Warnings}} {{plural .Warnings "warning" "warnings"}}</a>, <a id="minimum-information" href="{{(index $m 2).Href}}"{{if (index $m 2).Current}} aria-current="true"{{end}}>{{.Information}} {{plural .Information "item" "items"}} of information</a>{{else}}{{.Errors}} {{plural .Errors "error" "errors"}}, {{.Warnings}} {{plural .Warnings "warning" "warnings"}}, {{.Information}} {{plural .Information "item" "items"}} of information{{end}}</strong>.</p>
 <div class="scroll">
 <table>
 <caption>Findings by kind: errors first, then warnings, then information. Each kind links to its findings below.</caption>
