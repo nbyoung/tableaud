@@ -119,7 +119,10 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	}
 	entry := Entry(e.Page, top, spine)
 	u := Unfold(e.Page, treeRows(own), entry)
-	next := nextGates(d.Rows)
+	cells := map[string][]view.Cell{}
+	for _, r := range own {
+		cells[r.ID] = r.Cells
+	}
 	v.Grid = e.grid(d, "grid", own, u, false)
 	v.Grid.Control = ColumnsOf(e, gateChoices(d))
 	v.Grid.Caption = caption(len(v.Grid.Rows), len(own))
@@ -130,13 +133,7 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	}
 	for i := range v.Grid.Rows {
 		b := RowBlock{Row: &v.Grid.Rows[i]}
-		if j, ok := next[v.Grid.Rows[i].Task.ID]; ok {
-			g := e.Legend.Gate(j.Gate)
-			b.Next = &g
-			for _, m := range j.Marks {
-				b.NextMarks = append(b.NextMarks, e.Legend.Mark(m))
-			}
-		}
+		b.Next, b.NextMarks = e.nextOf(d, cells[v.Grid.Rows[i].Task.ID])
 		v.Blocks = append(v.Blocks, b)
 	}
 	return v
@@ -197,22 +194,34 @@ func beneathOf(rows []view.GridRow, id string) int {
 	return n
 }
 
-// nextGates returns, per row that carries its provenance, the junction that
-// stands next.
-func nextGates(rows []view.GridRow) map[string]view.Junction {
-	out := map[string]view.Junction{}
-	for _, r := range rows {
-		if r.RowProvenance == nil {
-			continue
-		}
-		for _, j := range r.Junctions {
-			if j.Stands == "next" {
-				out[r.ID] = j
-				break
-			}
+// nextOf returns the next gate of a row and the marks of its junction there,
+// from the row's cells, which stand one per gate of the legend: the first
+// cell after the status's whose kind is marks and which is not historical.
+// A row with no such cell, at its last gate, has none.
+func (e Env) nextOf(d *view.Tableau, cells []view.Cell) (*Sym, []Sym) {
+	status := -1
+	for i, c := range cells {
+		if c.Kind == "status" {
+			status = i
+			break
 		}
 	}
-	return out
+	if status < 0 {
+		return nil, nil
+	}
+	for i := status + 1; i < len(cells) && i < len(d.Legend.Gates); i++ {
+		c := cells[i]
+		if c.Kind != "marks" || c.Historical {
+			continue
+		}
+		g := e.Legend.Gate(d.Legend.Gates[i].Key)
+		var marks []Sym
+		for _, m := range c.Marks {
+			marks = append(marks, e.Legend.Mark(m))
+		}
+		return &g, marks
+	}
+	return nil, nil
 }
 
 // gateChoices returns every gate of the columns, with whether the page shows

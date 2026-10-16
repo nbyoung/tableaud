@@ -1475,6 +1475,48 @@ func TestStatusAdaptersAgreeWithTablo(t *testing.T) {
 	adapted(t, "queue", "detail", &q, nil)
 }
 
+// TestContextNextGateFromCells checks that a row block reads its next gate
+// from the row's cells at every level: over tablo's golden data of Ben's
+// contextual tableau at detail, which carries no provenance, the block of
+// c07d, at design, names implementation and the subproject's mark; the same
+// row moved to the last gate, release, names none.
+func TestContextNextGateFromCells(t *testing.T) {
+	var ctx view.Tableau
+	tabloGolden(t, "context-ben.detail", &ctx)
+	model := func() *web.ContextualView {
+		v, _ := web.Lookup("context")
+		p := pageOf(v, nil)
+		p.Params.Person, p.Legend = "ben@example.org", ctx.Legend
+		return web.ContextualFrom(&ctx, web.EnvOf(p, web.Document))
+	}
+	block := func(m *web.ContextualView, id string) web.RowBlock {
+		for _, b := range m.Blocks {
+			if b.Row.Task.ID == id {
+				return b
+			}
+		}
+		t.Fatalf("no block of %s", id)
+		return web.RowBlock{}
+	}
+	b := block(model(), "c07d")
+	if b.Next == nil || b.Next.Name != "implementation" || len(b.NextMarks) != 1 || b.NextMarks[0].Name != "a subproject does the work" {
+		t.Errorf("c07d: next %+v, marks %+v", b.Next, b.NextMarks)
+	}
+	for i := range ctx.Rows {
+		if ctx.Rows[i].ID != "c07d" {
+			continue
+		}
+		cells := ctx.Rows[i].Cells
+		for j := range cells {
+			cells[j] = view.Cell{Kind: "empty", Historical: true}
+		}
+		cells[len(cells)-1] = view.Cell{Kind: "status", State: "complete"}
+	}
+	if b := block(model(), "c07d"); b.Next != nil || b.NextMarks != nil {
+		t.Errorf("c07d at release: next %+v, marks %+v", b.Next, b.NextMarks)
+	}
+}
+
 // TestStatusCellRank covers T6 of design 5a2f on fixtures: a cell with Rank 0
 // or 1 writes no s2 or s3 class, a cell with Rank 2 writes s2 and a cell with
 // Rank 3 writes s3; the key under each tableau carries the sentence that says
