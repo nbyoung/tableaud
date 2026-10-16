@@ -39,8 +39,9 @@
 <caption>The requirements of {{.Task.ID}}, with their conditions</caption>
 <thead><tr><th scope="col">Task</th><th scope="col">Edge</th><th scope="col">What passes</th><th scope="col">Its status</th><th scope="col">Condition</th></tr></thead>
 <tbody>
-{{range .Requires.Rows.Shown}}<tr><th scope="row">{{template "task" .Task}}{{if .Project}} in <code>{{.Project}}</code> at <code>{{.ReadAt}}</code>{{end}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{with .Status}}{{template "status" .}}{{end}}</td><td>{{.Condition}}</td></tr>
-{{end}}</tbody>
+{{range .Requires.Rows}}{{range .Shown}}{{template "requires-row" .}}
+{{end}}{{range .Rest}}{{template "requires-row" .}}
+{{end}}{{end}}</tbody>
 </table>
 </div>
 {{template "fold" .Requires.Prov}}<summary id="{{.Requires.Prov.ID}}-s">Where the conditions read from</summary>{{if .Requires.Prov.Src}}{{template "lazy" .Requires.Prov}}{{else}}{{template "part/edges" .Requires}}{{end}}</details>
@@ -54,8 +55,8 @@
 <caption>The tasks that require {{.Task.ID}}, folded where rows repeat</caption>
 <thead><tr><th scope="col">Task</th><th scope="col">Edge</th><th scope="col">What passes</th><th scope="col">Condition</th></tr></thead>
 <tbody>
-{{range .Dependents.Rows.Shown}}<tr><th scope="row">{{template "task" .Task}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{.Condition}}</td></tr>
-{{end}}{{with .Dependents.Rows}}{{if .Rest}}<tr><td colspan="4">{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">… and {{len .Rest}} more {{.Alike}}</summary>
+{{range .Dependents.Rows}}{{range .Shown}}<tr><th scope="row">{{template "task" .Task}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{.Condition}}</td></tr>
+{{end}}{{if .Rest}}<tr><td colspan="4">{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">… and {{len .Rest}} more {{.Alike}}</summary>
 <ul class="tree">
 {{range .Rest}}<li>{{template "task" .Task}}</li>
 {{end}}</ul>
@@ -88,6 +89,8 @@
 {{template "fold" .Events.Fold}}<summary id="{{.Events.Fold.ID}}-s">Newest events</summary>{{if .Events.Fold.Src}}{{template "lazy" .Events.Fold}}{{else}}{{template "part/events" .Events}}{{end}}</details>
 </section>
 {{end}}{{end}}
+
+{{define "requires-row"}}<tr><th scope="row">{{template "task" .Task}}{{if .Project}} in <code>{{.Project}}</code> at <code>{{.ReadAt}}</code>{{end}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{with .Status}}{{template "status" .}}{{end}}</td><td>{{.Condition}}</td></tr>{{end}}
 
 {{define "part/status"}}{{if .Commit}}<p>The status file is <code>{{.File}}</code>. Its deciding commit is {{if .Reaffirmed}}the newest commit that carries <code>Reaffirmed:</code> for the task{{else}}the newest commit that changes the file{{end}}.</p>
 <dl class="fields">

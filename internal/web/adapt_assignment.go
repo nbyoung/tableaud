@@ -232,13 +232,10 @@ func (e Env) position(rows []view.JunctionRow, reviews bool, anchor string, posi
 				Reviewer: j.Reviewer, When: when(j.Stands),
 			})
 		}
-		grp.Rows = oneRun(FoldRuns(prs, func(r PositionRow) string {
+		grp.Rows = FoldRuns(prs, func(r PositionRow) string {
 			return r.Model + "\x00" + r.Contributor + "\x00" + r.Reviewer + "\x00" + r.When
-		}))
-		if len(grp.Rows.Rest) > 0 {
-			grp.Rows.Fold = e.Fold("fold", "fold-"+strings.TrimPrefix(id, "g-"), "", "")
-			grp.Rows.Alike = "at " + gate
-		}
+		})
+		foldRuns(grp.Rows, e, "fold-"+strings.TrimPrefix(id, "g-"), func(Run[PositionRow]) string { return "at " + gate })
 		grp.From = positionSources(positions, kind, gate, g, e)
 		out.Groups = append(out.Groups, grp)
 	}

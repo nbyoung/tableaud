@@ -2,6 +2,7 @@ package web
 
 import (
 	"slices"
+	"strconv"
 
 	"github.com/nbyoung/tablo/view"
 )
@@ -86,7 +87,9 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 			v.Place.Children = append(v.Place.Children, Child{Task: e.taskRef(c.TaskRef), Status: e.status(c.Status, nil)})
 		}
 		v.Place.Authorities = authorities(d.Authorities, e, ref)
-		v.Requires.Rows.Shown = e.edges(d.Requires, true)
+		if reqs := e.edges(d.Requires, true); len(reqs) > 0 {
+			v.Requires.Rows = []Run[Edge]{{Shown: reqs}}
+		}
 		v.Requires.Total = len(d.Requires)
 		deps := e.edges(d.Dependents, false)
 		v.Dependents.Total = len(deps)
@@ -274,32 +277,33 @@ func condition(r view.Requirement) string {
 }
 
 // foldEdges applies the fold rule to the dependents: rows are alike when
-// their edge, text and condition agree.
-func foldEdges(rows []Edge, e Env) Run[Edge] {
-	out := oneRun(FoldRuns(rows, func(r Edge) string {
+// their edge, text and condition agree, and each stretch of more than eight
+// folds.
+func foldEdges(rows []Edge, e Env) []Run[Edge] {
+	runs := FoldRuns(rows, func(r Edge) string {
 		return r.From.Name + "\x00" + r.To.Name + "\x00" + r.Text + "\x00" + r.Condition
-	}))
-	if len(out.Rest) > 0 {
-		out.Fold = e.Fold("fold", "fold-dependents", "", "")
-		out.Alike = "with the same edge, text and condition"
-	}
-	return out
+	})
+	foldRuns(runs, e, "fold-dependents", func(Run[Edge]) string { return "with the same edge, text and condition" })
+	return runs
 }
 
-// oneRun joins the runs of FoldRuns into the one Run a model holds: the first
-// run that folds keeps its fold, and every other row shows, in order.
-func oneRun[T any](runs []Run[T]) Run[T] {
-	var out Run[T]
-	for _, r := range runs {
-		if len(out.Rest) > 0 || len(r.Rest) == 0 {
-			out.Shown = append(out.Shown, r.Shown...)
-			out.Shown = append(out.Shown, r.Rest...)
+// foldRuns gives each run that folds its fold and what its rows share. The
+// first fold takes the id base, and the n-th from the second on base-n, so
+// that every id of a page stays unique.
+func foldRuns[T any](runs []Run[T], e Env, base string, alike func(Run[T]) string) {
+	n := 0
+	for i := range runs {
+		if len(runs[i].Rest) == 0 {
 			continue
 		}
-		out.Shown = append(out.Shown, r.Shown...)
-		out.Rest = r.Rest
+		n++
+		id := base
+		if n > 1 {
+			id += "-" + strconv.Itoa(n)
+		}
+		runs[i].Fold = e.Fold("fold", id, "", "")
+		runs[i].Alike = alike(runs[i])
 	}
-	return out
 }
 
 // junctions returns a row per junction tablo gives, and the marks the rows

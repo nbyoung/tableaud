@@ -459,15 +459,23 @@ func assignmentRows(n int, reviews bool) []web.PositionRow {
 	return rows
 }
 
-// assignmentRun applies the fold rule to rows, as the adapter does.
-func assignmentRun(id string, rows []web.PositionRow) web.Run[web.PositionRow] {
+// assignmentRuns applies the fold rule to rows, as the adapter does: the first
+// fold takes the id, the n-th from the second on id-n.
+func assignmentRuns(id string, rows []web.PositionRow) []web.Run[web.PositionRow] {
 	runs := web.FoldRuns(rows, func(r web.PositionRow) string { return r.Model + "|" + r.Contributor + "|" + r.Reviewer + "|" + r.When })
-	run := runs[0]
-	if len(run.Rest) > 0 {
-		run.Fold = web.Fold{ID: id, Class: "fold"}
-		run.Alike = "with model claude-haiku, due later"
+	n := 0
+	for i := range runs {
+		if len(runs[i].Rest) == 0 {
+			continue
+		}
+		n++
+		runs[i].Fold = web.Fold{ID: id, Class: "fold"}
+		if n > 1 {
+			runs[i].Fold.ID += "-" + strconv.Itoa(n)
+		}
+		runs[i].Alike = "with model claude-haiku, due later"
 	}
-	return run
+	return runs
 }
 
 // tableHeads returns the column headers of a table.
@@ -512,7 +520,7 @@ func TestAssignmentGroups(t *testing.T) {
 			pos, id = &m.Sections[0].Reviews, "g-noreply-r-implementation"
 		}
 		g := &pos.Groups[0]
-		g.Rows, g.Total = assignmentRun("fold-"+id, assignmentRows(9, reviews)), 9
+		g.Rows, g.Total = assignmentRuns("fold-"+id, assignmentRows(9, reviews)), 9
 		root := mustParse(t, render(t, web.Document, pageOf(v, m)))
 		for _, b := range check(root) {
 			t.Errorf("with nine rows: %s", b)
@@ -532,11 +540,65 @@ func TestAssignmentGroups(t *testing.T) {
 	}
 	// Eight alike rows fold nothing.
 	g := &m.Sections[0].Contributes.Groups[0]
-	g.Rows = assignmentRun("fold-x", assignmentRows(8, false))
+	g.Rows = assignmentRuns("fold-x", assignmentRows(8, false))
 	root = mustParse(t, render(t, web.Document, pageOf(v, m)))
 	group := root.byID(g.Fold.ID)
 	if root.byID("fold-x") != nil || len(group.byClass("details", "fold")) != 0 || len(group.find("table")[0].find("tbody")[0].find("tr")) != 8 {
 		t.Error("eight alike rows fold")
+	}
+}
+
+// TestAssignmentFoldsEveryStretch checks that the adapter folds every stretch
+// of more than eight alike rows of a group: two stretches of nine, split by an
+// unlike row, fold behind fold-agent-x-c-unit and fold-agent-x-c-unit-2, each
+// showing three rows, and the page holds all nineteen.
+func TestAssignmentFoldsEveryStretch(t *testing.T) {
+	d := assignment("ada@x", "agent@x")
+	s := &d.Sections[1]
+	s.Contributes = nil
+	row := func(task, model string) view.JunctionRow {
+		return view.JunctionRow{Task: view.TaskRef{ID: task, Title: "T " + task}, Junction: view.Junction{
+			Gate: "unit", Kind: "plain", Stands: "later", Contributor: "agent@x", Model: model,
+		}}
+	}
+	for i := 0; i < 19; i++ {
+		model := "m-1"
+		if i == 9 {
+			model = "m-2"
+		}
+		s.Contributes = append(s.Contributes, row(fmt.Sprintf("%04x", 0x1000+i), model))
+	}
+	p := at(t, "assignment", "")
+	p.Project, p.Link = &fixtureProject, fixtureLinker{} // no scripts: every group holds its rows
+	m := web.AssignmentFrom(d, web.EnvOf(p, web.Document))
+	g := m.Sections[1].Contributes.Groups[0]
+	var folds []string
+	for _, r := range g.Rows {
+		if len(r.Rest) > 0 {
+			folds = append(folds, r.Fold.ID+" "+strconv.Itoa(len(r.Shown))+"+"+strconv.Itoa(len(r.Rest)))
+		}
+	}
+	if want := []string{"fold-agent-x-c-unit 3+6", "fold-agent-x-c-unit-2 3+6"}; !slices.Equal(folds, want) {
+		t.Errorf("the folds are %q, want %q", folds, want)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("assignment"), m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	group := root.byID(g.Fold.ID)
+	rows := 0
+	for _, tb := range group.find("tbody") {
+		if tb.Parent.find("caption")[0].text(true) != "The entry that supplies each field" {
+			rows += len(tb.find("tr"))
+		}
+	}
+	for _, id := range []string{"fold-agent-x-c-unit", "fold-agent-x-c-unit-2"} {
+		if f := root.byID(id); f == nil || f.find("summary")[0].text(true) != "… and 6 more at unit" {
+			t.Errorf("%s: the fold is %v", id, f)
+		}
+	}
+	if rows != 19 {
+		t.Errorf("the group draws %d rows, want 19", rows)
 	}
 }
 
@@ -555,7 +617,7 @@ func TestAssignmentParts(t *testing.T) {
 					continue
 				}
 				g.Fold = web.Fold{ID: g.Fold.ID, Class: "group", Open: true}
-				g.Rows = assignmentRun("fold-"+g.Fold.ID, assignmentRows(2, g.Reviews))
+				g.Rows = assignmentRuns("fold-"+g.Fold.ID, assignmentRows(2, g.Reviews))
 				g.Prov = web.Fold{ID: "prov-" + g.Fold.ID, Class: "prov"}
 			}
 		}
@@ -845,7 +907,10 @@ func TestAssignmentCounts(t *testing.T) {
 		for _, pos := range []web.Position{s.Contributes, s.Reviews} {
 			total, next := 0, 0
 			for _, g := range pos.Groups {
-				n := len(g.Rows.Shown) + len(g.Rows.Rest)
+				n := 0
+				for _, r := range g.Rows {
+					n += len(r.Shown) + len(r.Rest)
+				}
 				if n != g.Total {
 					t.Errorf("%s: group %s counts %d of %d rows", s.Email, g.Gate.Name, g.Total, n)
 				}
@@ -859,7 +924,7 @@ func TestAssignmentCounts(t *testing.T) {
 		if s.Contributes.Total != 3 || s.Contributes.Next != 1 || s.Reviews.Total != 1 || len(s.Contributes.Groups) != 2 {
 			t.Errorf("%s: contributes %+v, reviews %+v", s.Email, s.Contributes, s.Reviews)
 		}
-		if w := s.Contributes.Groups[0].Rows.Shown[0].When; w != "passed" {
+		if w := s.Contributes.Groups[0].Rows[0].Shown[0].When; w != "passed" {
 			t.Errorf("%s: the junction at the status's gate reads %q", s.Email, w)
 		}
 	}

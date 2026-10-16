@@ -323,8 +323,8 @@ func TestTaskPage(t *testing.T) {
 	if n := len(root.byClass("p", "empty")); n != 0 {
 		t.Errorf("task: %d empty forms on a full page", n)
 	}
-	fold := root.byID(m.Dependents.Rows.Fold.ID)
-	if fold == nil || !fold.hasClass("fold") || !strings.HasPrefix(fold.find("summary")[0].text(true), "… and "+strconv.Itoa(len(m.Dependents.Rows.Rest))+" more with the same edge") {
+	fold := root.byID(m.Dependents.Rows[0].Fold.ID)
+	if fold == nil || !fold.hasClass("fold") || !strings.HasPrefix(fold.find("summary")[0].text(true), "… and "+strconv.Itoa(len(m.Dependents.Rows[0].Rest))+" more with the same edge") {
 		t.Errorf("task: the fold of the dependents is %v", fold)
 	}
 	mine := root.byClass("strong", "mine")
@@ -541,6 +541,54 @@ func TestAdaptersAgreeWithTablo(t *testing.T) {
 	root = adapted(t, "task", "", &c3c5d, nil)
 	if p := root.byClass("p", "empty"); len(p) == 0 || !strings.Contains(p[0].text(true), "Proposed: no authority has accepted this task.") {
 		t.Errorf("3c5d: no proposed note at glance")
+	}
+}
+
+// TestDependentsFoldEveryStretch checks that TaskFrom folds every stretch of
+// more than eight alike dependents: two stretches of nine, split by an unlike
+// row, fold behind fold-dependents and fold-dependents-2, each showing three
+// rows, and the page holds all nineteen.
+func TestDependentsFoldEveryStretch(t *testing.T) {
+	d := &view.Task{
+		Task: view.TaskRef{ID: "1000", Title: "Root"}, Status: view.Status{Kind: "recorded", Gate: "design"}, Authorised: true,
+		TaskDetail: &view.TaskDetail{},
+	}
+	for i := 0; i < 19; i++ {
+		text := "the same text"
+		if i == 9 {
+			text = "another text"
+		}
+		d.Dependents = append(d.Dependents, view.Requirement{
+			Task: view.TaskRef{ID: strconv.FormatInt(int64(0x2000+i), 16), Title: "T"}, From: "design", To: "unit", Text: text, Condition: "met",
+		})
+	}
+	v, _ := web.Lookup("task")
+	p := pageOf(v, nil)
+	p.Params.Level = "detail"
+	m := web.TaskFrom(d, web.EnvOf(p, web.Document))
+	var folds []string
+	for _, r := range m.Dependents.Rows {
+		if len(r.Rest) > 0 {
+			folds = append(folds, r.Fold.ID+" "+strconv.Itoa(len(r.Shown))+"+"+strconv.Itoa(len(r.Rest)))
+		}
+	}
+	if want := []string{"fold-dependents 3+6", "fold-dependents-2 3+6"}; !slices.Equal(folds, want) {
+		t.Errorf("the folds are %q, want %q", folds, want)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	section := root.byID("d-dependents")
+	shown := len(section.find("table")[0].find("tbody")[0].find("tr")) - 2 // a fold's row stands in the table
+	rest := len(section.find("li"))
+	if shown != 7 || rest != 12 {
+		t.Errorf("the dependents draw %d rows and %d folded, want 7 and 12", shown, rest)
+	}
+	for _, id := range []string{"fold-dependents", "fold-dependents-2"} {
+		if root.byID(id) == nil {
+			t.Errorf("no fold %s", id)
+		}
 	}
 }
 

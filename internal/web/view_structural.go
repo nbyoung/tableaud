@@ -125,8 +125,8 @@ type GateGroup struct {
 	Reviews bool // the person reviews at these junctions; false where the person contributes
 	Next    int
 	Total   int
-	Fold    Fold // class "group"
-	Rows    Run[PositionRow]
+	Fold    Fold               // class "group"
+	Rows    []Run[PositionRow] // the runs of the fold rule, in order; each stretch of more than eight alike rows folds
 	Prov    Fold
 	From    []SourceRow // the file and the ancestor behind the positions
 }
