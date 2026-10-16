@@ -800,8 +800,9 @@ func openFolds(t *testing.T, p *web.Page, data any, class string) []string {
 
 // TestAdaptersCallDisclosure covers A7 and A8 of design db74: the status
 // adapters call Unfold, Entry and ColumnsOf and name the focus of the queue and
-// the blockage tree from the person a page is seen by; the authority and the
-// assignment adapters call Focus with AuthorityFocus and the assignment's ids.
+// the blockage tree from the person a page is seen by; the authority, the
+// assignment and the audit adapters call Focus with AuthorityFocus, the
+// assignment's ids and AuditFocus.
 func TestAdaptersCallDisclosure(t *testing.T) {
 	var tab view.Tableau
 	tabloGolden(t, "tableau.detail", &tab)
@@ -863,23 +864,87 @@ func TestAdaptersCallDisclosure(t *testing.T) {
 	if want := []string{"p-agent-x", "g-ada-x-c-unit", "g-agent-x-c-unit"}; !slices.Equal(got, want) {
 		t.Errorf("the agent's assignment opens %q, want %q", got, want)
 	}
+
+	audit := &view.Audit{Warnings: 2, Findings: []view.Finding{
+		{Key: "R9", Rule: "R9", Severity: "warning", Kind: "An unmet requirement", Act: "await", Resolver: "ada@example.org"},
+		{Key: "proposed", Severity: "warning", Kind: "A proposed task", Act: "authorise", Resolver: "ben@example.org"},
+	}}
+	p = framed(t, "audit", "", "ben@example.org", []string{"assignee"}, nil)
+	if got := openFolds(t, p, audit, "detail"); !slices.Equal(got, []string{"proposed"}) {
+		t.Errorf("Ben's audit opens %q", got)
+	}
 }
 
 // TestAuditMinimumControl covers the control of the audit's minimum, which
 // 9a9c's adapter draws: the three counts as the three links, the current one
-// marked with aria-current="true". It waits for tablo's dada and the audit's
-// adapter.
+// marked with aria-current="true". It waits for a place in the model.
 func TestAuditMinimumControl(t *testing.T) {
-	t.Skip("waits for tablo's view types (task dada): the audit adapter draws the three counts as links to Page.Self(minimum, ...)")
+	t.Skip("waits for a change of the model: AuditView holds no control for the three counts and audit.html draws them as text, so the audit adapter has nowhere to put the links to Page.Self(minimum, ...) (db74 decision 8)")
 }
 
-// TestDisclosureAgreesWithTablo covers T14: over the corpus entry
+// TestDisclosureAgreesWithTablo covers T14: over tablo's golden data of
 // weather-station at main, the owner's /tableau draws a1c0, 4e2b, 7b2e and
 // 3c5d; Ben's /context draws all six rows in its wider grid, 4e2b and c07d in
 // its first, and opens d-wider; the form lists every gate; the authority tree
 // opens T6's ids for each of the three people; the owner's
-// /context?as_seen_by=ben@example.org draws Ben's page. It waits for tablo's
-// view types.
+// /context?as_seen_by=ben@example.org draws Ben's page.
 func TestDisclosureAgreesWithTablo(t *testing.T) {
-	t.Skip("waits for tablo's view types (tasks 886d, 493e, dada): the adapters of 44bf, e2b6 and 9a9c land with them")
+	rows := func(root *Node, grid string) []string {
+		var out []string
+		for _, tr := range root.byID(grid).find("tbody")[0].find("tr") {
+			out = append(out, strings.TrimPrefix(tr.Attr["id"], grid+"-"))
+		}
+		return out
+	}
+	owner := []string{"owner"}
+	var tab view.Tableau
+	tabloGolden(t, "tableau.detail", &tab)
+	p := framed(t, "tableau", "", "ada@example.org", owner, nil)
+	p.Data = &tab
+	root := mustParse(t, render(t, web.Document, p))
+	if got := rows(root, "grid"); !slices.Equal(got, []string{"a1c0", "4e2b", "7b2e", "3c5d"}) {
+		t.Errorf("the owner's tableau draws %q", got)
+	}
+	if n := len(root.byID("columns").find("fieldset")[0].find("input")); n != 12 {
+		t.Errorf("the form lists %d gates, want 12", n)
+	}
+
+	var ctx view.Tableau
+	tabloGolden(t, "context-ben.detail", &ctx)
+	for _, c := range []struct {
+		name, query, viewer string
+		roles, seen         []string
+	}{
+		{"Ben's own", "", "ben@example.org", []string{"assignee"}, nil},
+		{"the owner's, as seen by Ben", "as_seen_by=ben@example.org", "ada@example.org", owner, []string{"assignee"}},
+	} {
+		p := framed(t, "context", c.query, c.viewer, c.roles, c.seen)
+		p.Data = &ctx
+		root := mustParse(t, render(t, web.Document, p))
+		if got := rows(root, "grid"); !slices.Equal(got, []string{"4e2b", "c07d"}) {
+			t.Errorf("%s: the first grid draws %q", c.name, got)
+		}
+		if got := rows(root, "wider"); len(got) != 6 {
+			t.Errorf("%s: the wider grid draws %q", c.name, got)
+		}
+		if _, open := root.byID("d-wider").Attr["open"]; !open {
+			t.Errorf("%s: d-wider arrives closed", c.name)
+		}
+		if h := root.byID("h-corner").text(true); h != "The tasks of ben@example.org" {
+			t.Errorf("%s: the heading reads %q", c.name, h)
+		}
+	}
+
+	var d view.Delegation
+	tabloGolden(t, "authority.provenance", &d)
+	for _, c := range loadDiscloseCases(t).Authority[:3] {
+		p := framed(t, "authority", "", c.Viewer, []string{"authority"}, nil)
+		got := append(openFolds(t, p, &d, "detail"), openFolds(t, p, &d, "kids")...)
+		sort.Strings(got)
+		want := slices.Clone(c.Want)
+		sort.Strings(want)
+		if !slices.Equal(got, want) {
+			t.Errorf("%s: the tree opens %q, want %q", c.Name, got, want)
+		}
+	}
 }

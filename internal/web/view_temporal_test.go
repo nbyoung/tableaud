@@ -3,10 +3,13 @@ package web_test
 import (
 	"bytes"
 	"errors"
+	"path/filepath"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nbyoung/tablo/view"
 
 	"github.com/nbyoung/tableaud/internal/web"
 )
@@ -559,8 +562,8 @@ func TestTemporalEscaping(t *testing.T) {
 	}
 }
 
-// The adapters wait for tablo's view types, so the tests that run them exist
-// and skip. They name no adapter, since none stands.
+// The history adapter waits for tablo's history view, so the tests that run
+// it exist and skip.
 
 // TestHistoryAdapterLinesAndEffects covers T6: two events of one commit and
 // task join into one line with both kinds; the five effects; none for a task event.
@@ -577,12 +580,61 @@ func TestHistoryLongRange(t *testing.T) {
 // TestAuditAdapterGroups covers T10: the groups of a rule and two resolvers,
 // their anchors, the action words and the person with the most to resolve.
 func TestAuditAdapterGroups(t *testing.T) {
-	t.Skip("waits for tablo's audit (task dada): the audit adapter and its entry in adapters land with it")
+	finding := func(sev, rule, key, resolver, act, task string) view.Finding {
+		return view.Finding{Key: key, Rule: rule, Severity: sev, Kind: "kind " + key, Act: act, Resolver: resolver,
+			Tasks: []view.TaskRef{{ID: task, Title: "T " + task}}}
+	}
+	d := &view.Audit{
+		Errors: 1, Warnings: 1, Information: 3,
+		Most: &view.Resolving{Email: "ada@x", Count: 2},
+		Findings: []view.Finding{
+			finding("information", "H4", "H4", "ada@x", "record_handoff", "1000"),
+			finding("information", "H4", "H4", "ben@x", "clear_handoff", "2000"),
+			finding("warning", "", "proposed", "ben@x", "authorise", "3000"),
+			finding("information", "H4", "H4", "ada@x", "record_handoff", "4000"),
+			finding("error", "S11", "S11", "ada@x", "review", "1000"),
+		},
+	}
+	p := at(t, "audit", "")
+	p.Scripts = true
+	m := web.AuditFrom(d, web.EnvOf(p, web.Document))
+	var got []string
+	for _, g := range m.Groups {
+		got = append(got, g.Anchor+" "+g.Severity+" "+g.Action+" "+g.Resolver.Email+" "+strconv.Itoa(len(g.Rows)))
+	}
+	want := []string{
+		"s11 error Review ada@x 1", "proposed warning Authorise ben@x 1",
+		"h4 information Record the hand-off ada@x 2", "h4-2 information Clear the hand-off ben@x 1",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("groups %q, want %q", got, want)
+	}
+	if len(m.Kinds) != 4 || m.Kinds[2].Href != "#h4" || m.Kinds[2].Count != 2 || len(m.Kinds[2].Tasks) != 2 {
+		t.Errorf("kinds %+v", m.Kinds)
+	}
+	if m.Most != "ada@x" || m.MostCount != 2 || m.Errors+m.Warnings+m.Information != 5 || m.Stale != 7 {
+		t.Errorf("most %s %d, counts %d %d %d, stale %d", m.Most, m.MostCount, m.Errors, m.Warnings, m.Information, m.Stale)
+	}
+
+	// tablo's audit of weather-station at provenance: 3c5d stands proposed
+	// under Authorise for ada@example.org.
+	var a view.Audit
+	tabloFile(t, filepath.Join("view", "testdata", "audit.provenance.json"), &a)
+	root := adapted(t, "audit", "", &a, nil)
+	found := false
+	for _, g := range web.AuditFrom(&a, web.EnvOf(pageOf(viewNamed("audit"), nil), web.Document)).Groups {
+		if g.Action == "Authorise" && g.Resolver.Email == "ada@example.org" && len(g.Rows) == 1 && g.Rows[0].Tasks[0].ID == "3c5d" {
+			found = root.byID(g.Anchor) != nil
+		}
+	}
+	if !found {
+		t.Error("the audit shows no group that authorises 3c5d for ada@example.org")
+	}
 }
 
 // TestTemporalAdaptersAgreeWithTablo covers T13: the two adapters over the
 // corpus entries weather-station, review-by-non-reviewer, model-mismatch,
 // unknown-trailer and status-complete-early.
 func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
-	t.Skip("waits for tablo's view types (tasks 8ed1 and dada): the adapters, the Parts day, sub, commit and rule, and the corpus tests land with them")
+	t.Skip("waits for tablo's history view (task 8ed1): the history adapter, the Parts day, sub and commit, and the corpus tests land with it")
 }

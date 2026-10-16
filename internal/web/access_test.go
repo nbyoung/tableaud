@@ -517,9 +517,9 @@ func TestTemplatesKeepTheAccessRules(t *testing.T) {
 	}
 }
 
-// TestAdaptersSetTheRank covers T11 of design 5a2f: over the corpus entry
-// weather-station, a stalled task's cell carries s3. It waits for tablo's view
-// types.
+// TestAdaptersSetTheRank covers T11 of design 5a2f: over tablo's golden data
+// of weather-station, a stalled task's cell carries s3, and the legend's rows
+// of the states rank their severities.
 func TestAdaptersSetTheRank(t *testing.T) {
 	var tab view.Tableau
 	tabloGolden(t, "tableau.detail", &tab)

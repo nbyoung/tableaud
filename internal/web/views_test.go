@@ -444,9 +444,16 @@ func TestContextLine(t *testing.T) {
 
 // tabloGolden decodes one file of tablo's golden data of the corpus entry
 // weather-station into v: the views tablo's own tests derive from the built
-// entry at main. It finds tablo's module through TABLO_DIR, else through go
-// list, and skips where neither answers.
+// entry at main.
 func tabloGolden(t *testing.T, name string, v any) {
+	t.Helper()
+	tabloFile(t, filepath.Join("internal", "views", "testdata", "weather-station", name+".json"), v)
+}
+
+// tabloFile decodes a JSON file of tablo's module, by its path in the module,
+// into v. It finds the module through TABLO_DIR, else through go list, and
+// skips where neither answers.
+func tabloFile(t *testing.T, path string, v any) {
 	t.Helper()
 	dir := os.Getenv("TABLO_DIR")
 	if dir == "" {
@@ -456,14 +463,14 @@ func tabloGolden(t *testing.T, name string, v any) {
 		}
 		dir = strings.TrimSpace(string(out))
 	}
-	raw, err := os.ReadFile(filepath.Join(dir, "internal", "views", "testdata", "weather-station", name+".json"))
+	raw, err := os.ReadFile(filepath.Join(dir, path))
 	if err != nil {
 		t.Fatal(err)
 	}
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(v); err != nil {
-		t.Fatalf("%s: %v", name, err)
+		t.Fatalf("%s: %v", path, err)
 	}
 }
 
