@@ -4,11 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"reflect"
 	"slices"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nbyoung/tablo/view"
 
 	"github.com/nbyoung/tableaud/internal/web"
 )
@@ -437,10 +442,99 @@ func TestContextLine(t *testing.T) {
 	}
 }
 
-// TestAdaptersAgreeWithTablo covers T15: GateFrom and TaskFrom over the corpus
-// entry weather-station. It waits for tablo's view types.
+// tabloGolden decodes one file of tablo's golden data of the corpus entry
+// weather-station into v: the views tablo's own tests derive from the built
+// entry at main. It finds tablo's module through TABLO_DIR, else through go
+// list, and skips where neither answers.
+func tabloGolden(t *testing.T, name string, v any) {
+	t.Helper()
+	dir := os.Getenv("TABLO_DIR")
+	if dir == "" {
+		out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "github.com/nbyoung/tablo").Output()
+		if err != nil || strings.TrimSpace(string(out)) == "" {
+			t.Skipf("go list finds no directory of tablo's module (%v); set TABLO_DIR to it", err)
+		}
+		dir = strings.TrimSpace(string(out))
+	}
+	raw, err := os.ReadFile(filepath.Join(dir, "internal", "views", "testdata", "weather-station", name+".json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(v); err != nil {
+		t.Fatalf("%s: %v", name, err)
+	}
+}
+
+// adapted renders the page of a view whose data is tablo's at a level,
+// through the adapter Render calls, checks it, and returns its parsed
+// document.
+func adapted(t *testing.T, name, level string, data, legend any) *Node {
+	t.Helper()
+	v, _ := web.Lookup(name)
+	p := pageOf(v, nil)
+	p.Data, p.Legend, p.Params.Level = data, legend, level
+	model := web.Adapters[name](web.EnvOf(p, web.Document))
+	if model == nil {
+		t.Fatalf("%s: the adapter gives no model for %T", name, data)
+	}
+	if _, ok := model.(web.Parter); !ok && len(v.Parts) > 0 {
+		t.Errorf("%s: the model serves no part, and the view lists %q", name, v.Parts)
+	}
+	root := mustParse(t, render(t, web.Document, p))
+	for _, b := range check(root) {
+		t.Errorf("%s: %s", name, b)
+	}
+	return root
+}
+
+// TestAdaptersAgreeWithTablo covers T15: GateFrom and TaskFrom over tablo's
+// golden data of weather-station: the gate definition for 9f31, the task
+// definitions of c07d and 3c5d. Each page passes check; the gate page shows
+// the reference 9f31 states, the task page of c07d its snapshot and that of
+// 3c5d the proposed note. tablo's golden data holds no task view of 9f31 or
+// a1c0, so the roll-up of a1c0 stands untested here.
 func TestAdaptersAgreeWithTablo(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 493e): adapt_gate.go, adapt_task.go and the two entries of the adapters map land with them")
+	var gates view.Gates
+	tabloGolden(t, "gates-9f31.provenance", &gates)
+	root := adapted(t, "gates", "", &gates, nil)
+	for _, id := range []string{"gate-performance", "state-nominal", "reason-blocked", "mark-person", "mark-exempt", "d-task"} {
+		if root.byID(id) == nil {
+			t.Errorf("gates: no element %s", id)
+		}
+	}
+	if got := root.byID("task").text(true); !strings.Contains(got, "Power budget, docs/sensor-board.md#power-budget, stated by 9f31") {
+		t.Errorf("gates: the section of 9f31 lacks its reference: %.400s", got)
+	}
+	m := web.GateFrom(&gates, web.EnvOf(pageOf(web.View{Name: "gates"}, nil), web.Document))
+	if len(m.Gates) != 12 || len(m.Marks) != 5 || m.Task == nil || m.Task.Refs != 1 || len(m.Commands) != 4 {
+		t.Errorf("gates: %d gates, %d marks, task %+v, %d commands", len(m.Gates), len(m.Marks), m.Task, len(m.Commands))
+	}
+
+	var c07d view.Task
+	tabloGolden(t, "task-c07d.provenance", &c07d)
+	root = adapted(t, "task", "provenance", &c07d, &gates)
+	glance := root.byClass("dl", "glance")[0].text(true)
+	if !strings.Contains(glance, "a subproject does the work, firmware") {
+		t.Errorf("c07d: the status line lacks the snapshot: %q", glance)
+	}
+	if got := root.byID("prov-status").text(true); !strings.Contains(got, "f1a0 Weather node image, read at cf5b169, the submodule's pin") {
+		t.Errorf("c07d: the status commit lacks the snapshot: %.600s", got)
+	}
+	if n := len(root.byClass("tr", "here")); n != 1 {
+		t.Errorf("c07d: %d rows here, want 1", n)
+	}
+	if p := root.byClass("p", "empty"); len(p) > 0 && strings.Contains(p[0].text(true), "Proposed") {
+		t.Error("c07d: an authorised task shows the proposed note")
+	}
+
+	var c3c5d view.Task
+	tabloGolden(t, "task-3c5d.detail", &c3c5d)
+	root = adapted(t, "task", "", &c3c5d, nil)
+	if p := root.byClass("p", "empty"); len(p) == 0 || !strings.Contains(p[0].text(true), "Proposed: no authority has accepted this task.") {
+		t.Errorf("3c5d: no proposed note at glance")
+	}
 }
 
 // TestGateStateRank covers T6 of design 5a2f on the gate fixtures: the row of a
