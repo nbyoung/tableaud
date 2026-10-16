@@ -139,54 +139,56 @@
     "Alt": ""
    },
    "Total": 0,
-   "Rows": {
-    "Shown": [
-     {
-      "Task": {
-       "ID": "c2ad",
-       "Title": "Roles",
-       "Href": "T/c2ad"
-      },
-      "Project": "",
-      "ReadAt": "",
-      "From": {
-       "Glyph": "📐",
-       "Name": "design"
-      },
-      "To": {
-       "Glyph": "📐",
-       "Name": "design"
-      },
-      "Text": "The role names",
-      "Status": {
-       "Gate": {
-        "Glyph": "🧱",
-        "Name": "implementation"
+   "Rows": [
+    {
+     "Shown": [
+      {
+       "Task": {
+        "ID": "c2ad",
+        "Title": "Roles",
+        "Href": "T/c2ad"
        },
-       "State": {
-        "Glyph": "🟢",
-        "Name": "nominal"
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "📐",
+        "Name": "design"
        },
-       "Reason": null,
-       "Note": "",
-       "Date": "",
-       "Recorder": "",
-       "From": null,
-       "Snapshot": null
-      },
-      "Condition": "met"
-     }
-    ],
-    "Rest": null,
-    "Fold": {
-     "ID": "",
-     "Class": "",
-     "Open": false,
-     "Src": "",
-     "Alt": ""
-    },
-    "Alike": ""
-   },
+       "To": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "Text": "The role names",
+       "Status": {
+        "Gate": {
+         "Glyph": "🧱",
+         "Name": "implementation"
+        },
+        "State": {
+         "Glyph": "🟢",
+         "Name": "nominal"
+        },
+        "Reason": null,
+        "Note": "",
+        "Date": "",
+        "Recorder": "",
+        "From": null,
+        "Snapshot": null
+       },
+       "Condition": "met"
+      }
+     ],
+     "Rest": null,
+     "Fold": {
+      "ID": "",
+      "Class": "",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Alike": ""
+    }
+   ],
    "Prov": {
     "ID": "prov-requires",
     "Class": "prov",
@@ -208,120 +210,122 @@
     "Alt": ""
    },
    "Total": 0,
-   "Rows": {
-    "Shown": [
-     {
-      "Task": {
-       "ID": "99f0",
-       "Title": "Gate definition view in Markdown",
-       "Href": "T/99f0"
+   "Rows": [
+    {
+     "Shown": [
+      {
+       "Task": {
+        "ID": "99f0",
+        "Title": "Gate definition view in Markdown",
+        "Href": "T/99f0"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "📌",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
       },
-      "Project": "",
-      "ReadAt": "",
-      "From": {
-       "Glyph": "📐",
-       "Name": "design"
+      {
+       "Task": {
+        "ID": "05a9",
+        "Title": "x",
+        "Href": "T/05a9"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "📌",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
       },
-      "To": {
-       "Glyph": "📌",
-       "Name": "mockup"
+      {
+       "Task": {
+        "ID": "a9ce",
+        "Title": "y",
+        "Href": "T/a9ce"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "📌",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      }
+     ],
+     "Rest": [
+      {
+       "Task": {
+        "ID": "bb7c",
+        "Title": "z",
+        "Href": "T/bb7c"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "📌",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
       },
-      "Text": "The abstract definition of the view",
-      "Status": null,
-      "Condition": "met"
+      {
+       "Task": {
+        "ID": "c74a",
+        "Title": "w",
+        "Href": "T/c74a"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "📐",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "📌",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      }
+     ],
+     "Fold": {
+      "ID": "fold-dependents",
+      "Class": "fold",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
      },
-     {
-      "Task": {
-       "ID": "05a9",
-       "Title": "x",
-       "Href": "T/05a9"
-      },
-      "Project": "",
-      "ReadAt": "",
-      "From": {
-       "Glyph": "📐",
-       "Name": "design"
-      },
-      "To": {
-       "Glyph": "📌",
-       "Name": "mockup"
-      },
-      "Text": "The abstract definition of the view",
-      "Status": null,
-      "Condition": "met"
-     },
-     {
-      "Task": {
-       "ID": "a9ce",
-       "Title": "y",
-       "Href": "T/a9ce"
-      },
-      "Project": "",
-      "ReadAt": "",
-      "From": {
-       "Glyph": "📐",
-       "Name": "design"
-      },
-      "To": {
-       "Glyph": "📌",
-       "Name": "mockup"
-      },
-      "Text": "The abstract definition of the view",
-      "Status": null,
-      "Condition": "met"
-     }
-    ],
-    "Rest": [
-     {
-      "Task": {
-       "ID": "bb7c",
-       "Title": "z",
-       "Href": "T/bb7c"
-      },
-      "Project": "",
-      "ReadAt": "",
-      "From": {
-       "Glyph": "📐",
-       "Name": "design"
-      },
-      "To": {
-       "Glyph": "📌",
-       "Name": "mockup"
-      },
-      "Text": "The abstract definition of the view",
-      "Status": null,
-      "Condition": "met"
-     },
-     {
-      "Task": {
-       "ID": "c74a",
-       "Title": "w",
-       "Href": "T/c74a"
-      },
-      "Project": "",
-      "ReadAt": "",
-      "From": {
-       "Glyph": "📐",
-       "Name": "design"
-      },
-      "To": {
-       "Glyph": "📌",
-       "Name": "mockup"
-      },
-      "Text": "The abstract definition of the view",
-      "Status": null,
-      "Condition": "met"
-     }
-    ],
-    "Fold": {
-     "ID": "fold-dependents",
-     "Class": "fold",
-     "Open": false,
-     "Src": "",
-     "Alt": ""
-    },
-    "Alike": "with the same edge, text and condition"
-   },
+     "Alike": "with the same edge, text and condition"
+    }
+   ],
    "Prov": {
     "ID": "prov-dependents",
     "Class": "prov",

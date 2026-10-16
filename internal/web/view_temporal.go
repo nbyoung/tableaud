@@ -103,7 +103,11 @@ type AuditView struct {
 	MostCount                     int
 	Stale                         int      // the stale age in days
 	Silent                        []string // the rules that report nothing
-	Groups                        []FindingGroup
+	// Minimum is the control of the lowest severity the page lists: the
+	// three counts as links to the error, warning and information addresses,
+	// in that order, the minimum in force Current.
+	Minimum []NavItem
+	Groups  []FindingGroup
 }
 
 // FindingKind is one glance row: a rule and its count.

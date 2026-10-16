@@ -71,11 +71,14 @@ type AuthProv struct {
 	Commands []string
 }
 
-// Edges is one direction of the requirements: what the task requires, or its dependents.
+// Edges is one direction of the requirements: what the task requires, or its
+// dependents. Rows holds the runs of the fold rule in order: the dependents
+// fold each stretch of more than eight alike rows, and the requirements stand
+// in one run that folds nothing.
 type Edges struct {
 	Fold     Fold
 	Total    int
-	Rows     Run[Edge]
+	Rows     []Run[Edge]
 	Prov     Fold // where the conditions read from
 	Files    []string
 	Commands []string

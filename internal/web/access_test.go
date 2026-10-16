@@ -10,6 +10,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/nbyoung/tablo/view"
+
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -515,9 +517,29 @@ func TestTemplatesKeepTheAccessRules(t *testing.T) {
 	}
 }
 
-// TestAdaptersSetTheRank covers T11 of design 5a2f: over the corpus entry
-// weather-station, a stalled task's cell carries s3. It waits for tablo's view
-// types.
+// TestAdaptersSetTheRank covers T11 of design 5a2f: over tablo's golden data
+// of weather-station, a stalled task's cell carries s3, and the legend's rows
+// of the states rank their severities.
 func TestAdaptersSetTheRank(t *testing.T) {
-	t.Skip("waits for tablo's view types (tasks 886d and 493e): the status adapters set Cell.Rank and the gate adapter LegendRow.Rank from Legend.Rank")
+	var tab view.Tableau
+	tabloGolden(t, "tableau.detail", &tab)
+	root := adapted(t, "tableau", "detail", &tab, nil)
+	var stalled *Node
+	for _, td := range root.byID("grid-9f31").find("td") {
+		if strings.Contains(td.text(false), "stalled") {
+			stalled = td
+		}
+	}
+	if stalled == nil || !stalled.hasClass("s3") {
+		t.Errorf("the stalled cell of 9f31 is %v", stalled)
+	}
+	var gates view.Gates
+	tabloGolden(t, "gates-9f31.provenance", &gates)
+	root = adapted(t, "gates", "", &gates, nil)
+	for state, class := range map[string]string{"nominal": "", "at_risk": "s2", "stalled": "s3"} {
+		cell := root.byID("state-" + state).find("td")[0]
+		if cell.hasClass("s2") != (class == "s2") || cell.hasClass("s3") != (class == "s3") {
+			t.Errorf("the legend row of %s has the class %q", state, cell.Attr["class"])
+		}
+	}
 }

@@ -118,64 +118,66 @@
         "Src": "",
         "Alt": ""
        },
-       "Rows": {
-        "Shown": [
-         {
-          "Task": {
-           "ID": "99f0",
-           "Title": "T 99f0",
-           "Href": "T/99f0"
+       "Rows": [
+        {
+         "Shown": [
+          {
+           "Task": {
+            "ID": "99f0",
+            "Title": "T 99f0",
+            "Href": "T/99f0"
+           },
+           "Contributor": "noreply@anthropic.com",
+           "Model": "claude-haiku",
+           "Reviewer": "",
+           "When": "next"
           },
-          "Contributor": "noreply@anthropic.com",
-          "Model": "claude-haiku",
-          "Reviewer": "",
-          "When": "next"
+          {
+           "Task": {
+            "ID": "05a9",
+            "Title": "T 05a9",
+            "Href": "T/05a9"
+           },
+           "Contributor": "noreply@anthropic.com",
+           "Model": "claude-haiku",
+           "Reviewer": "",
+           "When": "next"
+          },
+          {
+           "Task": {
+            "ID": "a9ce",
+            "Title": "T a9ce",
+            "Href": "T/a9ce"
+           },
+           "Contributor": "noreply@anthropic.com",
+           "Model": "claude-haiku",
+           "Reviewer": "",
+           "When": "next"
+          }
+         ],
+         "Rest": [
+          {
+           "Task": {
+            "ID": "bb7c",
+            "Title": "T bb7c",
+            "Href": "T/bb7c"
+           },
+           "Contributor": "noreply@anthropic.com",
+           "Model": "claude-haiku",
+           "Reviewer": "",
+           "When": "next"
+          }
+         ],
+         "Fold": {
+          "ID": "fold-noreply-c-mockup",
+          "Class": "fold",
+          "Open": false,
+          "Src": "",
+          "Alt": ""
          },
-         {
-          "Task": {
-           "ID": "05a9",
-           "Title": "T 05a9",
-           "Href": "T/05a9"
-          },
-          "Contributor": "noreply@anthropic.com",
-          "Model": "claude-haiku",
-          "Reviewer": "",
-          "When": "next"
-         },
-         {
-          "Task": {
-           "ID": "a9ce",
-           "Title": "T a9ce",
-           "Href": "T/a9ce"
-          },
-          "Contributor": "noreply@anthropic.com",
-          "Model": "claude-haiku",
-          "Reviewer": "",
-          "When": "next"
-         }
-        ],
-        "Rest": [
-         {
-          "Task": {
-           "ID": "bb7c",
-           "Title": "T bb7c",
-           "Href": "T/bb7c"
-          },
-          "Contributor": "noreply@anthropic.com",
-          "Model": "claude-haiku",
-          "Reviewer": "",
-          "When": "next"
-         }
-        ],
-        "Fold": {
-         "ID": "fold-noreply-c-mockup",
-         "Class": "fold",
-         "Open": false,
-         "Src": "",
-         "Alt": ""
-        },
-        "Alike": "at mockup"
-       },
+         "Alike": "at mockup"
+        }
+       ],
        "Prov": {
         "ID": "prov-g-noreply-c-mockup",
         "Class": "prov",
@@ -229,18 +231,7 @@
         "Src": "P/g-noreply-c-design",
         "Alt": "A/g-noreply-c-design"
        },
-       "Rows": {
-        "Shown": null,
-        "Rest": null,
-        "Fold": {
-         "ID": "",
-         "Class": "",
-         "Open": false,
-         "Src": "",
-         "Alt": ""
-        },
-        "Alike": ""
-       },
+       "Rows": null,
        "Prov": {
         "ID": "",
         "Class": "",
@@ -271,30 +262,32 @@
         "Src": "",
         "Alt": ""
        },
-       "Rows": {
-        "Shown": [
-         {
-          "Task": {
-           "ID": "e9c6",
-           "Title": "T e9c6",
-           "Href": "T/e9c6"
-          },
-          "Contributor": "noreply@anthropic.com",
-          "Model": "claude-haiku",
-          "Reviewer": "",
-          "When": "next"
-         }
-        ],
-        "Rest": null,
-        "Fold": {
-         "ID": "",
-         "Class": "",
-         "Open": false,
-         "Src": "",
-         "Alt": ""
-        },
-        "Alike": ""
-       },
+       "Rows": [
+        {
+         "Shown": [
+          {
+           "Task": {
+            "ID": "e9c6",
+            "Title": "T e9c6",
+            "Href": "T/e9c6"
+           },
+           "Contributor": "noreply@anthropic.com",
+           "Model": "claude-haiku",
+           "Reviewer": "",
+           "When": "next"
+          }
+         ],
+         "Rest": null,
+         "Fold": {
+          "ID": "",
+          "Class": "",
+          "Open": false,
+          "Src": "",
+          "Alt": ""
+         },
+         "Alike": ""
+        }
+       ],
        "Prov": {
         "ID": "prov-g-noreply-r-implementation",
         "Class": "prov",

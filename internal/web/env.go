@@ -188,10 +188,6 @@ func levelOf(p *Page) Level {
 	return Detail
 }
 
-// legendOf builds the Legend from Page.Legend, tablo's gate definition. Until
-// the gate adapter lands it knows no type and returns NewLegend(nil, nil, nil, nil).
-func legendOf(any) *Legend { return NewLegend(nil, nil, nil, nil) }
-
 // envOf returns the Env of one rendering of p in a shape: Legend from
 // legendOf, Person from Params.Person, Open as openerOf(p) gives it, or
 // openAll{} for a Part; Inline when p.Scripts is false, or when the shape is

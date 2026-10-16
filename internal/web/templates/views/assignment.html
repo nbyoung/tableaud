@@ -56,11 +56,11 @@
 {{define "assignment-group"}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">{{template "sym" .Gate}} <span class="tally">· {{.Total}} {{plural .Total "junction" "junctions"}} · {{.Next}} next</span></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/group" .}}{{end}}</details>
 {{end}}
 
-{{define "part/group"}}{{if .Reviews}}{{template "assignment-reviewed" .Rows.Shown}}{{else}}{{template "assignment-contributed" .Rows.Shown}}{{end}}
-{{if .Rows.Rest}}{{template "fold" .Rows.Fold}}<summary id="{{.Rows.Fold.ID}}-s">… and {{len .Rows.Rest}} more {{.Rows.Alike}}</summary>
-{{if .Reviews}}{{template "assignment-reviewed" .Rows.Rest}}{{else}}{{template "assignment-contributed" .Rows.Rest}}{{end}}
+{{define "part/group"}}{{$g := .}}{{range .Rows}}{{if $g.Reviews}}{{template "assignment-reviewed" .Shown}}{{else}}{{template "assignment-contributed" .Shown}}{{end}}
+{{if .Rest}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">… and {{len .Rest}} more {{.Alike}}</summary>
+{{if $g.Reviews}}{{template "assignment-reviewed" .Rest}}{{else}}{{template "assignment-contributed" .Rest}}{{end}}
 </details>
-{{end}}{{template "fold" .Prov}}<summary id="{{.Prov.ID}}-s">Provenance: the file and the ancestor behind these positions</summary>
+{{end}}{{end}}{{template "fold" .Prov}}<summary id="{{.Prov.ID}}-s">Provenance: the file and the ancestor behind these positions</summary>
 <div class="scroll">
 <table>
 <caption>The entry that supplies each field</caption>
