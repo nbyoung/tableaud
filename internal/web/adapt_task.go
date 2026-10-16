@@ -274,13 +274,22 @@ func condition(r view.Requirement) string {
 }
 
 // foldEdges applies the fold rule to the dependents: rows are alike when
-// their edge, text and condition agree. A list folds one run at most, as the
-// model holds one Run.
+// their edge, text and condition agree.
 func foldEdges(rows []Edge, e Env) Run[Edge] {
-	runs := FoldRuns(rows, func(r Edge) string {
+	out := oneRun(FoldRuns(rows, func(r Edge) string {
 		return r.From.Name + "\x00" + r.To.Name + "\x00" + r.Text + "\x00" + r.Condition
-	})
-	var out Run[Edge]
+	}))
+	if len(out.Rest) > 0 {
+		out.Fold = e.Fold("fold", "fold-dependents", "", "")
+		out.Alike = "with the same edge, text and condition"
+	}
+	return out
+}
+
+// oneRun joins the runs of FoldRuns into the one Run a model holds: the first
+// run that folds keeps its fold, and every other row shows, in order.
+func oneRun[T any](runs []Run[T]) Run[T] {
+	var out Run[T]
 	for _, r := range runs {
 		if len(out.Rest) > 0 || len(r.Rest) == 0 {
 			out.Shown = append(out.Shown, r.Shown...)
@@ -289,10 +298,6 @@ func foldEdges(rows []Edge, e Env) Run[Edge] {
 		}
 		out.Shown = append(out.Shown, r.Shown...)
 		out.Rest = r.Rest
-	}
-	if len(out.Rest) > 0 {
-		out.Fold = e.Fold("fold", "fold-dependents", "", "")
-		out.Alike = "with the same edge, text and condition"
 	}
 	return out
 }
@@ -306,27 +311,12 @@ func (e Env) junctions(d *view.Task) ([]Junction, []Sym) {
 	var rows []Junction
 	used := map[string]bool{}
 	for _, j := range d.Junctions {
-		row := Junction{
-			Gate: e.Legend.Gate(j.Gate), Exempt: j.Kind == "not_applicable", Here: j.Stands == "here",
-			Model: j.Model, ByAssignee: j.ReviewerByDefault,
-		}
+		row := e.junctionRow(j, d.TaskDetail)
+		row.Here = j.Stands == "here"
+		row.Stands = stands(j)
 		for _, m := range j.Marks {
-			row.Marks = append(row.Marks, e.Legend.Mark(m))
 			used[m] = true
 		}
-		if j.Contributor != "" && !row.Exempt && j.Subproject == nil {
-			p := e.person(j.Contributor)
-			row.Contributor = &p
-		}
-		if j.Reviewer != "" && !row.Exempt {
-			p := e.person(j.Reviewer)
-			row.Reviewer = &p
-		}
-		if j.Subproject != nil {
-			row.Subproject = e.subRef(*j.Subproject, d.TaskDetail)
-		}
-		row.Refs = e.references(j.References, nil)
-		row.Stands = stands(j)
 		rows = append(rows, row)
 	}
 	var key []Sym
@@ -336,6 +326,30 @@ func (e Env) junctions(d *view.Task) ([]Junction, []Sym) {
 		}
 	}
 	return rows, key
+}
+
+// junctionRow returns a resolved junction with its marks, its people and its
+// references; where it stands is the caller's. A recursive junction reads
+// the gate of its subproject task from the detail, where the status reads the
+// same task.
+func (e Env) junctionRow(j view.Junction, detail *view.TaskDetail) Junction {
+	row := Junction{Gate: e.Legend.Gate(j.Gate), Exempt: j.Kind == "not_applicable", Model: j.Model, ByAssignee: j.ReviewerByDefault}
+	for _, m := range j.Marks {
+		row.Marks = append(row.Marks, e.Legend.Mark(m))
+	}
+	if j.Contributor != "" && !row.Exempt && j.Subproject == nil {
+		p := e.person(j.Contributor)
+		row.Contributor = &p
+	}
+	if j.Reviewer != "" && !row.Exempt {
+		p := e.person(j.Reviewer)
+		row.Reviewer = &p
+	}
+	if j.Subproject != nil {
+		row.Subproject = e.subRef(*j.Subproject, detail)
+	}
+	row.Refs = e.references(j.References, nil)
+	return row
 }
 
 // stands words where a junction stands.

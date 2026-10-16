@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/nbyoung/tablo/view"
 
 	"github.com/nbyoung/tableaud/internal/web"
 )
@@ -633,31 +636,300 @@ func TestStructuralTasksWithoutAddresses(t *testing.T) {
 	}
 }
 
+// delegation returns tablo's authority view of a tree given as id, depth,
+// assignee and whether the task is proposed, in display order, every task
+// decided by the commit of decide, by way of change.
+func delegation(rows []view.DelegationRow, decide map[string]string) *view.Delegation {
+	d := &view.Delegation{Rows: rows, DelegationDetail: &view.DelegationDetail{}, DelegationProvenance: &view.DelegationProvenance{}}
+	at := map[string]int{}
+	for _, r := range rows {
+		hash, ok := decide[r.ID]
+		if !ok {
+			continue
+		}
+		way := "change"
+		if strings.HasPrefix(hash, "m") {
+			way = "merge"
+		}
+		i, seen := at[hash]
+		if !seen {
+			i = len(d.Deciding)
+			at[hash] = i
+			d.Deciding = append(d.Deciding, view.Deciding{Commit: view.Commit{Hash: hash, Subject: "s " + hash}, Way: way, By: "both"})
+		}
+		d.Deciding[i].Tasks = append(d.Deciding[i].Tasks, r.ID)
+	}
+	return d
+}
+
+// viewNamed returns the view of a route's name.
+func viewNamed(name string) web.View {
+	v, _ := web.Lookup(name)
+	return v
+}
+
+// row returns one row of tablo's authority view.
+func row(id string, depth int, assignee string, proposed bool) view.DelegationRow {
+	return view.DelegationRow{TaskRef: view.TaskRef{ID: id, Title: "T " + id}, Depth: depth, Assignee: assignee, Proposed: proposed}
+}
+
+// authorityFrom runs the adapter for a page whose address states the query.
+func authorityFrom(t *testing.T, d *view.Delegation, query string) *web.AuthorityView {
+	t.Helper()
+	p := at(t, "authority", query)
+	p.Project, p.Scripts, p.Link = &fixtureProject, true, fixtureLinker{}
+	return web.AuthorityFrom(d, web.EnvOf(p, web.Document))
+}
+
+// kept returns the ids of the tree under n in display order, each with its
+// parent's id.
+func kept(n *web.AuthNode, parent string) (out []string) {
+	if n == nil {
+		return nil
+	}
+	out = append(out, parent+">"+n.Task.ID)
+	for _, c := range n.Children {
+		out = append(out, kept(c, n.Task.ID)...)
+	}
+	return out
+}
+
 // TestAuthorityFilter covers e2b6 T4: the adapter's filter keeps exactly the
-// ancestors of the proposed tasks.
+// ancestors of the proposed tasks, so that the parent of every task that
+// stays also stays, and leaves no root when nothing is proposed.
 func TestAuthorityFilter(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 493e): the authority adapter, which filters, lands with them")
+	rows := []view.DelegationRow{
+		row("r", 0, "o@x", false),
+		row("a", 1, "a@x", false), row("a1", 2, "a@x", true), row("a2", 2, "a@x", false),
+		row("b", 1, "b@x", false), row("b1", 2, "c@x", false), row("b11", 3, "c@x", true),
+		row("c", 1, "o@x", false), row("c1", 2, "o@x", false),
+	}
+	all := authorityFrom(t, delegation(rows, nil), "")
+	if got := kept(all.Root, ""); len(got) != len(rows) || all.Total != 9 || all.Proposed != 2 || all.Filtered {
+		t.Errorf("unfiltered: %q, total %d, proposed %d", got, all.Total, all.Proposed)
+	}
+	m := authorityFrom(t, delegation(rows, nil), "proposed=on")
+	want := []string{">r", "r>a", "a>a1", "r>b", "b>b1", "b1>b11"}
+	if got := kept(m.Root, ""); !slices.Equal(got, want) {
+		t.Errorf("filtered: %q, want %q", got, want)
+	}
+	if !m.Filtered || m.Total != 9 || m.Proposed != 2 {
+		t.Errorf("filtered: %+v", m)
+	}
+	var walk func(n *web.AuthNode)
+	walk = func(n *web.AuthNode) {
+		if n.Count != len(n.Children) {
+			t.Errorf("%s: count %d, %d children", n.Task.ID, n.Count, len(n.Children))
+		}
+		if n.Count > 0 && (!n.Kids.Open || n.Kids.Src != "") {
+			t.Errorf("%s: the kept path is closed: %+v", n.Task.ID, n.Kids)
+		}
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(m.Root)
+	for i := range rows {
+		rows[i].Proposed = false
+	}
+	none := authorityFrom(t, delegation(rows, nil), "proposed=on")
+	if none.Root != nil || none.Proposed != 0 {
+		t.Errorf("nothing proposed: root %+v", none.Root)
+	}
+	doc := render(t, web.Document, pageOf(viewNamed("authority"), none))
+	if !strings.Contains(doc, "No task is proposed: all 9 are authorised.") {
+		t.Error("nothing proposed: no empty form")
+	}
 }
 
-// TestAuthorityDecidingCommits covers e2b6 T7: the adapter groups the deciding
-// commits in the order of their first appearance.
+// TestAuthorityDecidingCommits covers e2b6 T7: two commits that decide five
+// tasks give two rows in the order display order first meets them, the other
+// tasks of each node's commit, and the way counts in README.md's order.
 func TestAuthorityDecidingCommits(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 493e): the authority adapter, which groups the commits, lands with them")
+	rows := []view.DelegationRow{
+		row("r", 0, "o@x", false), row("a", 1, "o@x", false), row("b", 1, "b@x", false),
+		row("b1", 2, "b@x", false), row("c", 1, "o@x", false),
+	}
+	d := delegation(rows, map[string]string{"r": "m2", "a": "c1", "b": "m2", "b1": "c1", "c": "c1"})
+	slices.Reverse(d.Deciding) // tablo gives the newest first; the order must not matter
+	m := authorityFrom(t, d, "level=provenance")
+	var got []string
+	for _, r := range m.Commits.Rows {
+		var ids []string
+		for _, task := range r.Tasks {
+			ids = append(ids, task.ID)
+		}
+		got = append(got, r.Commit.Hash+" "+r.Way+": "+strings.Join(ids, " "))
+	}
+	want := []string{"m2 a merge: r b", "c1 a change on the trunk: a b1 c"}
+	if !slices.Equal(got, want) {
+		t.Errorf("rows %q, want %q", got, want)
+	}
+	others := map[string]int{}
+	var walk func(n *web.AuthNode)
+	walk = func(n *web.AuthNode) {
+		if n.Body == nil {
+			t.Fatalf("%s: no body at provenance", n.Task.ID)
+		}
+		others[n.Task.ID] = n.Body.Others
+		for _, c := range n.Children {
+			walk(c)
+		}
+	}
+	walk(m.Root)
+	if !reflect.DeepEqual(others, map[string]int{"r": 1, "a": 2, "b": 1, "b1": 2, "c": 2}) {
+		t.Errorf("others %v", others)
+	}
+	if !reflect.DeepEqual(m.Commits.Ways, []web.WayCount{{Way: "a change on the trunk", Count: 3}, {Way: "a merge", Count: 2}}) {
+		t.Errorf("ways %+v", m.Commits.Ways)
+	}
+	if w := m.Root.Body.Prov.Way; w != "a merge by an authority" {
+		t.Errorf("the root's way reads %q", w)
+	}
 }
 
-// TestAssignmentCounts covers e2b6 T10: the totals equal the sums of the rows.
+// assignment returns tablo's assignment view of two people built for the
+// tests: Ada, the owner, who contributes at two gates and reviews at one, and
+// an agent.
+func assignment(emails ...string) *view.Assignment {
+	j := func(task, gate, stands, contributor, model, reviewer string) view.JunctionRow {
+		return view.JunctionRow{Task: view.TaskRef{ID: task, Title: "T " + task}, Junction: view.Junction{
+			Gate: gate, Kind: "plain", Stands: stands, Contributor: contributor, Model: model, Reviewer: reviewer,
+		}}
+	}
+	d := &view.Assignment{AssignmentDetail: &view.AssignmentDetail{}}
+	for i, email := range emails {
+		d.People = append(d.People, view.PersonRow{Email: email, Owner: i == 0, Assigned: 2, ContributesNext: 1})
+		s := view.PersonSection{
+			Email: email,
+			Assigned: []view.AssignedRow{
+				{TaskRef: view.TaskRef{ID: "r", Title: "Root"}, Status: view.Status{Gate: "design"}},
+				{TaskRef: view.TaskRef{ID: "a", Title: "A"}, Under: "r", Status: view.Status{Gate: "design"}, NextGate: "unit", Next: &view.Junction{Gate: "unit", Marks: []string{"person"}}},
+			},
+			Contributes: []view.JunctionRow{
+				j("a", "design", "here", email, "", "o@x"), j("b", "design", "passed", email, "", "o@x"),
+				j("a", "unit", "next", email, "", ""),
+			},
+			Reviews: []view.JunctionRow{j("c", "unit", "later", "z@x", "m-1", email)},
+			Counts: []view.GateCount{
+				{Gate: "undefined"}, {Gate: "design", Standing: 2, Contributes: 2},
+				{Gate: "unit", Contributes: 1, ContributesNext: 1, Reviews: 1},
+			},
+		}
+		d.Sections = append(d.Sections, s)
+	}
+	return d
+}
+
+// TestAssignmentCounts covers e2b6 T10: the totals equal the sums of the rows,
+// and the counts of the headings the lengths of the lists, for every person.
 func TestAssignmentCounts(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 493e): the assignment adapter, which sums the counts, lands with them")
+	p := at(t, "assignment", "")
+	p.Project, p.Scripts, p.Link = &fixtureProject, true, fixtureLinker{}
+	m := web.AssignmentFrom(assignment("ada@x", "agent@x"), web.EnvOf(p, web.Document))
+	if len(m.Sections) != 2 {
+		t.Fatalf("%d sections", len(m.Sections))
+	}
+	for _, s := range m.Sections {
+		var sum web.GateCount
+		for _, c := range s.Counts {
+			sum.Standing += c.Standing
+			sum.Contributes += c.Contributes
+			sum.ContribNext += c.ContribNext
+			sum.Reviews += c.Reviews
+			sum.ReviewsNext += c.ReviewsNext
+		}
+		if sum != s.Totals {
+			t.Errorf("%s: totals %+v, sums %+v", s.Email, s.Totals, sum)
+		}
+		for _, pos := range []web.Position{s.Contributes, s.Reviews} {
+			total, next := 0, 0
+			for _, g := range pos.Groups {
+				n := len(g.Rows.Shown) + len(g.Rows.Rest)
+				if n != g.Total {
+					t.Errorf("%s: group %s counts %d of %d rows", s.Email, g.Gate.Name, g.Total, n)
+				}
+				total += g.Total
+				next += g.Next
+			}
+			if total != pos.Total || next != pos.Next {
+				t.Errorf("%s: heading %d, %d next; groups %d, %d next", s.Email, pos.Total, pos.Next, total, next)
+			}
+		}
+		if s.Contributes.Total != 3 || s.Contributes.Next != 1 || s.Reviews.Total != 1 || len(s.Contributes.Groups) != 2 {
+			t.Errorf("%s: contributes %+v, reviews %+v", s.Email, s.Contributes, s.Reviews)
+		}
+		if w := s.Contributes.Groups[0].Rows.Shown[0].When; w != "passed" {
+			t.Errorf("%s: the junction at the status's gate reads %q", s.Email, w)
+		}
+	}
+	if m.Sections[0].Kind != "owner" || m.Sections[1].Kind != "person" {
+		t.Errorf("kinds %q, %q", m.Sections[0].Kind, m.Sections[1].Kind)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("assignment"), m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
 }
 
-// TestAssignmentAnchors covers e2b6 T11: two emails that map to one anchor take
-// distinct anchors.
+// TestAssignmentAnchors covers e2b6 T11: two emails that map to one anchor
+// take distinct anchors, and every # link of the People table resolves.
 func TestAssignmentAnchors(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 493e): the assignment adapter, which makes the anchors, lands with them")
+	got := web.AnchorsOf([]string{"Ada@X.org", "ada@x.org", "ada-x.org", "ben@x"})
+	want := []string{"p-ada-x-org", "p-ada-x-org-2", "p-ada-x-org-3", "p-ben-x"}
+	if !slices.Equal(got, want) {
+		t.Errorf("anchors %q, want %q", got, want)
+	}
+	p := at(t, "assignment", "")
+	p.Project, p.Scripts, p.Link = &fixtureProject, true, fixtureLinker{}
+	m := web.AssignmentFrom(assignment("ada@x.org", "ada-x.org"), web.EnvOf(p, web.Document))
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("assignment"), m)))
+	links := 0
+	for _, a := range root.find("table")[0].find("a") {
+		href := a.Attr["href"]
+		if !strings.HasPrefix(href, "#") {
+			continue
+		}
+		links++
+		if root.byID(href[1:]) == nil {
+			t.Errorf("%s resolves to nothing", href)
+		}
+	}
+	if links != 2 || m.Sections[0].Anchor == m.Sections[1].Anchor {
+		t.Errorf("%d links; anchors %q and %q", links, m.Sections[0].Anchor, m.Sections[1].Anchor)
+	}
 }
 
-// TestStructuralAdaptersAgreeWithTablo covers e2b6 T12: the two adapters over
-// the corpus entry weather-station.
+// TestStructuralAdaptersAgreeWithTablo covers e2b6 T12 over tablo's golden
+// data of weather-station: AuthorityFrom shows 3c5d proposed and, with the
+// filter, the path a1c0, 3c5d alone; AssignmentFrom shows four emails, the
+// model of opus@example.org and its zero counts. tablo's golden data holds no
+// view at the commit W3, so the off-trunk note stands untested here.
 func TestStructuralAdaptersAgreeWithTablo(t *testing.T) {
-	t.Skip("waits for tablo's view types (task 493e): adapt_authority.go, adapt_assignment.go and their entries in the adapters map land with them")
+	var d view.Delegation
+	tabloGolden(t, "authority.provenance", &d)
+	root := adapted(t, "authority", "", &d, nil)
+	row := root.byID("t-3c5d")
+	if row == nil || len(row.byClass("span", "proposed")) != 1 {
+		t.Errorf("3c5d does not read proposed")
+	}
+	m := authorityFrom(t, &d, "proposed=on")
+	if got := kept(m.Root, ""); !slices.Equal(got, []string{">a1c0", "a1c0>3c5d"}) {
+		t.Errorf("filtered: %q", got)
+	}
+	if m.Total != 6 || m.Proposed != 1 || len(authorityFrom(t, &d, "level=provenance").Commits.Rows) != 4 {
+		t.Errorf("total %d, proposed %d", m.Total, m.Proposed)
+	}
+
+	var a view.Assignment
+	tabloGolden(t, "assignment.glance", &a)
+	root = adapted(t, "assignment", "", &a, nil)
+	rows := root.find("table")[0].find("tbody")[0].find("tr")
+	if len(rows) != 4 {
+		t.Fatalf("%d people, want 4", len(rows))
+	}
+	opus := rows[3].text(true)
+	if !strings.Contains(opus, "opus@example.org") || !strings.Contains(opus, "claude-opus-5-5") || !strings.Contains(opus, "000") {
+		t.Errorf("the row of opus reads %q", opus)
+	}
 }
