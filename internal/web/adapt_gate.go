@@ -89,10 +89,13 @@ func lowerFirst(s string) string {
 }
 
 // GateFrom builds the model of the gate definition from tablo's view. The
-// language version and the trunk stand in tablo's envelope, not in its view,
-// and stay empty until the page carries them.
+// language version and the trunk stand in tablo's envelope, not in its view;
+// they come from the page's project.
 func GateFrom(d *view.Gates, e Env) *GateView {
 	v := &GateView{Prov: e.Fold("prov", "prov-legend", "", "")}
+	if p := e.Page.Project; p != nil {
+		v.Version, v.Trunk = p.Version, p.Trunk
+	}
 	for _, g := range d.Legend.Gates {
 		v.Gates = append(v.Gates, LegendRow{
 			Anchor: "gate-" + g.Key, Sym: e.Legend.Gate(g.Key), Key: g.Key, Title: g.Name, Text: g.Criteria,

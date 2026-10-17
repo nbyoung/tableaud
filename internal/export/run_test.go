@@ -235,7 +235,7 @@ func TestRunRequests(t *testing.T) {
 	focus := map[string]int{}
 	for _, r := range src.requests {
 		if r.Ref != "W5" || r.Window != -1 || r.Stale != 7 || r.Viewer != "" || r.Project != "" || r.Columns != nil ||
-			r.Historical || r.Proposed || r.BriefTask != "" || r.BriefGate != "" {
+			r.Historical || r.BriefTask != "" || r.BriefGate != "" {
 			t.Errorf("request %+v", r)
 		}
 		if r.Task != "" && r.Person != "" {

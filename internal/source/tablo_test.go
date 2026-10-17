@@ -1,11 +1,165 @@
 package source_test
 
-import "testing"
+import (
+	"bufio"
+	"errors"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"slices"
+	"strings"
+	"testing"
+	"time"
 
-// TestTabloAdapter is T25: the adapter's run of the 200 and 404 cases of the
-// server's table against the built weather-station entry of the corpus. It
-// waits for a tablo release with the views, which brings internal/source/tablo.go
-// and the require line of go.mod.
-func TestTabloAdapter(t *testing.T) {
-	t.Skip("tablo has no release with views yet; the adapter and this test land with step 5 of design 49ce")
+	"github.com/nbyoung/tableaud/internal/source"
+	"github.com/nbyoung/tablo/view"
+)
+
+// weatherStation copies the built weather-station entry of the corpus and
+// returns it with the commit that each label W1 to W13 names.
+func weatherStation(t *testing.T) (dir string, labels map[string]string) {
+	t.Helper()
+	dir = entry(t, "weather-station")
+	f, err := os.Open(filepath.Join(os.Getenv("TABLEAUX_CORPUS"), "weather-station.labels.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = f.Close() }()
+	labels = map[string]string{}
+	sc := bufio.NewScanner(f)
+	for sc.Scan() {
+		if name, sha, ok := strings.Cut(sc.Text(), " "); ok {
+			labels[name] = sha
+		}
+	}
+	return dir, labels
+}
+
+// entry copies the built entry of the corpus, with its .git and its
+// submodule, into a directory of the test. It skips without TABLEAUX_CORPUS or
+// without git. The built corpus is shared, so no Git command runs in it.
+func entry(t *testing.T, name string) string {
+	t.Helper()
+	corpus := os.Getenv("TABLEAUX_CORPUS")
+	if corpus == "" {
+		t.Skip("TABLEAUX_CORPUS names no built corpus")
+	}
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git is not on the path")
+	}
+	from := filepath.Join(corpus, name)
+	if _, err := os.Stat(from); err != nil {
+		t.Skipf("the corpus holds no %s: %v", name, err)
+	}
+	dir := filepath.Join(t.TempDir(), name)
+	if out, err := exec.Command("cp", "-a", from, dir).CombinedOutput(); err != nil {
+		t.Skipf("cannot copy the entry: %v: %s", err, out)
+	}
+	return dir
+}
+
+// TestTabloAnswers checks what the adapter answers beside the views: the
+// description of a project and of a subproject, the index the export reads, a
+// queue that carries a brief, and the errors.
+func TestTabloAnswers(t *testing.T) {
+	dir, labels := weatherStation(t)
+	ctx := t.Context()
+	src, err := source.NewTablo(ctx, dir, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	p, v, err := src.Describe(ctx, "", "", "ben@example.org")
+	if err != nil || p.Root != "a1c0" || p.Title != "Weather station" || p.Ref != "main" || !p.Worktree ||
+		p.Commit != labels["W13"] || p.Date != "2026-09-28" || p.Version != "0.3.1" || p.Trunk != "main" || !p.OnTrunk {
+		t.Errorf("describe: %+v, %v", p, err)
+	}
+	if v.Email != "ben@example.org" || v.Role() == "observer" {
+		t.Errorf("viewer %+v", v)
+	}
+	if _, v, _ := src.Describe(ctx, "", "", ""); v.Role() != "observer" {
+		t.Errorf("no viewer: %+v", v)
+	}
+	p, _, err = src.Describe(ctx, "firmware", labels["W11"], "")
+	if err != nil || p.Root != "b7d2" || p.Worktree || p.Ref != labels["W11"] {
+		t.Errorf("describe a subproject: %+v, %v", p, err)
+	}
+	// A range reads its end and checks its start.
+	if p, _, err = src.Describe(ctx, "", labels["W1"]+".."+labels["W5"], ""); err != nil || p.Commit != labels["W5"] {
+		t.Errorf("describe a range: %+v, %v", p, err)
+	}
+
+	ix, err := src.Index(ctx, "", "HEAD")
+	if err != nil || len(ix.Tasks) != 6 || ix.Tasks[0].ID != "a1c0" || ix.Tasks[0].Children != 3 || ix.Tasks[0].Parent != "" ||
+		ix.Tasks[3].ID != "c07d" || ix.Tasks[3].Parent != "4e2b" || ix.Trunk != "main" || ix.TrunkCommit != labels["W13"] {
+		t.Errorf("index: %+v, %v", ix, err)
+	}
+	if want := []string{"ada@example.org", "ben@example.org", "dan@example.org", "opus@example.org"}; !slices.Equal(ix.People, want) {
+		t.Errorf("people %q, want %q", ix.People, want)
+	}
+	if want := time.Date(2026, 9, 28, 12, 0, 0, 0, time.UTC); !ix.Date.Equal(want) {
+		t.Errorf("date %v, want %v", ix.Date, want)
+	}
+
+	// A queue with a brief: the items and the brief in one value, from two asks.
+	res, err := src.View(ctx, source.Request{View: "queue", Person: "ada@example.org", BriefTask: "7b2e", BriefGate: "defined", Window: -1, Stale: 7})
+	if q, ok := res.Data.(*view.Queue); err != nil || !ok || len(q.Items) == 0 || q.QueueProvenance == nil || q.Brief == nil {
+		t.Errorf("queue with a brief: %+v, %v", res.Data, err)
+	}
+	res, err = src.View(ctx, source.Request{View: "queue", Person: "ada@example.org", Window: -1, Stale: 7})
+	if q, ok := res.Data.(*view.Queue); err != nil || !ok || len(q.Items) == 0 || q.Brief != nil {
+		t.Errorf("queue without a brief: %+v, %v", res.Data, err)
+	}
+	if _, ok := res.Legend.(*view.Gates); !ok {
+		t.Errorf("legend %T", res.Legend)
+	}
+
+	for _, c := range []struct {
+		name string
+		call func() error
+		kind string
+	}{
+		{"ref", func() error { _, err := src.View(ctx, source.Request{View: "tableau", Ref: "nosuch"}); return err }, "ref"},
+		{"range start", func() error { _, _, err := src.Describe(ctx, "", "nosuch..HEAD", ""); return err }, "ref"},
+		{"task", func() error { _, err := src.View(ctx, source.Request{View: "task", Task: "ffff"}); return err }, "task"},
+		{"gate", func() error {
+			_, err := src.View(ctx, source.Request{View: "tableau", Columns: []string{"nosuch"}})
+			return err
+		}, "gate"},
+		{"before the pin", func() error {
+			_, err := src.View(ctx, source.Request{View: "gates", Project: "firmware", Ref: labels["W9"]})
+			return err
+		}, "project"},
+		{"project", func() error { _, err := src.View(ctx, source.Request{View: "gates", Project: "nosuch"}); return err }, "project"},
+		{"directory", func() error { _, err := src.View(ctx, source.Request{View: "gates", Project: "docs"}); return err }, "project"},
+		{"outside", func() error { _, err := src.View(ctx, source.Request{View: "gates", Project: "../x"}); return err }, "project"},
+		{"url", func() error {
+			_, err := src.View(ctx, source.Request{View: "gates", Project: "https://example.org/x"})
+			return err
+		}, "project"},
+	} {
+		var nf *source.NotFoundError
+		if err := c.call(); !errors.Is(err, source.ErrNotFound) || !errors.As(err, &nf) || nf.Kind != c.kind {
+			t.Errorf("%s: %v, want a missing %s", c.name, err, c.kind)
+		}
+	}
+}
+
+// TestTabloInvalid checks that a project tablo cannot derive from answers a
+// view with the diagnostics, and Describe without error.
+func TestTabloInvalid(t *testing.T) {
+	dir := entry(t, "gates-missing")
+	ctx := t.Context()
+	src, err := source.NewTablo(ctx, dir, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = src.View(ctx, source.Request{View: "tableau", Window: -1})
+	var inv *source.InvalidError
+	if !errors.As(err, &inv) || len(inv.Diagnostics) == 0 || inv.Diagnostics[0].Code == "" {
+		t.Fatalf("view: %v", err)
+	}
+	if _, _, err := src.Describe(ctx, "", "", ""); err != nil {
+		t.Errorf("describe: %v", err)
+	}
 }

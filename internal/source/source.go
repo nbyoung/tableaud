@@ -1,8 +1,8 @@
 // Package source is the one seam between tableaud and tablo. The daemon and
 // the export ask a Source for the data of a view and never read a task file.
 //
-// The adapter over tablo arrives once tablo releases its views. Until then
-// package sourcetest holds a Source over JSON fixtures, which every test uses.
+// Tablo is the adapter over tablo's library; package sourcetest holds a Source
+// over JSON fixtures, which most tests use.
 package source
 
 import (
@@ -55,7 +55,7 @@ type Request struct {
 	Task, Person, Viewer string // Person empty: the view's own default
 	Window, Stale        int    // Window -1: the default window
 	Columns              []string
-	Historical, Proposed bool
+	Historical           bool
 	BriefTask, BriefGate string
 	Minimum              string    // the audit's lowest severity: "error" or "information"; empty for the default, warning
 	Today                time.Time // the audit's clock; zero for every other view
@@ -63,9 +63,9 @@ type Request struct {
 
 // Key spells r as one string, equal for equal requests, for a cache.
 func (r Request) Key() string {
-	return fmt.Sprintf("%s\x00%s\x00%s\x00%s\x00%s\x00%s\x00%d\x00%d\x00%s\x00%t\x00%t\x00%s\x00%s\x00%s\x00%s",
+	return fmt.Sprintf("%s\x00%s\x00%s\x00%s\x00%s\x00%s\x00%d\x00%d\x00%s\x00%t\x00%s\x00%s\x00%s\x00%s",
 		r.View, r.Project, r.Ref, r.Task, r.Person, r.Viewer, r.Window, r.Stale,
-		strings.Join(r.Columns, ","), r.Historical, r.Proposed, r.BriefTask, r.BriefGate,
+		strings.Join(r.Columns, ","), r.Historical, r.BriefTask, r.BriefGate,
 		r.Today.Format(time.DateOnly), r.Minimum)
 }
 
@@ -83,6 +83,9 @@ type Project struct {
 	Ref, Commit string // the ref as named, or HEAD's branch; the commit it stands at
 	Date        string // that commit's author date, YYYY-MM-DD
 	Worktree    bool   // the files come from the working tree
+	Version     string // the language version version.yaml states
+	Trunk       string // the trunk's name; empty when tablo finds none
+	OnTrunk     bool   // the commit lies on the trunk's first-parent line
 }
 
 // Short returns the first seven digits of the commit.

@@ -161,7 +161,7 @@ func matches(header, etag string) bool {
 func (s *Server) request(v web.View, p web.Params, email string) source.Request {
 	req := source.Request{
 		View: v.Name, Project: p.Project, Ref: s.ref(p), Task: p.Task, Person: p.Person, Viewer: email,
-		Window: p.Window, Stale: p.Stale, Columns: p.Columns, Historical: p.Historical, Proposed: p.Proposed,
+		Window: p.Window, Stale: p.Stale, Columns: p.Columns, Historical: p.Historical,
 	}
 	if req.Person == "" && p.Task == "" && (v.Name == "context" || v.Name == "queue") {
 		req.Person = p.SeenBy // the person a page is seen by owns the corner and the queue

@@ -11,6 +11,7 @@ import (
 
 	"github.com/nbyoung/tablo/view"
 
+	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -690,15 +691,24 @@ func TestHistoryAdapterLinesAndEffects(t *testing.T) {
 	}
 
 	// At glance tablo gives no detail and no taken line: no effect, no
-	// subproject events, and the proposal marks the page off the trunk.
+	// subproject events, and the project marks the page off the trunk.
 	g := &view.History{Events: 1, Commits: 1, Days: []view.Day{{Date: "2026-10-03", Events: 3, Commits: 1}},
 		Lines: []view.Line{historyLine("2026-10-03", "5555555ee", "1000", "", "status", "reviewed", "pin")}}
 	g.Lines[0].LineDetail, g.Lines[0].Proposal = nil, true
 	ge := historyEnv(t, web.Glance)
-	ge.Inline = true // as the export draws it, every closed fold holds its body
+	ge.Page.Project = &source.Project{Trunk: "main"} // the ref is not on the trunk: tablo's on_trunk is false
+	ge.Inline = true                                 // as the export draws it, every closed fold holds its body
 	gm := web.HistoryFrom(g, ge)
 	if ev := gm.Days[0].Rows[0]; ev.Sub != nil || ev.Effect != "" || ev.After != nil || !ev.Proposal || !gm.OffTrunk {
 		t.Errorf("the glance line is %+v, off the trunk %v", ev, gm.OffTrunk)
+	}
+	// The note follows the project alone: on the trunk, or with no trunk, a
+	// proposal does not mark the page.
+	for _, p := range []*source.Project{{Trunk: "main", OnTrunk: true}, {}, nil} {
+		ge.Page.Project = p
+		if web.HistoryFrom(g, ge).OffTrunk {
+			t.Errorf("project %+v: the page is off the trunk", p)
+		}
 	}
 }
 
