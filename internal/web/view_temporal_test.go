@@ -832,6 +832,43 @@ func TestAuditAdapterGroups(t *testing.T) {
 	}
 }
 
+// TestAuditRowsOfOneRuleLeadApart checks the glance rows of one rule and
+// several resolvers: each link names its resolver in hidden text after the
+// title, or says that the group has none, so that the page passes N3 of
+// design 5a2f; a rule of one row adds nothing to its title.
+func TestAuditRowsOfOneRuleLeadApart(t *testing.T) {
+	stale := func(resolver, task string) view.Finding {
+		return view.Finding{Key: "stale", Severity: "warning", Kind: "A stale status", Act: "reaffirm", Resolver: resolver,
+			Tasks: []view.TaskRef{{ID: task, Title: "T " + task}}}
+	}
+	audit := &view.Audit{Warnings: 4, Findings: []view.Finding{
+		stale("dan@x", "3c5d"), stale("ada@x", "9f31"), stale("", "7b2e"),
+		{Key: "proposed", Severity: "warning", Kind: "A proposed task", Act: "authorise", Resolver: "ada@x"},
+	}}
+	p := framed(t, "audit", "", "ada@x", []string{"owner"}, nil)
+	p.Data = audit
+	root := mustParse(t, render(t, web.Document, p))
+	for _, b := range append(check(root), checkAccess(root)...) {
+		t.Error(b)
+	}
+	var got []string
+	for _, a := range root.find("table")[0].find("a") {
+		if strings.HasPrefix(a.Attr["href"], "#") {
+			got = append(got, a.Attr["href"]+" "+a.text(false))
+		}
+	}
+	want := []string{
+		"#stale A stale status, resolved by dan@x", "#stale-2 A stale status, resolved by ada@x",
+		"#stale-3 A stale status, with no resolver", "#proposed A proposed task",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("the links read %q, want %q", got, want)
+	}
+	if n := len(root.find("table")[0].byClass("span", "sr")); n != 3 {
+		t.Errorf("%d hidden texts in the kinds, want 3", n)
+	}
+}
+
 // historyLines returns the anchor of each line of the model, in page order.
 func historyLines(m *web.HistoryView) []string {
 	var out []string

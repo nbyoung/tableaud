@@ -119,6 +119,10 @@ type FindingKind struct {
 	Count    int
 	Tasks    []TaskRef
 	Resolver Person
+	// Apart is the hidden text after the title that tells the row's link
+	// from the link of another row of the same rule: ", resolved by EMAIL",
+	// or ", with no resolver". It is empty where the rule makes one row.
+	Apart string
 }
 
 // FindingGroup is the findings one action resolves.

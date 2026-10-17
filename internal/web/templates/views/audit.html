@@ -9,7 +9,7 @@
 <caption>Findings by kind: errors first, then warnings, then information. Each kind links to its findings below.</caption>
 <thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Kind</th><th scope="col" class="num">Findings</th><th scope="col">Tasks</th><th scope="col">Resolver</th></tr></thead>
 <tbody>
-{{range .Kinds}}<tr><td><span class="sev {{.Severity}}">{{.Severity}}</span></td><td>{{.Rule}}</td><th scope="row"><a href="{{.Href}}">{{.Title}}</a></th><td class="num">{{.Count}}</td><td>{{range $i, $t := .Tasks}}{{if $i}}, {{end}}{{template "task" $t}}{{end}}</td><td{{if .Resolver.Mine}} class="mine"{{end}}>{{.Resolver.Email}}</td></tr>
+{{range .Kinds}}<tr><td><span class="sev {{.Severity}}">{{.Severity}}</span></td><td>{{.Rule}}</td><th scope="row"><a href="{{.Href}}">{{.Title}}{{with .Apart}}<span class="sr">{{.}}</span>{{end}}</a></th><td class="num">{{.Count}}</td><td>{{range $i, $t := .Tasks}}{{if $i}}, {{end}}{{template "task" $t}}{{end}}</td><td{{if .Resolver.Mine}} class="mine"{{end}}>{{.Resolver.Email}}</td></tr>
 {{end}}</tbody>
 </table>
 </div>
