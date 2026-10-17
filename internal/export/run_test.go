@@ -472,16 +472,20 @@ func TestRunWalk(t *testing.T) {
 	if _, err := run(context.Background(), src, fr.render, o); err != nil {
 		t.Fatal(err)
 	}
+	if links := walkBundle(t, o.Out); links < 500 {
+		t.Errorf("the walk followed %d addresses", links)
+	}
+}
+
+// walkBundle runs Check over the bundle in dir and walks it from index.html:
+// each address resolves to a file on disk, each fragment names an id of its
+// file, and a chain of links reaches every file but the manifest. It returns
+// the number of addresses it follows.
+func walkBundle(t *testing.T, dir string) int {
+	t.Helper()
 	files := map[string][]byte{}
-	for _, p := range tree(t, o.Out) {
-		if strings.HasSuffix(p, "/") {
-			continue
-		}
-		b, err := os.ReadFile(filepath.Join(o.Out, filepath.FromSlash(p)))
-		if err != nil {
-			t.Fatal(err)
-		}
-		files[p] = b
+	for p, b := range readBundle(t, dir) {
+		files[p] = []byte(b)
 	}
 	if fs := Check(files); len(fs) != 0 {
 		t.Errorf("findings on the written bundle: %v", fs)
@@ -504,7 +508,7 @@ func TestRunWalk(t *testing.T) {
 				}
 				target = u.Path
 			}
-			if _, err := os.Stat(filepath.Join(o.Out, filepath.FromSlash(target))); err != nil {
+			if _, err := os.Stat(filepath.Join(dir, filepath.FromSlash(target))); err != nil {
 				t.Errorf("%s: %q has no file: %v", cur, m[1], err)
 				continue
 			}
@@ -528,9 +532,7 @@ func TestRunWalk(t *testing.T) {
 			t.Errorf("no chain of links reaches %s", p)
 		}
 	}
-	if links < 500 {
-		t.Errorf("the walk followed %d addresses", links)
-	}
+	return links
 }
 
 // TestRunScan covers T6 on the fake pages: no absolute address, no query, no
@@ -581,42 +583,59 @@ func scanBundle(t *testing.T, dir string, textOK bool) {
 // TestRunDeterministic covers T9: two runs agree byte for byte, the second under
 // another time zone, language and working directory.
 func TestRunDeterministic(t *testing.T) {
-	read := func(dir string) map[string]string {
-		m := map[string]string{}
-		for _, p := range tree(t, dir) {
-			if strings.HasSuffix(p, "/") {
-				continue
-			}
-			b, err := os.ReadFile(filepath.Join(dir, filepath.FromSlash(p)))
-			if err != nil {
-				t.Fatal(err)
-			}
-			m[p] = string(b)
-		}
-		return m
-	}
 	first := options(t)
 	src, fr := newRun(t)
 	fr.assets = []string{"tableaud.css"}
 	if _, err := run(context.Background(), src, fr.render, first); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("TZ", "Pacific/Auckland")
-	t.Setenv("LANG", "tr_TR.UTF-8")
-	t.Setenv("LC_ALL", "tr_TR.UTF-8")
-	t.Chdir(t.TempDir())
+	elsewhere(t)
 	second := options(t)
 	src, fr = newRun(t)
 	fr.assets = []string{"tableaud.css"}
 	if _, err := run(context.Background(), src, fr.render, second); err != nil {
 		t.Fatal(err)
 	}
-	a, b := read(first.Out), read(second.Out)
-	if len(a) == 0 || len(a) != len(b) {
-		t.Fatalf("%d files, then %d", len(a), len(b))
+	sameBundle(t, first.Out, second.Out)
+}
+
+// elsewhere moves the rest of the test to another time zone, language and
+// working directory.
+func elsewhere(t *testing.T) {
+	t.Helper()
+	t.Setenv("TZ", "Pacific/Auckland")
+	t.Setenv("LANG", "tr_TR.UTF-8")
+	t.Setenv("LC_ALL", "tr_TR.UTF-8")
+	t.Chdir(t.TempDir())
+}
+
+// readBundle returns the content of every file under dir, by its path in the
+// bundle.
+func readBundle(t *testing.T, dir string) map[string]string {
+	t.Helper()
+	m := map[string]string{}
+	for _, p := range tree(t, dir) {
+		if strings.HasSuffix(p, "/") {
+			continue
+		}
+		b, err := os.ReadFile(filepath.Join(dir, filepath.FromSlash(p)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		m[p] = string(b)
 	}
-	for p, content := range a {
-		if b[p] != content {
+	return m
+}
+
+// sameBundle reports each file in which the bundles in a and b differ.
+func sameBundle(t *testing.T, a, b string) {
+	t.Helper()
+	first, second := readBundle(t, a), readBundle(t, b)
+	if len(first) == 0 || len(first) != len(second) {
+		t.Fatalf("%d files, then %d", len(first), len(second))
+	}
+	for p, content := range first {
+		if second[p] != content {
 			t.Errorf("%s differs between the runs", p)
 		}
 	}
@@ -632,8 +651,16 @@ func TestRunBasePaths(t *testing.T) {
 	if _, err := run(context.Background(), src, fr.render, o); err != nil {
 		t.Fatal(err)
 	}
+	crawlBundle(t, o.Out)
+}
+
+// crawlBundle serves the bundle in dir under /, /repo/ and /a/b%20c/d/ and
+// crawls each from index.html: every file answers 200, every file but the
+// manifest is reached, and no link leaves the prefix.
+func crawlBundle(t *testing.T, dir string) {
+	t.Helper()
 	var all []string
-	for _, p := range tree(t, o.Out) {
+	for _, p := range tree(t, dir) {
 		if !strings.HasSuffix(p, "/") {
 			all = append(all, p)
 		}
@@ -648,7 +675,7 @@ func TestRunBasePaths(t *testing.T) {
 			if rel == "" {
 				rel = "index.html"
 			}
-			b, err := os.ReadFile(filepath.Join(o.Out, filepath.FromSlash(rel)))
+			b, err := os.ReadFile(filepath.Join(dir, filepath.FromSlash(rel)))
 			if err != nil || strings.Contains(rel, "..") {
 				http.NotFound(w, r)
 				return
