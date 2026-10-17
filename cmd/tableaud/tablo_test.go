@@ -61,5 +61,8 @@ func TestRealRepository(t *testing.T) {
 	if err != nil || !strings.Contains(string(manifest), `"tablo": "`+tabloVersion()+`"`) || !strings.Contains(string(manifest), `"name": "main"`) {
 		t.Errorf("manifest: %v\n%.400s", err, manifest)
 	}
-	t.Logf("%s", stdout)
+	index, err := os.ReadFile(filepath.Join(out, "index.html"))
+	if err != nil || !strings.Contains(string(index), "viewer: an observer") || !strings.Contains(string(index), "edb30d2</code>, 2026-09-28") {
+		t.Errorf("the context line of index.html: %v", err)
+	}
 }
