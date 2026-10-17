@@ -2,18 +2,28 @@ package source_test
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/nbyoung/tableaud/internal/serve"
 	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tablo/view"
 )
+
+// staticDigest is a Digester of a repository that never changes.
+type staticDigest struct{}
+
+func (staticDigest) Current() string { return "static" }
 
 // weatherStation copies the built weather-station entry of the corpus and
 // returns it with the commit that each label W1 to W13 names.
@@ -56,6 +66,62 @@ func entry(t *testing.T, name string) string {
 		t.Skipf("cannot copy the entry: %v: %s", err, out)
 	}
 	return dir
+}
+
+var label = regexp.MustCompile(`\bW[0-9]+\b`)
+
+// TestTabloAdapter is T25: the 200 and 404 cases of the server's table against
+// the built weather-station entry of the corpus, through the adapter and the
+// server. A label W1 to W13 in a case's address stands for the commit it names.
+func TestTabloAdapter(t *testing.T) {
+	dir, labels := weatherStation(t)
+	b, err := os.ReadFile("../serve/testdata/cases.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc struct {
+		Cases []struct {
+			Get    string `json:"get"`
+			Viewer string `json:"viewer"`
+			Status int    `json:"status"`
+		} `json:"cases"`
+	}
+	if err := json.Unmarshal(b, &doc); err != nil {
+		t.Fatal(err)
+	}
+	src, err := source.NewTablo(t.Context(), dir, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ran := 0
+	for _, c := range doc.Cases {
+		if c.Get == "" || (c.Status != 200 && c.Status != 404) {
+			continue
+		}
+		ran++
+		target := label.ReplaceAllStringFunc(c.Get, func(l string) string { return labels[l] })
+		t.Run(c.Get, func(t *testing.T) {
+			h := serve.New(serve.Config{
+				Source: src, Digest: staticDigest{}, Viewer: c.Viewer, Poll: 2 * time.Second, Version: "test",
+				Now: func() time.Time { return time.Date(2026, 10, 6, 12, 0, 0, 0, time.UTC) },
+			})
+			for _, hx := range []bool{false, true} {
+				req := httptest.NewRequest(http.MethodGet, target, nil)
+				req.Host, req.RemoteAddr = "127.0.0.1:8642", "127.0.0.1:4000"
+				if hx {
+					req.Header.Set("HX-Request", "true")
+				}
+				rec := httptest.NewRecorder()
+				h.ServeHTTP(rec, req)
+				if rec.Code != c.Status {
+					t.Errorf("status %d, want %d (fragment %v): %.400s", rec.Code, c.Status, hx, rec.Body.String())
+				}
+			}
+		})
+	}
+	if ran != 34 {
+		t.Errorf("%d cases ran, want the 34 of status 200 and 404", ran)
+	}
 }
 
 // TestTabloAnswers checks what the adapter answers beside the views: the
