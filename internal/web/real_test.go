@@ -479,3 +479,66 @@ func TestRealTaskDefinitions(t *testing.T) {
 		t.Error("c07d: an authorised task shows the proposed note")
 	}
 }
+
+// treeOf returns the tasks of an authority tree, in page order.
+func treeOf(root *Node) []string {
+	var out []string
+	for _, f := range root.byClass("details", "detail") {
+		if id, ok := strings.CutPrefix(f.Attr["id"], "t-"); ok {
+			out = append(out, id)
+		}
+	}
+	return out
+}
+
+// TestRealStructuralViews is T12 of design e2b6 through the real source: over
+// the copied weather-station, AuthorityFrom at main shows 3c5d proposed and,
+// with the filter, the path a1c0, 3c5d alone; at the commit the corpus
+// labels W3 every task reads proposed and the off-trunk note shows;
+// AssignmentFrom shows four emails, the model of opus@example.org and its
+// zero counts.
+func TestRealStructuralViews(t *testing.T) {
+	dir, labels := realEntry(t, "weather-station")
+	d := newDaemon(t, realSource(t, dir), "ada@example.org")
+	root := d.page("/authority")
+	if got := treeOf(root); len(got) != 6 {
+		t.Errorf("the tree holds %q", got)
+	}
+	var proposed []string
+	for _, id := range treeOf(root) {
+		if len(root.byID("t-" + id).find("summary")[0].byClass("span", "proposed")) > 0 {
+			proposed = append(proposed, id)
+		}
+	}
+	if !slices.Equal(proposed, []string{"3c5d"}) {
+		t.Errorf("at main the proposed tasks are %q", proposed)
+	}
+	if got := treeOf(d.page("/authority?proposed=on")); !slices.Equal(got, []string{"a1c0", "3c5d"}) {
+		t.Errorf("the filter keeps %q", got)
+	}
+
+	w3 := labels["W3"]
+	if w3 == "" {
+		t.Fatal("the corpus labels no W3")
+	}
+	root = d.page("/authority?ref=" + w3)
+	tasks := treeOf(root)
+	for _, id := range tasks {
+		if len(root.byID("t-" + id).find("summary")[0].byClass("span", "proposed")) == 0 {
+			t.Errorf("at W3 %s does not read proposed", id)
+		}
+	}
+	note := root.byClass("p", "empty")
+	if len(tasks) == 0 || len(note) != 1 || !strings.HasPrefix(note[0].text(true), "The ref lies off the trunk") {
+		t.Errorf("at W3 the tree holds %q and the notes %d", tasks, len(note))
+	}
+
+	rows := d.page("/assignment").find("table")[0].find("tbody")[0].find("tr")
+	if len(rows) != 4 {
+		t.Fatalf("%d people, want 4", len(rows))
+	}
+	opus := rows[3].text(true)
+	if !strings.Contains(opus, "opus@example.org") || !strings.Contains(opus, "claude-opus-5-5") || !strings.Contains(opus, "000") {
+		t.Errorf("the row of opus reads %q", opus)
+	}
+}
