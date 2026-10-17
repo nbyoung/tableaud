@@ -154,6 +154,10 @@ func TestTabloAnswers(t *testing.T) {
 	if p, _, err = src.Describe(ctx, "", labels["W1"]+".."+labels["W5"], ""); err != nil || p.Commit != labels["W5"] {
 		t.Errorf("describe a range: %+v, %v", p, err)
 	}
+	// A subproject's range reads its start from the superproject at that start.
+	if p, _, err = src.Describe(ctx, "firmware", labels["W11"]+"..HEAD", ""); err != nil || p.Root != "b7d2" || p.Commit == "" {
+		t.Errorf("describe a subproject's range: %+v, %v", p, err)
+	}
 
 	ix, err := src.Index(ctx, "", "HEAD")
 	if err != nil || len(ix.Tasks) != 6 || ix.Tasks[0].ID != "a1c0" || ix.Tasks[0].Children != 3 || ix.Tasks[0].Parent != "" ||
@@ -162,6 +166,10 @@ func TestTabloAnswers(t *testing.T) {
 	}
 	if want := []string{"ada@example.org", "ben@example.org", "dan@example.org", "opus@example.org"}; !slices.Equal(ix.People, want) {
 		t.Errorf("people %q, want %q", ix.People, want)
+	}
+	// A subproject's trunk resolves in its own repository.
+	if ix, err := src.Index(ctx, "firmware", ""); err != nil || len(ix.Tasks) == 0 || ix.Tasks[0].ID != "b7d2" || ix.Trunk != "main" || len(ix.TrunkCommit) != 40 {
+		t.Errorf("index of a subproject: %+v, %v", ix, err)
 	}
 	if want := time.Date(2026, 9, 28, 12, 0, 0, 0, time.UTC); !ix.Date.Equal(want) {
 		t.Errorf("date %v, want %v", ix.Date, want)
@@ -224,6 +232,10 @@ func TestTabloAnswers(t *testing.T) {
 		}, "gate"},
 		{"before the pin", func() error {
 			_, err := src.View(ctx, source.Request{View: "gates", Project: "firmware", Ref: labels["W9"]})
+			return err
+		}, "project"},
+		{"range start before the pin", func() error {
+			_, _, err := src.Describe(ctx, "firmware", labels["W9"]+"..HEAD", "")
 			return err
 		}, "project"},
 		{"project", func() error { _, err := src.View(ctx, source.Request{View: "gates", Project: "nosuch"}); return err }, "project"},

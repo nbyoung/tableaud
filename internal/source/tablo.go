@@ -4,28 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"os"
 	"os/exec"
 	"path"
-	"path/filepath"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/nbyoung/tablo"
 	"github.com/nbyoung/tablo/view"
 )
 
-// Tablo is the Source over tablo's library. It holds one tablo.Repository per
-// project directory, opened once, and loads the ref of each request. It is
-// safe for concurrent use.
+// Tablo is the Source over tablo's library. It holds the tablo.Repository of
+// the project, opened once, and loads the ref of each request; a subproject
+// reads from that load. It is safe for concurrent use.
 type Tablo struct {
 	root string // the working tree that holds the repository's files
 	main *tablo.Repository
-
-	mu   sync.Mutex
-	subs map[string]*tablo.Repository // by the checkout's directory
 }
 
 // NewTablo opens the project whose .tableaux lies in dir, or nearest above
@@ -35,15 +29,15 @@ func NewTablo(ctx context.Context, dir, root string) (*Tablo, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Tablo{root: root, main: r, subs: map[string]*tablo.Repository{}}, nil
+	return &Tablo{root: root, main: r}, nil
 }
 
 // loaded is one snapshot with what a request says of it.
 type loaded struct {
 	snap *tablo.Snapshot
-	repo *tablo.Repository // the repository the snapshot reads
-	ref  string            // the ref as the request names it
-	from string            // a range's start, in the snapshot's repository; empty otherwise
+	sub  bool   // the snapshot is a subproject's, linked from the superproject's load
+	ref  string // the ref as the request names it
+	from string // a range's start, in the snapshot's repository; empty otherwise
 }
 
 // View implements Source. A queue with a brief asks tablo twice, on the one
@@ -102,8 +96,8 @@ func (t *Tablo) Describe(ctx context.Context, project, ref, viewer string) (Proj
 	if err != nil {
 		return Project{}, Viewer{}, err
 	}
-	if _, from, ok := splitRange(ref); ok && from != "" {
-		if _, err := ld.repo.Resolve(ctx, ld.from); err != nil {
+	if _, from, ok := splitRange(ref); ok && from != "" && !ld.sub {
+		if _, err := t.main.Resolve(ctx, from); err != nil {
 			return Project{}, Viewer{}, convert(err)
 		}
 	}
@@ -155,7 +149,7 @@ func (t *Tablo) Index(ctx context.Context, project, ref string) (Index, error) {
 	if src.Date != nil {
 		ix.Date, _ = time.Parse(time.DateOnly, *src.Date)
 	}
-	if src.Commit != nil && ld.repo == t.main {
+	if src.Commit != nil && !ld.sub {
 		if out, err := t.git(ctx, "log", "-1", "--format=%aI", *src.Commit); err == nil {
 			if d, err := time.Parse(time.RFC3339, strings.TrimSpace(out)); err == nil {
 				ix.Date = d
@@ -164,7 +158,7 @@ func (t *Tablo) Index(ctx context.Context, project, ref string) (Index, error) {
 	}
 	if name := src.Trunk.Name; name != nil {
 		ix.Trunk = *name
-		ix.TrunkCommit, _ = ld.repo.Resolve(ctx, *name)
+		ix.TrunkCommit, _ = t.resolve(ctx, ld, *name)
 	}
 	return ix, nil
 }
@@ -182,50 +176,77 @@ func splitRange(ref string) (to, from string, isRange bool) {
 	return to, from, true
 }
 
-// load loads the project at the ref of the request. For a subproject it opens
-// the checkout the junction's url names and loads it at the commit the
-// superproject's tree pins, or at the checkout's own HEAD in the working tree
-// (49ce decision 11; the library gives no reader of a linked project, so the
-// adapter reads the gitlink itself).
+// load loads the project at the ref of the request. A subproject reads from
+// the superproject's load, through the link its junction's url names (49ce
+// decision 11): at the commit the link fixes at that ref, or as the Loader
+// reads the link in the working tree. A range's start reads the same way, from
+// the superproject at that start.
 func (t *Tablo) load(ctx context.Context, project, ref string) (*loaded, error) {
 	to, from, _ := splitRange(ref)
-	ld := &loaded{repo: t.main, ref: ref, from: from}
+	ld := &loaded{ref: ref, from: from}
+	snap, err := t.main.Load(ctx, to)
+	if err != nil {
+		return nil, convert(err)
+	}
 	if project == "" {
-		snap, err := t.main.Load(ctx, to)
-		if err != nil {
-			return nil, convert(err)
-		}
 		ld.snap = snap
 		return ld, nil
 	}
-	repo, err := t.sub(project)
-	if err != nil {
+	if _, ok := link(project); !ok {
+		return nil, &NotFoundError{Kind: "project", Name: project}
+	}
+	if ld.snap, err = linked(snap, project); err != nil {
 		return nil, err
 	}
-	ld.repo = repo
-	pin := ""
-	if to != "" {
-		if pin, err = t.pin(ctx, to, project); err != nil {
-			return nil, err
-		}
-	} else if err := t.checkedOut(ctx, project); err != nil {
-		return nil, err
-	}
+	ld.sub = true
 	if from != "" {
-		if ld.from, err = t.pin(ctx, from, project); err != nil {
+		start, err := t.main.Load(ctx, from)
+		if err != nil {
+			return nil, convert(err)
+		}
+		at, err := linked(start, project)
+		if err != nil {
 			return nil, err
 		}
-	}
-	snap, err := repo.Load(ctx, pin)
-	if err != nil {
-		var nf *tablo.NotFoundError
-		if errors.As(err, &nf) {
-			return nil, &NotFoundError{Kind: "project", Name: project} // the pin lies outside the checkout
+		if c := at.Source().Commit; c != nil {
+			ld.from = *c
 		}
-		return nil, err
 	}
-	ld.snap = snap
 	return ld, nil
+}
+
+// linked returns the snapshot of the subproject that url links in snap. A url
+// that names no link of the load, a *tablo.NotFoundError of kind subproject,
+// and a link that leads to no project, a *tablo.LinkError, are a missing
+// project: the 404 of decision 11.
+func linked(snap *tablo.Snapshot, url string) (*tablo.Snapshot, error) {
+	sub, err := snap.Linked(url, "")
+	var nf *tablo.NotFoundError
+	var le *tablo.LinkError
+	switch {
+	case errors.As(err, &nf) && nf.Kind == "subproject", errors.As(err, &le):
+		return nil, &NotFoundError{Kind: "project", Name: url}
+	case err != nil:
+		return nil, convert(err)
+	}
+	return sub, nil
+}
+
+// resolve returns the commit that ref names in the repository the snapshot
+// reads. For a subproject, which has no tablo.Repository of its own, tablo
+// resolves ref as the start of a history in the linked repository.
+func (t *Tablo) resolve(ctx context.Context, ld *loaded, ref string) (string, error) {
+	if !ld.sub {
+		return t.main.Resolve(ctx, ref)
+	}
+	env, err := ld.snap.View(ctx, tablo.History, tablo.Params{From: ref})
+	if err != nil {
+		return "", convert(err)
+	}
+	if env.Source.From == nil {
+		return "", &NotFoundError{Kind: "ref", Name: ref}
+	}
+	return env.Source.From.Commit, nil
 }
 
 // link cleans the url of a junction. Only a path to a directory of the
@@ -238,62 +259,6 @@ func link(url string) (string, bool) {
 		return "", false
 	}
 	return clean, true
-}
-
-// sub returns the repository of the checkout that url names, opened once.
-func (t *Tablo) sub(url string) (*tablo.Repository, error) {
-	clean, ok := link(url)
-	if !ok {
-		return nil, &NotFoundError{Kind: "project", Name: url}
-	}
-	dir := filepath.Join(t.root, filepath.FromSlash(clean))
-	if _, err := os.Stat(filepath.Join(dir, ".git")); err != nil {
-		return nil, &NotFoundError{Kind: "project", Name: url}
-	}
-	t.mu.Lock()
-	defer t.mu.Unlock()
-	if r, ok := t.subs[dir]; ok {
-		return r, nil
-	}
-	r, err := tablo.Open(context.Background(), dir, tablo.Options{})
-	if err != nil {
-		return nil, err
-	}
-	t.subs[dir] = r
-	return r, nil
-}
-
-// pin returns the commit that the superproject's tree at ref holds at url.
-func (t *Tablo) pin(ctx context.Context, ref, url string) (string, error) {
-	commit, err := t.main.Resolve(ctx, ref)
-	if err != nil {
-		return "", convert(err)
-	}
-	clean, _ := link(url)
-	out, err := t.git(ctx, "ls-tree", commit, "--", clean)
-	if err != nil {
-		return "", err
-	}
-	mode, rest, _ := strings.Cut(strings.TrimSpace(out), " ")
-	_, rest, _ = strings.Cut(rest, " ")
-	sha, _, _ := strings.Cut(rest, "\t")
-	if mode != "160000" || sha == "" {
-		return "", &NotFoundError{Kind: "project", Name: url}
-	}
-	return sha, nil
-}
-
-// checkedOut reports a *NotFoundError unless the index holds a gitlink at url.
-func (t *Tablo) checkedOut(ctx context.Context, url string) error {
-	clean, _ := link(url)
-	out, err := t.git(ctx, "ls-files", "--stage", "--", clean)
-	if err != nil {
-		return err
-	}
-	if !strings.HasPrefix(out, "160000 ") {
-		return &NotFoundError{Kind: "project", Name: url}
-	}
-	return nil
 }
 
 // git runs one Git command in the working tree and returns its standard output.
