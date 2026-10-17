@@ -33,9 +33,10 @@ const minPoll = 250 * time.Millisecond
 // replaces this variable with the fixture.
 var openSource = openTablo
 
-// openTablo opens the adapter over tablo's library.
-func openTablo(project, root string) (source.Source, error) {
-	return source.NewTablo(context.Background(), project, root)
+// openTablo opens the adapter over tablo's library, which needs no root: the
+// working tree's root is the watcher's alone.
+func openTablo(project, _ string) (source.Source, error) {
+	return source.NewTablo(context.Background(), project)
 }
 
 // gitEmail reads the viewer from the repository's Git configuration: the one

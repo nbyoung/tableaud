@@ -3,8 +3,6 @@ package source
 import (
 	"context"
 	"errors"
-	"fmt"
-	"os/exec"
 	"slices"
 	"strings"
 	"time"
@@ -17,18 +15,17 @@ import (
 // the project, opened once, and loads the ref of each request; a subproject
 // reads from that load. It is safe for concurrent use.
 type Tablo struct {
-	root string // the working tree that holds the repository's files
 	main *tablo.Repository
 }
 
 // NewTablo opens the project whose .tableaux lies in dir, or nearest above
-// it, in the working tree at root. The error is a *tablo.ReadError.
-func NewTablo(ctx context.Context, dir, root string) (*Tablo, error) {
+// it. The error is a *tablo.ReadError.
+func NewTablo(ctx context.Context, dir string) (*Tablo, error) {
 	r, err := tablo.Open(ctx, dir, tablo.Options{})
 	if err != nil {
 		return nil, err
 	}
-	return &Tablo{root: root, main: r}, nil
+	return &Tablo{main: r}, nil
 }
 
 // loaded is one snapshot with what a request says of it.
@@ -108,10 +105,9 @@ func (t *Tablo) Describe(ctx context.Context, project, ref, viewer string) (Proj
 // Index implements Source. The tasks come from the tableau at detail, which
 // holds a row for every task in display order, with its parent in Under and its
 // children counted from the rows; the people from the task assignment, one row
-// per email, sorted by their bytes; the date from the commit's author date,
-// with its zone, which Git reads where the library gives the day alone; the
-// trunk's name from the snapshot's source, and the commit it stands at from the
-// repository.
+// per email, sorted by their bytes; the date from the commit's author time,
+// with its zone; the trunk's name from the snapshot's source, and the commit it
+// stands at from the repository.
 func (t *Tablo) Index(ctx context.Context, project, ref string) (Index, error) {
 	ld, err := t.load(ctx, project, ref)
 	if err != nil {
@@ -145,16 +141,7 @@ func (t *Tablo) Index(ctx context.Context, project, ref string) (Index, error) {
 		}
 		slices.Sort(ix.People)
 	}
-	if src.Date != nil {
-		ix.Date, _ = time.Parse(time.DateOnly, *src.Date)
-	}
-	if src.Commit != nil && !ld.sub {
-		if out, err := t.git(ctx, "log", "-1", "--format=%aI", *src.Commit); err == nil {
-			if d, err := time.Parse(time.RFC3339, strings.TrimSpace(out)); err == nil {
-				ix.Date = d
-			}
-		}
-	}
+	ix.Date, _ = time.Parse(time.RFC3339, ld.snap.AuthorTime())
 	if name := src.Trunk.Name; name != nil {
 		ix.Trunk = *name
 		ix.TrunkCommit, _ = t.resolve(ctx, ld, *name)
@@ -244,15 +231,6 @@ func (t *Tablo) resolve(ctx context.Context, ld *loaded, ref string) (string, er
 		return "", &NotFoundError{Kind: "ref", Name: ref}
 	}
 	return env.Source.From.Commit, nil
-}
-
-// git runs one Git command in the working tree and returns its standard output.
-func (t *Tablo) git(ctx context.Context, args ...string) (string, error) {
-	out, err := exec.CommandContext(ctx, "git", append([]string{"-C", t.root}, args...)...).Output()
-	if err != nil {
-		return "", fmt.Errorf("git %s: %w", args[0], err)
-	}
-	return string(out), nil
 }
 
 // paramsOf maps a request to tablo's parameters, field by field. The level is

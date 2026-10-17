@@ -90,7 +90,7 @@ func TestTabloAdapter(t *testing.T) {
 	if err := json.Unmarshal(b, &doc); err != nil {
 		t.Fatal(err)
 	}
-	src, err := source.NewTablo(t.Context(), dir, dir)
+	src, err := source.NewTablo(t.Context(), dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +131,7 @@ func TestTabloAdapter(t *testing.T) {
 func TestTabloAnswers(t *testing.T) {
 	dir, labels := weatherStation(t)
 	ctx := t.Context()
-	src, err := source.NewTablo(ctx, dir, dir)
+	src, err := source.NewTablo(ctx, dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -168,8 +168,10 @@ func TestTabloAnswers(t *testing.T) {
 	if want := []string{"ada@example.org", "ben@example.org", "dan@example.org", "opus@example.org"}; !slices.Equal(ix.People, want) {
 		t.Errorf("people %q, want %q", ix.People, want)
 	}
-	// A subproject's trunk resolves in its own repository.
-	if ix, err := src.Index(ctx, "firmware", ""); err != nil || len(ix.Tasks) == 0 || ix.Tasks[0].ID != "b7d2" || ix.Trunk != "main" || len(ix.TrunkCommit) != 40 {
+	// A subproject's trunk resolves in its own repository, and its date is its
+	// commit's author time.
+	if ix, err := src.Index(ctx, "firmware", ""); err != nil || len(ix.Tasks) == 0 || ix.Tasks[0].ID != "b7d2" || ix.Trunk != "main" ||
+		len(ix.TrunkCommit) != 40 || !ix.Date.Equal(time.Date(2026, 9, 17, 12, 0, 0, 0, time.UTC)) {
 		t.Errorf("index of a subproject: %+v, %v", ix, err)
 	}
 	if want := time.Date(2026, 9, 28, 12, 0, 0, 0, time.UTC); !ix.Date.Equal(want) {
@@ -259,7 +261,7 @@ func TestTabloAnswers(t *testing.T) {
 func TestTabloInvalid(t *testing.T) {
 	dir := entry(t, "gates-missing")
 	ctx := t.Context()
-	src, err := source.NewTablo(ctx, dir, dir)
+	src, err := source.NewTablo(ctx, dir)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -294,7 +296,7 @@ func TestTabloByURL(t *testing.T) {
 	}
 	t.Setenv("XDG_CACHE_HOME", t.TempDir()) // no clone in the cache stands in
 	ctx := t.Context()
-	src, err := source.NewTablo(ctx, dir, dir)
+	src, err := source.NewTablo(ctx, dir)
 	if err != nil {
 		t.Fatal(err)
 	}

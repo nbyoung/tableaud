@@ -46,7 +46,7 @@ func corpusEntry(t *testing.T, name string) string {
 // working tree.
 func tabloSource(t *testing.T, dir string) source.Source {
 	t.Helper()
-	src, err := source.NewTablo(context.Background(), dir, dir)
+	src, err := source.NewTablo(context.Background(), dir)
 	if err != nil {
 		t.Fatal(err)
 	}
