@@ -440,3 +440,42 @@ func TestRealDisclosureAgreesWithTablo(t *testing.T) {
 		}
 	}
 }
+
+// TestRealTaskDefinitions is T15 of design 438a through the real source: over
+// the copied weather-station at main, the gate definition of 9f31 and the
+// task definitions of 9f31, c07d, a1c0 and 3c5d pass check; the first shows
+// the reference 9f31 states, and so does the task page of 9f31; the page of
+// c07d shows its snapshot, the page of a1c0 its roll-up, and the page of 3c5d
+// the proposed note.
+func TestRealTaskDefinitions(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	d := newDaemon(t, realSource(t, dir), "ada@example.org")
+	words := func(n *Node) string { return strings.Join(strings.Fields(n.text(true)), " ") }
+	glance := func(root *Node) string { return words(root.byClass("dl", "glance")[0]) }
+	pages := map[string]*Node{}
+	for _, target := range []string{"/gates?task=9f31", "/task?task=9f31", "/task?task=c07d", "/task?task=a1c0", "/task?task=3c5d"} {
+		pages[target] = d.page(target)
+		for _, b := range check(pages[target]) {
+			t.Errorf("%s: %s", target, b)
+		}
+	}
+	const ref = "Power budget, docs/sensor-board.md#power-budget"
+	if got := words(pages["/gates?task=9f31"].byID("task")); !strings.Contains(got, ref+", stated by 9f31") {
+		t.Errorf("the gate definition of 9f31 lacks its reference: %.400s", got)
+	}
+	if got := words(pages["/task?task=9f31"].find("main")[0]); !strings.Contains(got, ref) {
+		t.Errorf("the task definition of 9f31 lacks its reference: %.600s", got)
+	}
+	if got := glance(pages["/task?task=c07d"]); !strings.Contains(got, "a subproject does the work, firmware") {
+		t.Errorf("c07d: the status line lacks the snapshot: %q", got)
+	}
+	if got := glance(pages["/task?task=a1c0"]); !strings.Contains(got, "rolled up from 3c5d Dashboard") {
+		t.Errorf("a1c0: the status line lacks the roll-up: %q", got)
+	}
+	if p := pages["/task?task=3c5d"].byClass("p", "empty"); len(p) == 0 || !strings.Contains(p[0].text(true), "Proposed: no authority has accepted this task.") {
+		t.Error("3c5d: no proposed note at glance")
+	}
+	if p := pages["/task?task=c07d"].byClass("p", "empty"); len(p) > 0 && strings.Contains(p[0].text(true), "Proposed") {
+		t.Error("c07d: an authorised task shows the proposed note")
+	}
+}
