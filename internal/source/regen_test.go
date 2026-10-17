@@ -30,7 +30,7 @@ func TestRegenerateFixture(t *testing.T) {
 	}
 	dir, _ := weatherStation(t)
 	ctx := t.Context()
-	src, err := source.NewTablo(ctx, dir, dir)
+	src, err := source.NewTablo(ctx, dir)
 	if err != nil {
 		t.Fatal(err)
 	}

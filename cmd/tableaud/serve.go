@@ -10,12 +10,13 @@ import (
 	"net"
 	"net/http"
 	"net/mail"
-	"os/exec"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/nbyoung/tableaud/internal/serve"
 	"github.com/nbyoung/tableaud/internal/source"
+	"github.com/nbyoung/tablo"
 )
 
 // Exit statuses of serve.
@@ -33,19 +34,10 @@ const minPoll = 250 * time.Millisecond
 // replaces this variable with the fixture.
 var openSource = openTablo
 
-// openTablo opens the adapter over tablo's library.
-func openTablo(project, root string) (source.Source, error) {
-	return source.NewTablo(context.Background(), project, root)
-}
-
-// gitEmail reads the viewer from the repository's Git configuration: the one
-// git command the daemon runs. A failure gives no viewer.
-var gitEmail = func(ctx context.Context, dir string) string {
-	out, err := exec.CommandContext(ctx, "git", "-C", dir, "config", "--get", "user.email").Output()
-	if err != nil {
-		return ""
-	}
-	return strings.TrimSpace(string(out))
+// openTablo opens the adapter over tablo's library, which needs no root: the
+// working tree's root is the watcher's alone.
+func openTablo(project, _ string) (source.Source, error) {
+	return source.NewTablo(context.Background(), project)
 }
 
 // stringList is a flag that collects comma-separated names, in one or several
@@ -68,7 +60,7 @@ const serveUsage = `usage: tableaud serve [-C DIR] [--addr HOST:PORT] [--as EMAI
 
   -C DIR               the directory that holds .tableaux, or below it (default .)
   --addr HOST:PORT     the one address to bind (default 127.0.0.1:8642; port 0 takes a free port)
-  --as EMAIL           the viewer for a loopback peer (default: git config user.email)
+  --as EMAIL           the viewer for a loopback peer (default: GIT_AUTHOR_EMAIL, else git config user.email)
   --ref REF            the ref a page reads when its address states none (default: the working tree on HEAD)
   --poll DURATION      how often an open page asks whether it changed (default 2s; 0 turns it off; at least 250ms)
   --allow-host NAMES   Host names to accept beside the loopback names
@@ -131,9 +123,9 @@ func runServe(ctx context.Context, args []string, stdout, stderr io.Writer) int 
 		return exitRead
 	}
 	viewer := *as
-	if viewer == "" {
+	if viewer == "" { // GIT_AUTHOR_EMAIL, else user.email, else nobody, by tablo's rule (4ed9 decision 18 a)
 		gctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-		viewer = gitEmail(gctx, project)
+		viewer = tablo.DefaultViewer(gctx, project, os.Getenv("GIT_AUTHOR_EMAIL"))
 		cancel()
 	}
 	src, err := openSource(project, root)

@@ -2,6 +2,8 @@ github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxK
 github.com/dlclark/regexp2 v1.11.0/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
 github.com/nbyoung/tablo v0.0.0-20261017032544-ddf6ee719101 h1:B8lKzi4K0ZSN6y8nWPAXgM20tdKiBYWYN7NhdQ/2EY4=
 github.com/nbyoung/tablo v0.0.0-20261017032544-ddf6ee719101/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
+github.com/nbyoung/tablo v0.0.0-20261017141209-03c5e35eac90 h1:koI9cafAVhjdRmzhit2y6l5UpgEPTMaezTty/OL9NmY=
+github.com/nbyoung/tablo v0.0.0-20261017141209-03c5e35eac90/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
 github.com/nbyoung/tabloio v0.0.0-20261017005742-c1e56af49750 h1:IwzFdX/SdI2la17+QST38+hedxeq8aXDERfBC7rTqrM=
 github.com/nbyoung/tabloio v0.0.0-20261017005742-c1e56af49750/go.mod h1:m60oYqwHGxmPfRBZH2z+W7l8AlczlqTRa7/k8UJWuJo=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=

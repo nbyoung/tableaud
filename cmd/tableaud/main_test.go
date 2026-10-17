@@ -228,10 +228,12 @@ func fetch(t *testing.T, url string, hdr ...string) (int, string) {
 
 // TestServes covers T2 and half of T7: the daemon binds the address it is
 // given and prints its line, answers over the socket, and takes the viewer
-// from --as, else the repository's user.email.
+// from --as, else GIT_AUTHOR_EMAIL, else the repository's user.email, as
+// tablo's rule orders them; an author value that is no email is nobody.
 func TestServes(t *testing.T) {
 	dir := repo(t)
 	git(t, dir, "config", "user.email", "git@example.org")
+	t.Setenv("GIT_AUTHOR_EMAIL", "author@example.org") // --as wins over it
 
 	base, m, errb, stop := start(t, "serve", "-C", dir, "--addr", "127.0.0.1:0", "--as", "ben@example.org", "--allow-host", "tab.lan")
 	if m[2] != dir || m[3] != "ben@example.org" {
@@ -257,7 +259,20 @@ func TestServes(t *testing.T) {
 		t.Errorf("standard error: %q", errb.String())
 	}
 
-	// With no --as, the viewer is the repository's user.email.
+	// With no --as, the viewer is GIT_AUTHOR_EMAIL; an author value that is no
+	// email is nobody, with no fall back to user.email.
+	for author, want := range map[string]string{"author@example.org": "author@example.org", "Ann <ann@example.org>": "an observer"} {
+		t.Setenv("GIT_AUTHOR_EMAIL", author)
+		_, m, _, stop = start(t, "serve", "-C", dir, "--addr", "127.0.0.1:0")
+		if m[3] != want {
+			t.Errorf("GIT_AUTHOR_EMAIL %q: the viewer %q, want %q", author, m[3], want)
+		}
+		stop()
+	}
+
+	// With neither --as nor GIT_AUTHOR_EMAIL, the viewer is the repository's
+	// user.email.
+	t.Setenv("GIT_AUTHOR_EMAIL", "")
 	base, m, _, stop = start(t, "serve", "-C", dir, "--addr", "127.0.0.1:0", "--poll", "0")
 	if m[3] != "git@example.org" {
 		t.Errorf("the viewer %q, want the repository's user.email", m[3])
@@ -267,7 +282,7 @@ func TestServes(t *testing.T) {
 	}
 	stop()
 
-	// With neither, an observer.
+	// With none of the three, an observer.
 	git(t, dir, "config", "--unset", "user.email")
 	base, m, _, stop = start(t, "serve", "-C", dir, "--addr", "127.0.0.1:0")
 	if m[3] != "an observer" {
