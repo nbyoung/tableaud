@@ -1,5 +1,5 @@
-github.com/nbyoung/tablo v0.0.0-20261017000822-620473c299bd h1:zZkztLcsaAoN1UbIBQ0IDn2GvumSZGHIRkyVaBSs0LM=
-github.com/nbyoung/tablo v0.0.0-20261017000822-620473c299bd/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
+github.com/nbyoung/tablo v0.0.0-20261017032544-ddf6ee719101 h1:B8lKzi4K0ZSN6y8nWPAXgM20tdKiBYWYN7NhdQ/2EY4=
+github.com/nbyoung/tablo v0.0.0-20261017032544-ddf6ee719101/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
 github.com/nbyoung/tabloio v0.0.0-20261017005742-c1e56af49750 h1:IwzFdX/SdI2la17+QST38+hedxeq8aXDERfBC7rTqrM=
 github.com/nbyoung/tabloio v0.0.0-20261017005742-c1e56af49750/go.mod h1:m60oYqwHGxmPfRBZH2z+W7l8AlczlqTRa7/k8UJWuJo=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=
