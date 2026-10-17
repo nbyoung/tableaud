@@ -23,8 +23,9 @@ func init() {
 // from the view, every other row from its parent's chain. The adapter builds
 // the tree from the rows' depths, words each relation, applies the
 // proposed-only filter, which keeps the proposed tasks and their ancestors,
-// and groups the deciding commits by commit, in the order display order
-// first meets each.
+// groups the deciding commits by commit, in the order display order first
+// meets each, and marks the page off the trunk from the project's on_trunk, as
+// the history does, at every level.
 func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 	p := e.Page
 	v := &AuthorityView{
@@ -88,9 +89,9 @@ func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 				}
 			}
 		}
-		for _, u := range d.Undecided {
-			v.OffTrunk = v.OffTrunk || u.Why == "off_trunk"
-		}
+	}
+	if p.Project != nil {
+		v.OffTrunk = p.Project.Trunk != "" && !p.Project.OnTrunk // with no trunk, no ref lies off it
 	}
 	v.Commits = deciding(d, decided, e, ref)
 	others := map[string]int{}
