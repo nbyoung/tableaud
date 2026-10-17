@@ -1,3 +1,3 @@
-gate: unit
+gate: integrate
 state: nominal
-note: T1 to T3, T5, T6, T8 and T9 pass on the four fixtures through go test; T4, T7 and T10 to T12 exist and skip until tablo 493e brings the data of the two adapters; integrate needs the adapters, their entries, the parts and those tests
+note: AuthorityFrom and AssignmentFrom, the routes /authority and /assignment, their export pages and both templates stand; T1 to T12 pass with and without TABLEAUX_CORPUS, T12 on tablo's golden data and as TestRealStructuralViews through tablo's adapter, the off-trunk note at W3 among it, and every page of both views passes the access and disclosure checks there at every level; the validate gate has a person check in a browser that a lazy node, a lazy kids fold and a lazy group fetch on opening and that the filter's link swaps main; nothing waits on another task
