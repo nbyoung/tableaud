@@ -549,9 +549,9 @@ func TestRealStructuralViews(t *testing.T) {
 // collapses to the address it left (T6); the task form of 4e2b draws 4e2b
 // and the rows beneath it; Ben's contextual tableau draws his own 4e2b and
 // c07d first and all six rows in its wider grid, the siblings marked; the
-// blockage tree shows its causes largest first; the
-// queue of ada@example.org shows four items in the order of VIEWS.md and the
-// brief of one, and that of ben@example.org five empty kinds.
+// blockage tree shows its causes largest first; the queue of ada@example.org
+// shows four items in the order of VIEWS.md and the brief of one, and that of
+// ben@example.org five empty kinds.
 func TestRealStatusViews(t *testing.T) {
 	dir, _ := realEntry(t, "weather-station")
 	d := newDaemon(t, realSource(t, dir), "ada@example.org")
@@ -728,6 +728,88 @@ func TestRealTemporalViews(t *testing.T) {
 		}
 		if strings.Contains(root.text(true), "No finding: files and history agree") {
 			t.Errorf("%s: the audit reads clean", c.entry)
+		}
+	}
+}
+
+// TestRealAdaptersCallDisclosure covers A7 and A8 of design db74, the control
+// of minimum and findings C2 and C3 through the real source, over the copied
+// weather-station at main: each viewer's arrival opens the folds of the queue,
+// the blockage tree and the audit that tablo's roles and resolvers give; the
+// audit's three counts link the three minimums, the one in force current; a
+// row's folds take ids by task; and in the export a row with no control
+// counts the rows its grid does not draw.
+func TestRealAdaptersCallDisclosure(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	src := realSource(t, dir)
+	opened := func(root *Node, class string) []string {
+		var out []string
+		for _, f := range root.byClass("details", class) {
+			if _, open := f.Attr["open"]; open {
+				out = append(out, f.Attr["id"])
+			}
+		}
+		return out
+	}
+	for _, c := range []struct {
+		viewer, target, class string
+		want                  []string
+	}{
+		{"ada@example.org", "/queue", "detail", []string{"d-auth-3c5d"}},
+		{"ben@example.org", "/queue?person=ada@example.org", "detail", nil},
+		{"ben@example.org", "/blockage", "detail", []string{"d-cause-3"}},
+		{"dan@example.org", "/blockage", "detail", []string{"d-cause-2", "h-2-3c5d"}},
+		{"dan@example.org", "/audit", "detail", []string{"stale"}},
+		{"ada@example.org", "/audit", "prov", []string{"prov-r9", "prov-proposed", "prov-stale", "prov-stale-2"}},
+	} {
+		if got := opened(newDaemon(t, src, c.viewer).page(c.target), c.class); !slices.Equal(got, c.want) {
+			t.Errorf("%s %s opens %q, want %q", c.viewer, c.target, got, c.want)
+		}
+	}
+
+	d := newDaemon(t, src, "ada@example.org")
+	links := d.page("/audit?minimum=information").byClass("p", "counts")[0].find("a")
+	var got []string
+	for _, a := range links {
+		got = append(got, a.Attr["id"]+" "+a.Attr["href"]+" "+a.Attr["aria-current"])
+	}
+	want := []string{"minimum-error /audit?minimum=error ", "minimum-warning /audit ", "minimum-information /audit?minimum=information true"}
+	if !slices.Equal(got, want) {
+		t.Errorf("the audit's control reads %q, want %q", got, want)
+	}
+
+	for _, tr := range d.page("/tableau?level=provenance").byID("grid").find("tbody")[0].find("tr") {
+		id := strings.TrimPrefix(tr.Attr["id"], "grid-")
+		if tr.byID("n-grid-"+id) == nil || tr.byID("prov-grid-"+id) == nil {
+			t.Errorf("C2: the row of %s holds no n-grid-%s and prov-grid-%s", id, id, id)
+		}
+	}
+
+	out := filepath.Join(t.TempDir(), "public")
+	if _, err := export.Run(context.Background(), src, export.Options{Out: out, Ref: "main", Tableaud: "0.1.0", Tablo: "0.1.0"}); err != nil {
+		t.Fatal(err)
+	}
+	count := func(name, row string) string {
+		b, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		tr := mustParse(t, string(b)).byID(row)
+		if tr == nil {
+			t.Fatalf("%s holds no row %s", name, row)
+		}
+		var n []string
+		for _, s := range tr.byClass("span", "fold") {
+			n = append(n, s.text(false))
+		}
+		return strings.Join(n, " ")
+	}
+	if got := count("index.html", "grid-a1c0"); got != "(2 rows not drawn)" {
+		t.Errorf("C3: the export's root reads %q", got)
+	}
+	for _, row := range []string{"wider-a1c0", "wider-4e2b"} {
+		if got := count("context-ben@example.org.html", row); got != "" && got != "· sibling" {
+			t.Errorf("C3: %s of Ben's export reads %q", row, got)
 		}
 	}
 }
