@@ -639,3 +639,88 @@ func TestRealStatusViews(t *testing.T) {
 		t.Errorf("Ben's queue reads %q", kinds)
 	}
 }
+
+// TestRealTemporalViews is T13 of design 9a9c through the real source. Over
+// the copied weather-station, the history of the range ..W13, which the
+// address writes as the ref W13, shows seventeen events in thirteen commits,
+// oldest first; the history at W3, off the trunk, says so from the
+// envelope's on_trunk (decision 11); the history of 9f31 holds exactly the
+// lines of 9f31 that the whole history holds; the audit shows 3c5d proposed under Authorise for
+// ada@example.org. Over the entries review-by-non-reviewer, model-mismatch
+// and unknown-trailer, each at the day tablo's own audit of the corpus
+// reads, the audit shows H2, H3 and the two H1 warnings; over
+// status-complete-early it shows S12, as the entry's expected.yaml states,
+// where the design expects the clean form.
+func TestRealTemporalViews(t *testing.T) {
+	dir, labels := realEntry(t, "weather-station")
+	d := newDaemon(t, realSource(t, dir), "ada@example.org")
+	lines := func(root *Node) []string {
+		var out []string
+		for _, ul := range root.byClass("ul", "events") {
+			for _, li := range ul.find("li") {
+				if strings.HasPrefix(li.Attr["id"], "e-") {
+					out = append(out, li.Attr["id"])
+				}
+			}
+		}
+		return out
+	}
+	root := d.page("/history?level=detail&ref=" + labels["W13"])
+	if got := root.byClass("p", "fold")[0].text(true); !strings.HasPrefix(got, "17 events in 13 commits, 2026-09-15 to 2026-09-28") {
+		t.Errorf("the history of ..W13 reads %q", got)
+	}
+	var days []string
+	for _, f := range root.byClass("details", "day") {
+		days = append(days, f.Attr["id"])
+	}
+	if !slices.IsSorted(days) || len(days) != 12 {
+		t.Errorf("the days stand in the order %q", days)
+	}
+	note := d.page("/history?ref="+labels["W3"]).byClass("p", "empty")
+	if len(note) != 1 || !strings.Contains(note[0].text(true), "off the trunk") {
+		t.Errorf("the history at W3 holds the notes %v", note)
+	}
+	var of9f31 []string
+	for _, l := range lines(d.page("/history?level=detail")) {
+		if strings.HasSuffix(l, "-9f31") {
+			of9f31 = append(of9f31, l)
+		}
+	}
+	if got := lines(d.page("/history?level=detail&task=9f31")); len(got) != 6 || !slices.Equal(got, of9f31) {
+		t.Errorf("the history of 9f31 draws %q, the whole history %q", got, of9f31)
+	}
+
+	found := false
+	for _, f := range d.page("/audit").byClass("details", "detail") {
+		s := f.find("summary")[0].text(true)
+		found = found || (strings.Contains(s, "Authorise") && strings.Contains(s, "ada@example.org") && strings.Contains(f.text(true), "3c5d"))
+	}
+	if !found {
+		t.Error("the audit shows no group that authorises 3c5d for ada@example.org")
+	}
+
+	for _, c := range []struct {
+		entry, day, group string
+		count             int
+	}{
+		{"review-by-non-reviewer", "2026-09-02", "h2", 1},
+		{"model-mismatch", "2026-09-04", "h3", 1},
+		{"unknown-trailer", "2026-09-03", "h1", 2},
+		{"status-complete-early", "2026-09-01", "s12", 1},
+	} {
+		dir, _ := realEntry(t, c.entry)
+		now, _ := time.Parse(time.DateOnly, c.day)
+		root := newDaemonAt(t, realSource(t, dir), "", now.Add(12*time.Hour)).page("/audit")
+		g := root.byID(c.group)
+		if g == nil {
+			t.Errorf("%s: no group %s", c.entry, c.group)
+			continue
+		}
+		if n := len(g.find("tbody")[0].find("tr")); n != c.count {
+			t.Errorf("%s: the group %s holds %d findings, want %d", c.entry, c.group, n, c.count)
+		}
+		if strings.Contains(root.text(true), "No finding: files and history agree") {
+			t.Errorf("%s: the audit reads clean", c.entry)
+		}
+	}
+}
