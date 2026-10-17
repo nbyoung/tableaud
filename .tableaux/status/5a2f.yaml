@@ -1,3 +1,3 @@
-gate: unit
+gate: integrate
 state: nominal
-note: T1 to T10 pass under go test (TestAccess, TestCheckAccessFindsFaults, TestSheetAccess, TestSeverityRank, TestStatusCellRank, TestGateStateRank, TestFocusHasAnElementToReturnTo, TestTemplatesKeepTheAccessRules, TestGolden, TestRunFrame) with the five checks and the race run; T11 (TestAdaptersSetTheRank, skipped) waits at the integrate gate for tablo 886d and 493e and the adapters of 44bf and e2b6 per decision 11; V1 to V11 wait for a person at validate
+note: checkAccess, TestSheetAccess, the rank and the frame stand over every adapter; T1 to T11 pass with and without TABLEAUX_CORPUS, T11 as TestAdaptersSetTheRank on tablo's golden data and as TestRealAdaptersSetTheRank through tablo's adapter, and every page of the ten views passes checkAccess there for three viewers at every level, and so does every page of a view in the export (TestRealPagesKeepTheRules, TestRealBundleKeepsTheRules); the validate gate has a person run V1 to V11 of design/5a2f/validate.md in a browser, with two screen readers and on a phone; nothing waits on another task
