@@ -340,7 +340,11 @@ func (s *Server) fail(w http.ResponseWriter, r *http.Request, v web.View, p web.
 	var param *ParamError
 	var invalid *source.InvalidError
 	var missing *source.NotFoundError
+	var usage *source.UsageError
 	switch {
+	case errors.As(err, &usage):
+		pe.Status, pe.Text, pe.Message = http.StatusBadRequest, "Bad Request", usage.Error()
+		poll, tagged = false, false
 	case errors.As(err, &param):
 		pe.Status, pe.Text, pe.Message = http.StatusBadRequest, "Bad Request", param.Error()
 		poll, tagged = false, false

@@ -29,6 +29,15 @@ func (e *NotFoundError) Error() string { return fmt.Sprintf("%s %s: not found", 
 // Is reports whether target is ErrNotFound.
 func (e *NotFoundError) Is(target error) bool { return target == ErrNotFound }
 
+// UsageError reports a request that lacks a person or a task its view needs
+// and no viewer stands in: the message names the query fields that supply one.
+type UsageError struct {
+	Msg string
+}
+
+// Error implements error.
+func (e *UsageError) Error() string { return e.Msg }
+
 // Diagnostic is one finding of tablo's loader or validator.
 type Diagnostic struct {
 	Severity string // "error", "warning" or "information"
@@ -128,8 +137,9 @@ type IndexTask struct {
 
 // Source is everything the daemon and the export ask of tablo. An
 // implementation is safe for concurrent use. View returns ErrNotFound,
-// wrapped with the thing missing, or *InvalidError with tablo's diagnostics
-// when the project does not load. Describe answers with no view, for "/".
+// wrapped with the thing missing, *UsageError for a view that lacks the person
+// or the task it needs, or *InvalidError with tablo's diagnostics when the
+// project does not load. Describe answers with no view, for "/".
 // Index answers with no view either: the tasks and the people of the project
 // at ref, for the export; the daemon never asks for it.
 type Source interface {

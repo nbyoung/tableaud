@@ -365,12 +365,28 @@ func viewerOf(v *tablo.Viewer) Viewer {
 	return out
 }
 
-// convert turns tablo's NotFoundError into the seam's and leaves every other
-// error as it stands.
+// The messages of a view that lacks its person, in the words of the query.
+const (
+	QueueNeedsPerson  = "The queue needs a person: name one with person=EMAIL."
+	ContextNeedsFocus = "The contextual tableau needs a task or a person: name one with task=ID or person=EMAIL."
+)
+
+// convert turns tablo's NotFoundError and UsageError into the seam's and
+// leaves every other error as it stands.
 func convert(err error) error {
 	var nf *tablo.NotFoundError
 	if errors.As(err, &nf) {
 		return &NotFoundError{Kind: nf.Kind, Name: nf.Name}
+	}
+	var ue *tablo.UsageError
+	if errors.As(err, &ue) {
+		switch {
+		case strings.HasPrefix(ue.Msg, "queue needs"):
+			return &UsageError{Msg: QueueNeedsPerson}
+		case strings.HasPrefix(ue.Msg, "context needs"):
+			return &UsageError{Msg: ContextNeedsFocus}
+		}
+		return &UsageError{Msg: ue.Msg}
 	}
 	return err
 }

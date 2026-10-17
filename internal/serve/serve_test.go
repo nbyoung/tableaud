@@ -663,6 +663,10 @@ func TestErrorPages(t *testing.T) {
 		notWant []string
 	}{
 		{"400", newRig(t), "/tableau?window=x", 400, []string{"<h1>400 Bad Request</h1>", "window: ", "is not a whole number"}, false, false, nil},
+		{"400 queue without a person", newRig(t, func(c *serve.Config) { c.Viewer = "" }), "/queue", 400,
+			[]string{"<h1>400 Bad Request</h1>", "The queue needs a person: name one with person=EMAIL."}, false, false, nil},
+		{"400 context without a focus", errorRig(t, &source.UsageError{Msg: source.ContextNeedsFocus}), "/tableau", 400,
+			[]string{"The contextual tableau needs a task or a person: name one with task=ID or person=EMAIL."}, false, false, nil},
 		{"404 route", newRig(t), "/nosuch", 404, []string{"<h1>404 Not Found</h1>", "/nosuch"}, false, false, nil},
 		{"404 task", newRig(t), "/task?task=ffff", 404, []string{"<h1>404 Not Found</h1>", "task ffff: not found"}, true, true, []string{`data-columns=""`}},
 		{"404 ref", newRig(t), "/tableau?ref=nosuch", 404, []string{"ref nosuch: not found"}, true, true, nil},

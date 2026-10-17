@@ -181,6 +181,36 @@ func TestTabloAnswers(t *testing.T) {
 	}
 
 	for _, c := range []struct {
+		name, want string
+		view       string
+	}{
+		{"queue", source.QueueNeedsPerson, "queue"},
+		{"context", source.ContextNeedsFocus, "context"},
+	} {
+		_, err := src.View(ctx, source.Request{View: c.view, Window: -1})
+		var ue *source.UsageError
+		if !errors.As(err, &ue) || ue.Msg != c.want {
+			t.Errorf("%s with no person and no viewer: %v", c.name, err)
+		}
+		if c.view == "context" {
+			continue // the server leads an observer from /context to /tableau before it asks
+		}
+		h := serve.New(serve.Config{Source: src, Digest: staticDigest{}, Version: "test"})
+		for _, hx := range []bool{false, true} {
+			req := httptest.NewRequest(http.MethodGet, "/"+c.view, nil)
+			req.Host, req.RemoteAddr = "127.0.0.1:8642", "127.0.0.1:4000"
+			if hx {
+				req.Header.Set("HX-Request", "true")
+			}
+			rec := httptest.NewRecorder()
+			h.ServeHTTP(rec, req)
+			if rec.Code != 400 || !strings.Contains(rec.Body.String(), c.want) || rec.Header().Get("ETag") != "" {
+				t.Errorf("%s as an observer (fragment %v): %d %.200s", c.name, hx, rec.Code, rec.Body.String())
+			}
+		}
+	}
+
+	for _, c := range []struct {
 		name string
 		call func() error
 		kind string

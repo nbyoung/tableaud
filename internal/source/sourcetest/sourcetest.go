@@ -174,6 +174,15 @@ func (f *Fixture) View(ctx context.Context, r source.Request) (source.Result, er
 	if !ok {
 		return source.Result{}, source.ErrNotFound
 	}
+	// As tablo does: with no person and no viewer, these two views have no focus.
+	if r.Person == "" && r.Viewer == "" {
+		switch {
+		case r.View == "queue":
+			return source.Result{}, &source.UsageError{Msg: source.QueueNeedsPerson}
+		case r.View == "context" && r.Task == "":
+			return source.Result{}, &source.UsageError{Msg: source.ContextNeedsFocus}
+		}
+	}
 	proj, viewer, err := f.describe(r.Project, r.Ref, r.Viewer)
 	if err != nil {
 		return source.Result{}, err

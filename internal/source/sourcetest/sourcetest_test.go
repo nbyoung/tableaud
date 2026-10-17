@@ -54,7 +54,7 @@ func TestFixture(t *testing.T) {
 		{"subproject task", source.Request{View: "task", Project: sourcetest.Subproject, Task: "9f31"}, "task"},
 		{"project", source.Request{View: "task", Project: "nosuch"}, "project"},
 		{"gate", source.Request{View: "tableau", Columns: []string{"nosuch"}}, "gate"},
-		{"brief gate", source.Request{View: "queue", BriefTask: "9f31", BriefGate: "nosuch"}, "gate"},
+		{"brief gate", source.Request{View: "queue", Person: sourcetest.Owner, BriefTask: "9f31", BriefGate: "nosuch"}, "gate"},
 	} {
 		_, err := f.View(ctx, c.r)
 		var nf *source.NotFoundError
