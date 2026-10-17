@@ -15,6 +15,7 @@ import (
 
 	"github.com/nbyoung/tablo/view"
 
+	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -526,6 +527,13 @@ func TestAdaptersAgreeWithTablo(t *testing.T) {
 	m := web.GateFrom(&gates, web.EnvOf(pageOf(web.View{Name: "gates"}, nil), web.Document))
 	if len(m.Gates) != 12 || len(m.Marks) != 5 || m.Task == nil || m.Task.Refs != 1 || len(m.Commands) != 4 {
 		t.Errorf("gates: %d gates, %d marks, task %+v, %d commands", len(m.Gates), len(m.Marks), m.Task, len(m.Commands))
+	}
+
+	// The language version and the trunk come from the page's project.
+	pg := pageOf(web.View{Name: "gates"}, nil)
+	pg.Project = &source.Project{Version: "0.3.1", Trunk: "main"}
+	if m := web.GateFrom(&gates, web.EnvOf(pg, web.Document)); m.Version != "0.3.1" || m.Trunk != "main" {
+		t.Errorf("gates: version %q, trunk %q", m.Version, m.Trunk)
 	}
 
 	var c07d view.Task

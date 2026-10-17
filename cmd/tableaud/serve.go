@@ -16,7 +16,6 @@ import (
 
 	"github.com/nbyoung/tableaud/internal/serve"
 	"github.com/nbyoung/tableaud/internal/source"
-	"github.com/nbyoung/tableaud/internal/source/sourcetest"
 )
 
 // Exit statuses of serve.
@@ -30,16 +29,14 @@ const (
 const minPoll = 250 * time.Millisecond
 
 // openSource opens the source of the project at project, in the working tree
-// at root. Until tablo releases its views the daemon serves the weather-station
-// fixture, which stands in for tablo; the adapter in internal/source replaces
-// this function and standIn.
-var openSource = func(project, root string) (source.Source, error) {
-	return sourcetest.New(), nil
-}
+// at root. The daemon and the export read the repository through tablo; a test
+// replaces this variable with the fixture.
+var openSource = openTablo
 
-// standIn is the one line the daemon prints to standard error while its
-// source is the fixture.
-const standIn = "tableaud: note: tablo has no release with views yet; the pages show the weather-station fixture, not this repository"
+// openTablo opens the adapter over tablo's library.
+func openTablo(project, root string) (source.Source, error) {
+	return source.NewTablo(context.Background(), project, root)
+}
 
 // gitEmail reads the viewer from the repository's Git configuration: the one
 // git command the daemon runs. A failure gives no viewer.
@@ -169,7 +166,6 @@ func runServe(ctx context.Context, args []string, stdout, stderr io.Writer) int 
 	if w := warning(ln.Addr().String()); w != "" {
 		_, _ = fmt.Fprintln(stderr, w)
 	}
-	_, _ = fmt.Fprintln(stderr, standIn)
 	return serveUntil(ctx, ln, h, stderr)
 }
 

@@ -1,392 +1,656 @@
 {
-  "detail": {
-    "authorisation": {
-      "state": "authorised",
-      "way": "merge"
+  "legend": {
+    "gates": [
+      {
+        "key": "undefined",
+        "symbol": "❔",
+        "name": "Undefined",
+        "criteria": "No one has started work on the definition"
+      },
+      {
+        "key": "defined",
+        "symbol": "📝",
+        "name": "Defined",
+        "criteria": "Title, description, assignee and references exist"
+      },
+      {
+        "key": "mockup",
+        "symbol": "📌",
+        "name": "Mockup",
+        "criteria": "A non-technical mockup of the outcome exists"
+      },
+      {
+        "key": "function",
+        "symbol": "⚙️",
+        "name": "Functional prototype",
+        "criteria": "A technical demonstration of function exists"
+      },
+      {
+        "key": "performance",
+        "symbol": "⚡",
+        "name": "Performance prototype",
+        "criteria": "Target performance shown in the deliverable's technology"
+      },
+      {
+        "key": "reliability",
+        "symbol": "⚓",
+        "name": "Reliability prototype",
+        "criteria": "Target reliability shown in the fundamental technology"
+      },
+      {
+        "key": "design",
+        "symbol": "📐",
+        "name": "Design",
+        "criteria": "A model and sufficient tests exist"
+      },
+      {
+        "key": "implementation",
+        "symbol": "🛠️",
+        "name": "Implementation",
+        "criteria": "Artifacts suffice for unit, integration and validation tests"
+      },
+      {
+        "key": "unit",
+        "symbol": "🧩",
+        "name": "Unit test",
+        "criteria": "All prescribed tests pass"
+      },
+      {
+        "key": "integrate",
+        "symbol": "🖼️",
+        "name": "Integration",
+        "criteria": "Assembled with neighbouring components"
+      },
+      {
+        "key": "validate",
+        "symbol": "🌍",
+        "name": "Validation",
+        "criteria": "Passes user and field tests"
+      },
+      {
+        "key": "release",
+        "symbol": "🚀",
+        "name": "Release",
+        "criteria": "All variants documented and approved"
+      }
+    ],
+    "states": [
+      {
+        "key": "undefined",
+        "symbol": "⚪",
+        "severity": 0,
+        "synopsis": "The work has not yet been defined"
+      },
+      {
+        "key": "nominal",
+        "symbol": "🟢",
+        "severity": 1,
+        "synopsis": "The work is proceeding as expected"
+      },
+      {
+        "key": "at_risk",
+        "symbol": "🟡",
+        "severity": 2,
+        "synopsis": "The work is at risk of stalling"
+      },
+      {
+        "key": "stalled",
+        "symbol": "🔴",
+        "severity": 3,
+        "synopsis": "Practically all progress has stalled"
+      },
+      {
+        "key": "complete",
+        "symbol": "✅",
+        "severity": 0,
+        "synopsis": "All deliverables satisfy their requirements"
+      }
+    ],
+    "reasons": [
+      {
+        "key": "overloaded",
+        "symbol": "🪫",
+        "synopsis": "The assigned resource is overloaded",
+        "reserved": false
+      },
+      {
+        "key": "blocked",
+        "symbol": "⛔",
+        "synopsis": "An external resource is unavailable",
+        "reserved": false
+      }
+    ],
+    "marks": [
+      {
+        "key": "person",
+        "symbol": "🧑",
+        "meaning": "A person contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "agent",
+        "symbol": "🤖",
+        "meaning": "An agent contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "reviewer",
+        "symbol": "👀",
+        "meaning": "A reviewer accepts",
+        "junction": "plain"
+      },
+      {
+        "key": "subproject",
+        "symbol": "🪆",
+        "meaning": "A subproject does the work",
+        "junction": "recursive"
+      },
+      {
+        "key": "exempt",
+        "symbol": "—",
+        "meaning": "The gate does not apply",
+        "junction": "not_applicable"
+      }
+    ]
+  },
+  "task": {
+    "id": "9f31",
+    "title": "Sensor board"
+  },
+  "assignee": "ada@example.org",
+  "parent": {
+    "id": "4e2b",
+    "title": "Sensor node",
+    "order": 1
+  },
+  "status": {
+    "kind": "recorded",
+    "gate": "function",
+    "state": "stalled",
+    "reason": "blocked",
+    "note": "Barometer ICs on 14-week backorder",
+    "date": "2026-09-28",
+    "recorder": "ada@example.org",
+    "derived": false,
+    "why": "",
+    "uncommitted": false,
+    "from": null
+  },
+  "authorised": true,
+  "description": "The PCB that carries the barometer, hygrometer and thermometer and powers them from the solar cell within the power budget.\n",
+  "references": [
+    {
+      "text": "",
+      "url": "docs/sensor-board.md"
     },
-    "authorities": [
+    {
+      "text": "Barometer datasheet",
+      "url": "https://example.org/datasheets/bmp390.pdf"
+    }
+  ],
+  "path": [
+    {
+      "id": "a1c0",
+      "title": "Weather station"
+    },
+    {
+      "id": "4e2b",
+      "title": "Sensor node"
+    },
+    {
+      "id": "9f31",
+      "title": "Sensor board"
+    }
+  ],
+  "siblings": 2,
+  "children": [],
+  "authorities": [
+    {
+      "email": "ben@example.org",
+      "by": "4e2b"
+    },
+    {
+      "email": "ada@example.org",
+      "by": "a1c0"
+    }
+  ],
+  "requires": [],
+  "dependents": [
+    {
+      "task": {
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      "from": "design",
+      "to": "implementation",
+      "text": "Pin map and sensor bus",
+      "met": false,
+      "due": true,
+      "condition": "unmet",
+      "why": "",
+      "status": null,
+      "subproject": "",
+      "commit": "",
+      "at_trunk": "unknown"
+    }
+  ],
+  "junctions": [
+    {
+      "gate": "defined",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "passed",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "mockup",
+      "kind": "plain",
+      "marks": [
+        "person",
+        "reviewer"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "ben@example.org",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "passed",
+      "reviewed": true,
+      "from": [
+        "4e2b"
+      ]
+    },
+    {
+      "gate": "function",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "here",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "performance",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [
+        {
+          "text": "Power budget",
+          "url": "docs/sensor-board.md#power-budget"
+        }
+      ],
+      "stands": "next",
+      "reviewed": false,
+      "from": [
+        "9f31"
+      ]
+    },
+    {
+      "gate": "reliability",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "design",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "implementation",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "unit",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "integrate",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": []
+    },
+    {
+      "gate": "validate",
+      "kind": "plain",
+      "marks": [
+        "person",
+        "reviewer"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "ben@example.org",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": [
+        "9f31"
+      ]
+    },
+    {
+      "gate": "release",
+      "kind": "plain",
+      "marks": [
+        "person"
+      ],
+      "acts": false,
+      "contributor": "ada@example.org",
+      "model": "",
+      "reviewer": "",
+      "reviewer_by_default": false,
+      "subproject": null,
+      "references": [],
+      "stands": "later",
+      "reviewed": false,
+      "from": []
+    }
+  ],
+  "snapshot": null,
+  "status_commit": {
+    "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+    "subject": "Weekly review: no change",
+    "date": "2026-09-28",
+    "author_time": "2026-09-28T12:00:00Z",
+    "author": {
+      "name": "Ada Byron",
+      "email": "ada@example.org"
+    },
+    "committer": {
+      "name": "Ada Byron",
+      "email": "ada@example.org"
+    },
+    "parents": [
+      "1b8cfb16a248f50eeefb76e0994234693ff4f4a6"
+    ],
+    "trailers": [
+      "Reaffirmed: 9f31"
+    ],
+    "files": []
+  },
+  "own_commit": null,
+  "authorisation": {
+    "commit": {
+      "hash": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
+      "subject": "Merge the sensor board task",
+      "date": "2026-09-19",
+      "author_time": "2026-09-19T12:00:00Z",
+      "author": {
+        "name": "Ben Okafor",
+        "email": "ben@example.org"
+      },
+      "committer": {
+        "name": "Ben Okafor",
+        "email": "ben@example.org"
+      },
+      "parents": [
+        "22a758bec2a079fd908bba970db5eb51ecccd0c6",
+        "91aa7747f22ef4bb66becb6eab5d5f1f9c28836d"
+      ],
+      "trailers": [
+        "Authorised: 9f31"
+      ],
+      "files": [
+        {
+          "path": ".tableaux/tasks/9f31.yaml",
+          "change": "added"
+        }
+      ]
+    },
+    "way": "merge",
+    "by": "both",
+    "email": "ben@example.org",
+    "judges": [
       "ben@example.org",
       "ada@example.org"
     ],
-    "children": null,
-    "dependents": [
-      {
-        "id": "c07d",
-        "title": "Node firmware",
-        "from": "design",
-        "to": "implementation",
-        "text": "Pin map and sensor bus",
-        "met": false,
-        "due": true,
-        "condition": "unmet"
-      }
-    ],
-    "description": "The PCB that carries the barometer, hygrometer and thermometer and powers them from the solar cell within the power budget.",
-    "junctions": [
-      {
-        "contributor": "ada@example.org",
-        "gate": "undefined",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "❔"
+    "why": "",
+    "differs_from_trunk": false,
+    "uncommitted": false
+  },
+  "considered": [],
+  "chain": [
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
       },
-      {
-        "contributor": "ada@example.org",
-        "gate": "defined",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "📝"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "mockup",
-        "kind": "plain",
-        "marks": [
-          "🧑",
-          "👀"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "ben@example.org",
-        "subproject": null,
-        "symbol": "📌"
-      },
-      {
-        "contributor": "ada@example.org",
+      "url": "",
+      "status": {
+        "kind": "recorded",
         "gate": "function",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "⚙️"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "performance",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": [
-          {
-            "text": "Power budget",
-            "url": "docs/sensor-board.md#power-budget"
-          }
-        ],
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "⚡"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "reliability",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "⚓"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "design",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "📐"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "implementation",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "🛠️"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "unit",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "🧩"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "integrate",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "🖼️"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "validate",
-        "kind": "plain",
-        "marks": [
-          "🧑",
-          "👀"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "ben@example.org",
-        "subproject": null,
-        "symbol": "🌍"
-      },
-      {
-        "contributor": "ada@example.org",
-        "gate": "release",
-        "kind": "plain",
-        "marks": [
-          "🧑"
-        ],
-        "model": "",
-        "references": null,
-        "reviewer": "",
-        "subproject": null,
-        "symbol": "🚀"
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "2026-09-28",
+        "recorder": "ada@example.org",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
       }
-    ],
-    "references": [
-      {
-        "url": "docs/sensor-board.md"
-      },
-      {
-        "text": "Barometer datasheet",
-        "url": "https://example.org/datasheets/bmp390.pdf"
-      }
-    ],
-    "requires": null
-  },
-  "glance": {
-    "assignee": "ada@example.org",
-    "id": "9f31",
-    "next_gate": "performance",
-    "parent": {
-      "id": "4e2b",
-      "order": 1,
-      "title": "Sensor node"
+    }
+  ],
+  "linkages": [],
+  "sources": [
+    {
+      "gate": "mockup",
+      "field": "reviewer",
+      "value": "ben@example.org",
+      "by": "4e2b",
+      "key": "junctions.mockup.reviewer",
+      "file": ".tableaux/tasks/4e2b.yaml",
+      "line": 10,
+      "col": 23
     },
-    "status": {
-      "gate": "function",
-      "state": "stalled",
-      "reason": "blocked",
-      "note": "Barometer ICs on 14-week backorder",
-      "date": "2026-09-28",
-      "recorder": "ada@example.org",
-      "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a"
+    {
+      "gate": "performance",
+      "field": "references",
+      "value": "1",
+      "by": "9f31",
+      "key": "junctions.performance.references",
+      "file": ".tableaux/tasks/9f31.yaml",
+      "line": 11,
+      "col": 3
     },
-    "title": "Sensor board"
-  },
-  "on_trunk": true,
-  "params": {
-    "task": "9f31",
-    "level": "provenance",
-    "window": -1
-  },
-  "provenance": {
-    "authorisation": {
-      "state": "authorised",
+    {
+      "gate": "validate",
+      "field": "reviewer",
+      "value": "ben@example.org",
+      "by": "9f31",
+      "key": "junctions.validate.reviewer",
+      "file": ".tableaux/tasks/9f31.yaml",
+      "line": 12,
+      "col": 28
+    }
+  ],
+  "reviews": [
+    {
+      "gate": "mockup",
+      "reviewer": "ben@example.org",
+      "effect": "accepts",
+      "by": "ben@example.org",
       "commit": {
-        "hash": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
-        "author": "ben@example.org",
-        "committer": "ben@example.org",
-        "date": "2026-09-19",
-        "subject": "Merge the sensor board task"
-      },
-      "by": "author",
-      "way": "merge"
-    },
-    "command": "git log --format='%h %as %ae %s' -- .tableaux/tasks/9f31.yaml .tableaux/status/9f31.yaml",
-    "events": [
-      {
-        "date": "2026-09-19",
-        "commit": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
-        "by": "ben@example.org",
-        "task": "9f31",
-        "event": "authorised"
-      },
-      {
-        "date": "2026-09-22",
-        "commit": "63a1f88f84354726d5e1b431df5e11a518854cdb",
-        "by": "ada@example.org",
-        "task": "9f31",
-        "event": "status",
-        "gate": "mockup",
-        "state": "nominal"
-      },
-      {
+        "hash": "85adb9bd07783927046f987a17471c42eee97b87",
+        "subject": "Accept the sensor board mockup",
         "date": "2026-09-24",
-        "commit": "85adb9bd07783927046f987a17471c42eee97b87",
-        "by": "ben@example.org",
-        "task": "9f31",
-        "event": "reviewed",
-        "gate": "mockup"
-      },
-      {
-        "date": "2026-09-25",
-        "commit": "a2393fb3090844dd83d44a39739ad486e1fcecd2",
-        "by": "ada@example.org",
-        "task": "9f31",
-        "event": "status",
+        "author_time": "2026-09-24T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9"
+        ],
+        "trailers": [
+          "Reviewed: 9f31 mockup"
+        ],
+        "files": []
+      }
+    }
+  ],
+  "models": [],
+  "events": [
+    {
+      "date": "2026-09-28",
+      "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+      "by": "ada@example.org",
+      "kind": "reaffirmed",
+      "recorded": null,
+      "gate": "",
+      "pin": null,
+      "subproject": null
+    },
+    {
+      "date": "2026-09-25",
+      "commit": "a2393fb3090844dd83d44a39739ad486e1fcecd2",
+      "by": "ada@example.org",
+      "kind": "status",
+      "recorded": {
         "gate": "function",
         "state": "stalled",
         "reason": "blocked",
         "note": "Barometer ICs on 14-week backorder"
       },
-      {
-        "date": "2026-09-28",
-        "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
-        "by": "ada@example.org",
-        "task": "9f31",
-        "event": "reaffirmed"
-      }
-    ],
-    "junction_sources": [
-      {
-        "gate": "undefined",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "defined",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
+      "gate": "",
+      "pin": null,
+      "subproject": null
+    },
+    {
+      "date": "2026-09-24",
+      "commit": "85adb9bd07783927046f987a17471c42eee97b87",
+      "by": "ben@example.org",
+      "kind": "reviewed",
+      "recorded": null,
+      "gate": "mockup",
+      "pin": null,
+      "subproject": null
+    },
+    {
+      "date": "2026-09-22",
+      "commit": "63a1f88f84354726d5e1b431df5e11a518854cdb",
+      "by": "ada@example.org",
+      "kind": "status",
+      "recorded": {
         "gate": "mockup",
-        "source": "4e2b",
-        "sources": {
-          "contributor": "default",
-          "reviewer": "4e2b"
-        }
+        "state": "nominal",
+        "reason": "",
+        "note": ""
       },
-      {
-        "gate": "function",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "performance",
-        "source": "9f31",
-        "sources": {
-          "contributor": "default",
-          "references": "9f31"
-        }
-      },
-      {
-        "gate": "reliability",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "design",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "implementation",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "unit",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "integrate",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      },
-      {
-        "gate": "validate",
-        "source": "9f31",
-        "sources": {
-          "contributor": "default",
-          "reviewer": "9f31"
-        }
-      },
-      {
-        "gate": "release",
-        "source": "",
-        "sources": {
-          "contributor": "default"
-        }
-      }
-    ],
-    "reviews": [
-      {
-        "gate": "mockup",
-        "reviewer": "ben@example.org",
-        "commit": "85adb9bd07783927046f987a17471c42eee97b87",
-        "date": "2026-09-24"
-      }
-    ],
-    "status_commit": {
-      "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
-      "author": "ada@example.org",
-      "committer": "ada@example.org",
-      "date": "2026-09-28",
-      "subject": "Weekly review: no change"
+      "gate": "",
+      "pin": null,
+      "subproject": null
+    },
+    {
+      "date": "2026-09-19",
+      "commit": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
+      "by": "ben@example.org",
+      "kind": "authorised",
+      "recorded": null,
+      "gate": "",
+      "pin": null,
+      "subproject": null
     }
-  },
-  "ref": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
-  "view": "task"
+  ],
+  "event_count": 6,
+  "commands": [
+    {
+      "text": "git log --format='%H %as %ae %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/tasks/9f31.yaml .tableaux/status/9f31.yaml",
+      "comment": ""
+    }
+  ]
 }

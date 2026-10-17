@@ -42,7 +42,7 @@ type fakeSource struct {
 func newFake(ix source.Index) *fakeSource { return &fakeSource{ix: ix} }
 
 func (f *fakeSource) project(ref string) source.Project {
-	return source.Project{Title: "Weather station", Root: f.ix.Tasks[0].ID, Ref: ref, Commit: fakeCommit, Date: "2026-09-30"}
+	return source.Project{Title: "Weather station", Root: f.ix.Tasks[0].ID, Ref: ref, Commit: fakeCommit, Date: "2026-09-28"}
 }
 
 func (f *fakeSource) Describe(_ context.Context, project, ref, viewer string) (source.Project, source.Viewer, error) {
@@ -235,7 +235,7 @@ func TestRunRequests(t *testing.T) {
 	focus := map[string]int{}
 	for _, r := range src.requests {
 		if r.Ref != "W5" || r.Window != -1 || r.Stale != 7 || r.Viewer != "" || r.Project != "" || r.Columns != nil ||
-			r.Historical || r.Proposed || r.BriefTask != "" || r.BriefGate != "" {
+			r.Historical || r.BriefTask != "" || r.BriefGate != "" {
 			t.Errorf("request %+v", r)
 		}
 		if r.Task != "" && r.Person != "" {
@@ -243,7 +243,7 @@ func TestRunRequests(t *testing.T) {
 		}
 		want := time.Time{}
 		if r.View == "audit" {
-			want = time.Date(2026, 9, 30, 0, 0, 0, 0, time.UTC)
+			want = time.Date(2026, 9, 28, 0, 0, 0, 0, time.UTC)
 		}
 		if !r.Today.Equal(want) {
 			t.Errorf("%s: today %v, want %v", r.View, r.Today, want)

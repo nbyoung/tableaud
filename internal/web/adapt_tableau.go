@@ -65,7 +65,7 @@ func TableauFrom(d *view.Tableau, e Env) *TableauView {
 		b := Branch{
 			Task: e.taskRef(r.TaskRef), Beneath: beneath,
 			Fold: e.Fold("detail", "branch-"+r.ID, "", ""),
-			Grid: e.grid(d, "grid-"+r.ID, sub, su, true),
+			Grid: e.grid(d, "sub-"+r.ID, sub, su, true), // not "grid-": the row of r in the grid above has that id
 		}
 		b.Grid.Caption = caption(len(b.Grid.Rows), beneath+1)
 		v.Branches = append(v.Branches, b)

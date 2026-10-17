@@ -161,7 +161,7 @@ func matches(header, etag string) bool {
 func (s *Server) request(v web.View, p web.Params, email string) source.Request {
 	req := source.Request{
 		View: v.Name, Project: p.Project, Ref: s.ref(p), Task: p.Task, Person: p.Person, Viewer: email,
-		Window: p.Window, Stale: p.Stale, Columns: p.Columns, Historical: p.Historical, Proposed: p.Proposed,
+		Window: p.Window, Stale: p.Stale, Columns: p.Columns, Historical: p.Historical,
 	}
 	if req.Person == "" && p.Task == "" && (v.Name == "context" || v.Name == "queue") {
 		req.Person = p.SeenBy // the person a page is seen by owns the corner and the queue
@@ -340,7 +340,11 @@ func (s *Server) fail(w http.ResponseWriter, r *http.Request, v web.View, p web.
 	var param *ParamError
 	var invalid *source.InvalidError
 	var missing *source.NotFoundError
+	var usage *source.UsageError
 	switch {
+	case errors.As(err, &usage):
+		pe.Status, pe.Text, pe.Message = http.StatusBadRequest, "Bad Request", usage.Error()
+		poll, tagged = false, false
 	case errors.As(err, &param):
 		pe.Status, pe.Text, pe.Message = http.StatusBadRequest, "Bad Request", param.Error()
 		poll, tagged = false, false

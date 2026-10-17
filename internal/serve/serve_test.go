@@ -64,6 +64,20 @@ type digest struct {
 func (d *digest) Current() string { d.mu.Lock(); defer d.mu.Unlock(); return d.v }
 func (d *digest) set(v string)    { d.mu.Lock(); d.v = v; d.mu.Unlock() }
 
+// probing is the fixture with the data of the gates view replaced by a string
+// that no adapter takes, so that the view draws its placeholder, which the
+// probe part of TestMain extends. The fixture's data is otherwise tablo's, and
+// the gates adapter's model holds no such part.
+type probing struct{ *sourcetest.Fixture }
+
+func (p probing) View(ctx context.Context, r source.Request) (source.Result, error) {
+	res, err := p.Fixture.View(ctx, r)
+	if r.View == "gates" {
+		res.Data = "gates"
+	}
+	return res, err
+}
+
 // rig is a Server over the fixture with a digest and a clock under the test's
 // hand.
 type rig struct {
@@ -77,7 +91,7 @@ func newRig(t testing.TB, mod ...func(*serve.Config)) *rig {
 	t.Helper()
 	r := &rig{fix: sourcetest.New(), digest: &digest{v: "d1"}, now: time.Date(2026, 10, 6, 12, 0, 0, 0, time.UTC)}
 	cfg := serve.Config{
-		Source: r.fix, Digest: r.digest, Poll: 2 * time.Second, Version: "test",
+		Source: probing{r.fix}, Digest: r.digest, Poll: 2 * time.Second, Version: "test",
 		Now: func() time.Time { return r.now },
 	}
 	for _, m := range mod {
@@ -649,6 +663,10 @@ func TestErrorPages(t *testing.T) {
 		notWant []string
 	}{
 		{"400", newRig(t), "/tableau?window=x", 400, []string{"<h1>400 Bad Request</h1>", "window: ", "is not a whole number"}, false, false, nil},
+		{"400 queue without a person", newRig(t, func(c *serve.Config) { c.Viewer = "" }), "/queue", 400,
+			[]string{"<h1>400 Bad Request</h1>", "The queue needs a person: name one with person=EMAIL."}, false, false, nil},
+		{"400 context without a focus", errorRig(t, &source.UsageError{Msg: source.ContextNeedsFocus}), "/tableau", 400,
+			[]string{"The contextual tableau needs a task or a person: name one with task=ID or person=EMAIL."}, false, false, nil},
 		{"404 route", newRig(t), "/nosuch", 404, []string{"<h1>404 Not Found</h1>", "/nosuch"}, false, false, nil},
 		{"404 task", newRig(t), "/task?task=ffff", 404, []string{"<h1>404 Not Found</h1>", "task ffff: not found"}, true, true, []string{`data-columns=""`}},
 		{"404 ref", newRig(t), "/tableau?ref=nosuch", 404, []string{"ref nosuch: not found"}, true, true, nil},

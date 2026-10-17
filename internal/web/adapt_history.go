@@ -88,7 +88,6 @@ func HistoryFrom(d *view.History, e Env) *HistoryView {
 			taken = append(taken, d.Lines[k])
 		}
 		ev := e.historyEvent(l, taken)
-		v.OffTrunk = v.OffTrunk || ev.Proposal
 		day := &v.Days[at[date]]
 		day.Rows = append(day.Rows, ev)
 		if commits, ok := added[date]; ok {
@@ -101,6 +100,9 @@ func HistoryFrom(d *view.History, e Env) *HistoryView {
 		if day.Fold.Src != "" {
 			day.Rows = nil
 		}
+	}
+	if p := e.Page.Project; p != nil {
+		v.OffTrunk = p.Trunk != "" && !p.OnTrunk // with no trunk, no ref lies off it
 	}
 	if len(v.Days) > 0 {
 		v.From, v.To = v.Days[0].Date, v.Days[len(v.Days)-1].Date

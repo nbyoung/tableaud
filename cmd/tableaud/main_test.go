@@ -19,6 +19,14 @@ import (
 	"github.com/nbyoung/tableaud/internal/source/sourcetest"
 )
 
+// TestMain serves the tests of the command line from the fixture, since the
+// repositories they build hold one task of no gates; the tests of the adapter
+// restore openTablo.
+func TestMain(m *testing.M) {
+	openSource = func(string, string) (source.Source, error) { return sourcetest.New(), nil }
+	os.Exit(m.Run())
+}
+
 // lines is an io.Writer that hands each line to a channel and keeps the text.
 type lines struct {
 	mu  sync.Mutex
@@ -245,7 +253,7 @@ func TestServes(t *testing.T) {
 	if got := stop(); got != 0 {
 		t.Errorf("exit %d after a signal", got)
 	}
-	if strings.Contains(errb.String(), "warning") || strings.Count(errb.String(), "\n") != 1 || !strings.Contains(errb.String(), "fixture") {
+	if errb.String() != "" {
 		t.Errorf("standard error: %q", errb.String())
 	}
 

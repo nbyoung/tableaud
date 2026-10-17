@@ -1367,6 +1367,10 @@ func TestStatusExpandThenCollapse(t *testing.T) {
 		if r.Task.ID == "2000" && (r.Expand == nil || r.Expand.Href != "#branch-2000" || r.Expand.Swap) {
 			t.Errorf("the export's expand of 2000 is %+v", r.Expand)
 		}
+		// A row of the grid has the id GRID-TASK, so a branch's table may not.
+		if m.Branches[0].Grid.ID == m.Grid.ID+"-"+r.Task.ID {
+			t.Errorf("the branch's grid and the row of %s share the id %s", r.Task.ID, m.Branches[0].Grid.ID)
+		}
 	}
 	if m.Grid.Control != nil {
 		t.Error("the export draws a column choice")
