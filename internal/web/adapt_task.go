@@ -434,7 +434,7 @@ func sourceRows(ss []view.Supplier, e Env, ref func(string) TaskRef) []SourceRow
 }
 
 // eventRow returns one event of the task. An event the Derivation takes from
-// a subproject shows as the task's own: the model has no place for its origin.
+// a subproject names the subproject and its task there, by id and title.
 func (e Env) eventRow(ev view.Event) EventRow {
 	row := EventRow{Date: ev.Date, Hash: short(ev.Commit), By: e.person(ev.By), Event: ev.Kind}
 	if ev.Recorded != nil {
@@ -447,6 +447,10 @@ func (e Env) eventRow(ev view.Event) EventRow {
 	}
 	if ev.Pin != nil {
 		row.Pin = &PinChange{URL: ev.Pin.URL, Old: short(ev.Pin.Old), New: short(ev.Pin.New)}
+	}
+	if s := ev.Subproject; s != nil {
+		t := e.subTask(s.URL, view.TaskRef{ID: s.Task, Title: s.Title})
+		row.Project, row.Sub = s.URL, &t
 	}
 	return row
 }

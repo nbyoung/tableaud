@@ -194,6 +194,10 @@ type EventRow struct {
 	Status *Status
 	Gate   *Sym // a reviewed event's gate
 	Pin    *PinChange
+	// Project and Sub name the subproject an event is taken from and its
+	// task there, by id and title; "" and nil for an event of the project.
+	Project string
+	Sub     *TaskRef
 }
 
 // PinChange is what a pin event records.

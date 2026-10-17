@@ -562,19 +562,209 @@ func TestTemporalEscaping(t *testing.T) {
 	}
 }
 
-// The history adapter waits for tablo's history view, so the tests that run
-// it exist and skip.
-
-// TestHistoryAdapterLinesAndEffects covers T6: two events of one commit and
-// task join into one line with both kinds; the five effects; none for a task event.
-func TestHistoryAdapterLinesAndEffects(t *testing.T) {
-	t.Skip("waits for tablo's history view (task 8ed1): the history adapter and its entry in adapters land with it")
+// historyLine is one line of tablo's history at detail: a commit's events on
+// one task, all of one date and author, and the effect.
+func historyLine(date, commit, task, effect string, kinds ...string) view.Line {
+	l := view.Line{Task: view.TaskRef{ID: task, Title: "T " + task}, LineDetail: &view.LineDetail{Effect: effect}}
+	for _, k := range kinds {
+		ev := view.Event{Date: date, Commit: commit, By: "ada@x", Kind: k}
+		switch k {
+		case "status":
+			ev.Recorded = &view.EventStatus{Gate: "design", State: "nominal", Reason: "review"}
+		case "reviewed":
+			ev.Gate = "design"
+		case "pin":
+			ev.Pin = &view.PinMove{URL: "sub", New: commit}
+		}
+		l.Events = append(l.Events, ev)
+	}
+	return l
 }
 
-// TestHistoryLongRange covers T7: over fifty events the days open at detail;
-// over fifty-one every day arrives closed and lazy with the part day.
+// taken marks every event of a line as taken from the subproject sub's task.
+func taken(l view.Line, task string) view.Line {
+	for i := range l.Events {
+		l.Events[i].Subproject = &view.SubEvent{URL: "sub", Task: task, Title: "S " + task}
+	}
+	return l
+}
+
+// historyEnv returns the Env of a history page with script, at the level
+// given, opened by level.
+func historyEnv(t *testing.T, l web.Level) web.Env {
+	t.Helper()
+	p := at(t, "history", "")
+	p.Scripts = true
+	e := web.EnvOf(p, web.Document)
+	e.Open = web.ByLevel(l)
+	return e
+}
+
+// TestHistoryAdapterLinesAndEffects covers T6 on tablo's lines: a line of two
+// events of one commit and task is one event of the page with both kinds;
+// each effect tablo gives reads its fixed sentence, the five of the design's
+// table among them, and "" none; a line taken from a subproject stands under
+// the next pin of that subproject, counted there and named by id and title,
+// and a taken line that no pin follows stands in its own place.
+func TestHistoryAdapterLinesAndEffects(t *testing.T) {
+	d := &view.History{
+		Events: 6, Commits: 5,
+		Days: []view.Day{{Date: "2026-10-01", Events: 3, Commits: 2}, {Date: "2026-10-03", Events: 3, Commits: 3}},
+		Lines: []view.Line{
+			historyLine("2026-10-01", "1111111aa", "1000", "authorised_commit", "task", "authorised"),
+			taken(historyLine("2026-10-01", "2222222bb", "1000", "", "task", "status"), "f1a0"),
+			historyLine("2026-10-01", "3333333cc", "2000", "", "task"),
+			taken(historyLine("2026-10-02", "4444444dd", "1000", "", "status"), "f1a0"),
+			historyLine("2026-10-03", "5555555ee", "1000", "accepts", "status", "reviewed", "pin"),
+			historyLine("2026-10-03", "6666666ff", "2000", "handoff", "status"),
+			historyLine("2026-10-03", "7777777aa", "2000", "stands", "reviewed"),
+			taken(historyLine("2026-10-04", "8888888bb", "1000", "", "status"), "f1a0"),
+		},
+	}
+	m := web.HistoryFrom(d, historyEnv(t, web.Provenance))
+	var got []string
+	for _, day := range m.Days {
+		for _, ev := range day.Rows {
+			got = append(got, day.Date+" "+ev.Anchor+" "+strings.Join(ev.Kinds, ", "))
+		}
+	}
+	want := []string{
+		"2026-10-01 e-1111111-1000 task, authorised",
+		"2026-10-01 e-3333333-2000 task",
+		"2026-10-03 e-5555555-1000 status, reviewed, pin",
+		"2026-10-03 e-6666666-2000 status",
+		"2026-10-03 e-7777777-2000 reviewed",
+		"2026-10-04 e-8888888-1000-f1a0 status",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("the lines are %q, want %q", got, want)
+	}
+	if n := len(m.Days); n != 3 || m.Days[2].Events != 1 || m.Days[2].Commits != 1 || len(m.Days[2].Counts) != 1 || m.Days[2].Counts[0] != (web.KindCount{Kind: "status", Count: 1}) {
+		t.Errorf("the day the adapter adds is %+v", m.Days[len(m.Days)-1])
+	}
+	if m.Events != 6 || m.Commits != 5 || m.From != "2026-10-01" || m.To != "2026-10-04" {
+		t.Errorf("the counts are %d in %d, %s to %s", m.Events, m.Commits, m.From, m.To)
+	}
+
+	pin := m.Days[1].Rows[0]
+	if pin.Sub == nil || pin.Sub.Events != 3 || pin.Sub.Commits != 2 || len(pin.Sub.Rows) != 3 || pin.Sub.Project != "sub" || pin.Sub.Old != "" || pin.Sub.New != "5555555" {
+		t.Fatalf("the pin holds %+v", pin.Sub)
+	}
+	for _, r := range pin.Sub.Rows {
+		if r.Project != "sub" || r.Sub == nil || r.Sub.ID != "f1a0" || r.Sub.Title != "S f1a0" {
+			t.Errorf("a taken row names %q %+v", r.Project, r.Sub)
+		}
+	}
+	if pin.Status == nil || pin.Status.Reason == nil || pin.Status.Reason.Name != "review" || pin.Gate == nil || pin.Gate.Name != "design" || pin.Pin == nil {
+		t.Errorf("the pin line records %+v, %+v, %+v", pin.Status, pin.Gate, pin.Pin)
+	}
+
+	effects := map[string]string{}
+	for _, day := range m.Days {
+		for _, ev := range day.Rows {
+			effects[ev.Anchor] = ev.Effect
+		}
+	}
+	for anchor, want := range map[string]string{
+		"e-1111111-1000": "the task stands authorised by a change on the trunk",
+		"e-3333333-2000": "",
+		"e-5555555-1000": "the reviewer accepts the work at the gate",
+		"e-6666666-2000": "the hand-off: the work at the next gate waits for its reviewer",
+		"e-7777777-2000": "no effect: the authorisation stands as the review",
+	} {
+		if effects[anchor] != want {
+			t.Errorf("%s: the effect reads %q, want %q", anchor, effects[anchor], want)
+		}
+	}
+	for key, want := range map[string]string{
+		"authorised_merge":   "the task stands authorised by a merge",
+		"authorised_trailer": "the task stands authorised by an Authorised: trailer",
+		"proposed":           "the task stands proposed: no authority accepts it",
+		"none":               "no effect",
+	} {
+		one := &view.History{Events: 1, Commits: 1, Days: []view.Day{{Date: "2026-10-01", Events: 1, Commits: 1}},
+			Lines: []view.Line{historyLine("2026-10-01", "1111111aa", "1000", key, "authorised")}}
+		if got := web.HistoryFrom(one, historyEnv(t, web.Detail)).Days[0].Rows[0].Effect; got != want {
+			t.Errorf("%s reads %q, want %q", key, got, want)
+		}
+	}
+
+	// At glance tablo gives no detail and no taken line: no effect, no
+	// subproject events, and the proposal marks the page off the trunk.
+	g := &view.History{Events: 1, Commits: 1, Days: []view.Day{{Date: "2026-10-03", Events: 3, Commits: 1}},
+		Lines: []view.Line{historyLine("2026-10-03", "5555555ee", "1000", "", "status", "reviewed", "pin")}}
+	g.Lines[0].LineDetail, g.Lines[0].Proposal = nil, true
+	ge := historyEnv(t, web.Glance)
+	ge.Inline = true // as the export draws it, every closed fold holds its body
+	gm := web.HistoryFrom(g, ge)
+	if ev := gm.Days[0].Rows[0]; ev.Sub != nil || ev.Effect != "" || ev.After != nil || !ev.Proposal || !gm.OffTrunk {
+		t.Errorf("the glance line is %+v, off the trunk %v", ev, gm.OffTrunk)
+	}
+}
+
+// longHistory returns tablo's history of n events, one line each, ten to a
+// day.
+func longHistory(n int) *view.History {
+	d := &view.History{Events: n, Commits: n}
+	for i := 0; i < n; i++ {
+		date := "2026-10-" + strconv.Itoa(10+i/10)
+		if i%10 == 0 {
+			d.Days = append(d.Days, view.Day{Date: date})
+		}
+		day := &d.Days[len(d.Days)-1]
+		day.Events++
+		day.Commits++
+		d.Lines = append(d.Lines, historyLine(date, strconv.Itoa(1000000+i), "1000", "", "status"))
+	}
+	return d
+}
+
+// TestHistoryLongRange covers T7: over fifty events ByLevel(Detail) opens every
+// day and each event's detail; over fifty-one every day arrives closed and
+// lazy with the part day, and holds no row, but the day a part address names;
+// a part's model, built with every fold open, holds every day.
 func TestHistoryLongRange(t *testing.T) {
-	t.Skip("waits for tablo's history view (task 8ed1): the history adapter and the parts of the history route land with it")
+	m := web.HistoryFrom(longHistory(50), historyEnv(t, web.Detail))
+	if len(m.Days) != 5 {
+		t.Fatalf("%d days", len(m.Days))
+	}
+	for _, day := range m.Days {
+		if !day.Fold.Open || day.Fold.Src != "" || len(day.Rows) != 10 || !day.Rows[0].Fold.Open {
+			t.Errorf("50 events: the day %s is %+v with %d rows", day.Date, day.Fold, len(day.Rows))
+		}
+	}
+
+	m = web.HistoryFrom(longHistory(51), historyEnv(t, web.Detail))
+	if len(m.Days) != 6 {
+		t.Fatalf("%d days", len(m.Days))
+	}
+	for _, day := range m.Days {
+		if day.Fold.Open || !strings.Contains(day.Fold.Src, "part=day:"+day.Date) || day.Fold.Class != "day" || day.Rows != nil {
+			t.Errorf("51 events: the day %s is %+v with %d rows", day.Date, day.Fold, len(day.Rows))
+		}
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("history"), m)))
+	if n := len(root.find("main")[0].find("li")); n != 0 {
+		t.Errorf("51 events: the page holds %d lines", n)
+	}
+
+	e := historyEnv(t, web.Detail)
+	e.Page.Params.Part, e.Page.Params.Key = "day", "2026-10-12"
+	m = web.HistoryFrom(longHistory(51), e)
+	for _, day := range m.Days {
+		if open := day.Date == "2026-10-12"; day.Fold.Open != open || (len(day.Rows) == 10) != open {
+			t.Errorf("the address names 2026-10-12: the day %s is %+v with %d rows", day.Date, day.Fold, len(day.Rows))
+		}
+	}
+
+	e = historyEnv(t, web.Detail)
+	e.Open = web.OpenAll{}
+	m = web.HistoryFrom(longHistory(51), e)
+	for _, day := range m.Days {
+		if !day.Fold.Open || day.Rows == nil {
+			t.Errorf("a part's model: the day %s is %+v", day.Date, day.Fold)
+		}
+	}
 }
 
 // TestAuditAdapterGroups covers T10: the groups of a rule and two resolvers,
@@ -632,9 +822,103 @@ func TestAuditAdapterGroups(t *testing.T) {
 	}
 }
 
-// TestTemporalAdaptersAgreeWithTablo covers T13: the two adapters over the
-// corpus entries weather-station, review-by-non-reviewer, model-mismatch,
-// unknown-trailer and status-complete-early.
+// historyLines returns the anchor of each line of the model, in page order.
+func historyLines(m *web.HistoryView) []string {
+	var out []string
+	for _, e := range historyEvents(m) {
+		out = append(out, e.Anchor)
+	}
+	return out
+}
+
+// TestTemporalAdaptersAgreeWithTablo covers T13 over tablo's golden data of
+// weather-station at main. The history at glance draws tablo's fifteen lines
+// of seventeen events, oldest first, under twelve days; the history of 4e2b at
+// detail draws the lines of 9f31 that the history of the root does, since
+// tablo's own filter gives them, and nests c07d's two lines taken from the
+// firmware under its pin; the history of c07d at provenance names the
+// subproject's task by id and title and holds each line's commit and the
+// view's two commands. TestAuditAdapterGroups shows 3c5d under Authorise for
+// ada@example.org. tablo's golden data holds no history of the range ..W13
+// and no audit of review-by-non-reviewer, model-mismatch, unknown-trailer or
+// status-complete-early, so those stand untested here.
 func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
-	t.Skip("waits for tablo's history view (task 8ed1): the history adapter, the Parts day, sub and commit, and the corpus tests land with it")
+	var root view.History
+	tabloGolden(t, "history.glance", &root)
+	doc := adapted(t, "history", "glance", &root, nil)
+	for _, d := range root.Days {
+		f := doc.byID("day-" + d.Date)
+		if f == nil {
+			t.Fatalf("at glance the page lacks the day %s", d.Date)
+		}
+		if _, open := f.Attr["open"]; open || f.Attr["hx-get"] == "" {
+			t.Errorf("at glance the day %s arrives open or not lazy", d.Date)
+		}
+	}
+	doc = adapted(t, "history", "detail", &root, nil)
+	m := web.HistoryFrom(&root, web.EnvOf(pageOf(viewNamed("history"), nil), web.Document))
+	events := historyEvents(m)
+	kinds := 0
+	for i, e := range events {
+		kinds += len(e.Kinds)
+		if doc.byID(e.Anchor) == nil {
+			t.Errorf("the page lacks the line %s", e.Anchor)
+		}
+		if i > 0 && root.Lines[i].Events[0].Date < root.Lines[i-1].Events[0].Date {
+			t.Errorf("the line %s is older than the one above", e.Anchor)
+		}
+	}
+	if len(events) != 15 || kinds != 17 || len(m.Days) != 12 || m.Events != 17 || m.Commits != 13 || m.From != "2026-09-15" || m.To != "2026-09-28" {
+		t.Errorf("%d lines of %d events under %d days; counts %d in %d, %s to %s", len(events), kinds, len(m.Days), m.Events, m.Commits, m.From, m.To)
+	}
+	w11 := doc.byID("e-97e4231-c07d")
+	if w11 == nil || !strings.Contains(w11.find("summary")[0].text(true), "status, reviewed, pin c07d Node firmware") {
+		t.Fatalf("W11 reads %v", w11)
+	}
+	if e := events[12]; e.Pin == nil || e.Pin.URL != "firmware" || e.Pin.Old != "" || e.Sub != nil {
+		t.Errorf("W11 pins %+v with %+v", e.Pin, e.Sub)
+	}
+
+	var sub view.History
+	tabloGolden(t, "history-4e2b.detail", &sub)
+	adapted(t, "history", "detail", &sub, nil)
+	sm := web.HistoryFrom(&sub, web.EnvOf(pageOf(viewNamed("history"), nil), web.Document))
+	only := func(lines []string, task string) []string {
+		var out []string
+		for _, l := range lines {
+			if strings.HasSuffix(l, "-"+task) {
+				out = append(out, l)
+			}
+		}
+		return out
+	}
+	if a, b := only(historyLines(sm), "9f31"), only(historyLines(m), "9f31"); len(a) != 6 || !reflect.DeepEqual(a, b) {
+		t.Errorf("the lines of 9f31 under 4e2b are %q, under the root %q", a, b)
+	}
+	for _, e := range historyEvents(sm) {
+		if strings.HasSuffix(e.Anchor, "-f1a0") {
+			t.Errorf("the taken line %s stands in its own place", e.Anchor)
+		}
+	}
+
+	var c07d view.History
+	tabloGolden(t, "history-c07d.provenance", &c07d)
+	doc = adapted(t, "history", "provenance", &c07d, nil)
+	cm := web.HistoryFrom(&c07d, web.EnvOf(pageOf(viewNamed("history"), nil), web.Document))
+	if got := historyLines(cm); !reflect.DeepEqual(got, []string{"e-22a758b-c07d", "e-97e4231-c07d"}) || len(cm.Commands) != 2 {
+		t.Fatalf("c07d draws %q and %d commands", got, len(cm.Commands))
+	}
+	pin := historyEvents(cm)[1]
+	if pin.Sub == nil || pin.Sub.Events != 3 || pin.Sub.Commits != 2 || pin.Commit == nil || pin.Commit.Full != "97e423122790a250e4e067d7d33bbf88622b00d5" {
+		t.Fatalf("W11 holds %+v, commit %+v", pin.Sub, pin.Commit)
+	}
+	if got := doc.byID(pin.Sub.Fold.ID).text(true); !strings.Contains(got, "in the subproject firmware, task f1a0 Weather node image") {
+		t.Errorf("the subproject's events read %.400q", got)
+	}
+	if e := historyEvents(cm)[0]; e.Effect != "the task stands authorised by a change on the trunk" || pin.Effect != "the reviewer accepts the work at the gate" {
+		t.Errorf("the effects read %q and %q", e.Effect, pin.Effect)
+	}
+	if got := doc.byID("prov-list").text(true); !strings.Contains(got, "-- .tableaux/tasks/c07d.yaml .tableaux/status/c07d.yaml firmware") {
+		t.Errorf("the list's provenance reads %.400q", got)
+	}
 }
