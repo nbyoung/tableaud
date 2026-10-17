@@ -813,3 +813,30 @@ func TestRealAdaptersCallDisclosure(t *testing.T) {
 		}
 	}
 }
+
+// TestRealAdaptersSetTheRank is T11 of design 5a2f through the real source:
+// over the copied weather-station at main, the stalled cell of 9f31 carries
+// s3 in the global tableau and in Ben's contextual tableau, and the legend's
+// rows of the states rank their severities.
+func TestRealAdaptersSetTheRank(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	d := newDaemon(t, realSource(t, dir), "ada@example.org")
+	for _, c := range [][2]string{{"/tableau?level=detail", "grid-9f31"}, {"/context?person=ben@example.org", "wider-9f31"}} {
+		var stalled *Node
+		for _, td := range d.page(c[0]).byID(c[1]).find("td") {
+			if strings.Contains(td.text(false), "stalled") {
+				stalled = td
+			}
+		}
+		if stalled == nil || !stalled.hasClass("s3") {
+			t.Errorf("%s: the stalled cell of 9f31 is %v", c[0], stalled)
+		}
+	}
+	root := d.page("/gates")
+	for state, class := range map[string]string{"nominal": "", "at_risk": "s2", "stalled": "s3"} {
+		cell := root.byID("state-" + state).find("td")[0]
+		if cell.hasClass("s2") != (class == "s2") || cell.hasClass("s3") != (class == "s3") {
+			t.Errorf("the legend row of %s has the class %q", state, cell.Attr["class"])
+		}
+	}
+}
