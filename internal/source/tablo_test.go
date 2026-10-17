@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -269,5 +270,70 @@ func TestTabloInvalid(t *testing.T) {
 	}
 	if _, _, err := src.Describe(ctx, "", "", ""); err != nil {
 		t.Errorf("describe: %v", err)
+	}
+}
+
+// TestTabloByURL reads a subproject that the junction links by absolute URL,
+// through the clone that Git's configuration names, on the built
+// subproject-by-url entry: the library at the commit the junction names, L1
+// at U1 and L2 at U2, and the 404 of a missing project without the clone.
+func TestTabloByURL(t *testing.T) {
+	dir := entry(t, "subproject-by-url")
+	lib := entry(t, "subproject-by-url.lib")
+	labels := map[string]string{}
+	for _, name := range []string{"subproject-by-url.labels.txt", "subproject-by-url.lib.labels.txt"} {
+		b, err := os.ReadFile(filepath.Join(os.Getenv("TABLEAUX_CORPUS"), name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, line := range strings.Split(string(b), "\n") {
+			if l, sha, ok := strings.Cut(line, " "); ok {
+				labels[l] = sha
+			}
+		}
+	}
+	t.Setenv("XDG_CACHE_HOME", t.TempDir()) // no clone in the cache stands in
+	ctx := t.Context()
+	src, err := source.NewTablo(ctx, dir, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	const url = "https://example.org/lib.git"
+	var nf *source.NotFoundError
+	if _, _, err := src.Describe(ctx, url, "", ""); !errors.As(err, &nf) || nf.Kind != "project" {
+		t.Errorf("no clone: %v, want a missing project", err)
+	}
+
+	f, err := os.OpenFile(filepath.Join(dir, ".git", "config"), os.O_APPEND|os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := fmt.Fprintf(f, "[tableaux %q]\n\tpath = %s\n", url, lib); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []struct{ ref, want string }{{"", "L2"}, {labels["U1"], "L1"}, {labels["U2"], "L2"}} {
+		p, _, err := src.Describe(ctx, url, c.ref, "")
+		if err != nil || p.Root != "5a00" || p.Commit != labels[c.want] || p.Worktree {
+			t.Errorf("describe at %q: %+v, %v, want 5a00 at %s", c.ref, p, err, c.want)
+		}
+	}
+	if p, _, err := src.Describe(ctx, url, labels["U1"]+".."+labels["U2"], ""); err != nil || p.Commit != labels["L2"] {
+		t.Errorf("describe a range: %+v, %v", p, err)
+	}
+	h := serve.New(serve.Config{Source: src, Digest: staticDigest{}, Version: "test"})
+	for _, target := range []string{"/gates?project=", "/task?task=5a00&project="} {
+		req := httptest.NewRequest(http.MethodGet, target+"https%3A%2F%2Fexample.org%2Flib.git", nil)
+		req.Host, req.RemoteAddr = "127.0.0.1:8642", "127.0.0.1:4000"
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		if rec.Code != 200 {
+			t.Errorf("%s: status %d, want 200: %.400s", target, rec.Code, rec.Body.String())
+		}
+	}
+	if _, _, err := src.Describe(ctx, "https://example.org/other.git", "", ""); !errors.As(err, &nf) || nf.Kind != "project" {
+		t.Errorf("another url: %v, want a missing project", err)
 	}
 }

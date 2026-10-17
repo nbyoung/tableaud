@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"os/exec"
-	"path"
 	"slices"
 	"strings"
 	"time"
@@ -179,8 +178,9 @@ func splitRange(ref string) (to, from string, isRange bool) {
 // load loads the project at the ref of the request. A subproject reads from
 // the superproject's load, through the link its junction's url names (49ce
 // decision 11): at the commit the link fixes at that ref, or as the Loader
-// reads the link in the working tree. A range's start reads the same way, from
-// the superproject at that start.
+// reads the link in the working tree. The url is a path, or an absolute URL
+// whose clone Git's configuration names under tableaux.<url>.path. A range's
+// start reads the same way, from the superproject at that start.
 func (t *Tablo) load(ctx context.Context, project, ref string) (*loaded, error) {
 	to, from, _ := splitRange(ref)
 	ld := &loaded{ref: ref, from: from}
@@ -191,9 +191,6 @@ func (t *Tablo) load(ctx context.Context, project, ref string) (*loaded, error) 
 	if project == "" {
 		ld.snap = snap
 		return ld, nil
-	}
-	if _, ok := link(project); !ok {
-		return nil, &NotFoundError{Kind: "project", Name: project}
 	}
 	if ld.snap, err = linked(snap, project); err != nil {
 		return nil, err
@@ -247,18 +244,6 @@ func (t *Tablo) resolve(ctx context.Context, ld *loaded, ref string) (string, er
 		return "", &NotFoundError{Kind: "ref", Name: ref}
 	}
 	return env.Source.From.Commit, nil
-}
-
-// link cleans the url of a junction. Only a path to a directory of the
-// repository selects a subproject; an absolute URL, which tablo reads through
-// a clone of its own, is not found.
-func link(url string) (string, bool) {
-	clean := path.Clean(url)
-	if url == "" || clean == "." || path.IsAbs(clean) || clean == ".." || strings.HasPrefix(clean, "../") ||
-		strings.HasPrefix(clean, "-") || strings.Contains(url, "://") {
-		return "", false
-	}
-	return clean, true
 }
 
 // git runs one Git command in the working tree and returns its standard output.
