@@ -802,7 +802,8 @@ func openFolds(t *testing.T, p *web.Page, data any, class string) []string {
 // adapters call Unfold, Entry and ColumnsOf and name the focus of the queue and
 // the blockage tree from the person a page is seen by; the authority, the
 // assignment and the audit adapters call Focus with AuthorityFocus, the
-// assignment's ids and AuditFocus.
+// assignment's ids and AuditFocus. TestAdaptersKeepFindingsC2AndC3 covers the
+// findings A7 names.
 func TestAdaptersCallDisclosure(t *testing.T) {
 	var tab view.Tableau
 	tabloGolden(t, "tableau.detail", &tab)
@@ -872,6 +873,59 @@ func TestAdaptersCallDisclosure(t *testing.T) {
 	p = framed(t, "audit", "", "ben@example.org", []string{"assignee"}, nil)
 	if got := openFolds(t, p, audit, "detail"); !slices.Equal(got, []string{"proposed"}) {
 		t.Errorf("Ben's audit opens %q", got)
+	}
+}
+
+// TestAdaptersKeepFindingsC2AndC3 covers the findings of design db74 that A7
+// names, over tablo's golden data. C2: a row's folds take ids by task,
+// n-GRID-TASK and prov-GRID-TASK. C3: where a drawn parent takes no control,
+// in the export, Row.Beneath counts the rows the grid does not draw, so the
+// root of the global tableau counts the two rows that stand in a branch
+// alone, a branch's first row counts none, and the person form's wider grid,
+// which draws every row, counts none.
+func TestAdaptersKeepFindingsC2AndC3(t *testing.T) {
+	var tab view.Tableau
+	tabloGolden(t, "tableau.detail", &tab)
+	p := framed(t, "tableau", "level=provenance", "ada@example.org", []string{"owner"}, nil)
+	for _, r := range web.TableauFrom(&tab, web.EnvOf(p, web.Document)).Grid.Rows {
+		if id := r.Task.ID; r.Fold.ID != "n-grid-"+id || r.ProvFold.ID != "prov-grid-"+id {
+			t.Errorf("C2: the folds of %s are %s and %s", id, r.Fold.ID, r.ProvFold.ID)
+		}
+	}
+
+	beneath := func(g web.Grid) map[string]int {
+		out := map[string]int{}
+		for _, r := range g.Rows {
+			if r.Expand == nil && r.Collapse == nil {
+				out[r.Task.ID] = r.Beneath
+			}
+		}
+		return out
+	}
+	p = framed(t, "tableau", "", "", nil, nil)
+	p.Scripts = false
+	m := web.TableauFrom(&tab, web.EnvOf(p, web.Document))
+	if got := beneath(m.Grid); got["a1c0"] != 2 || got["7b2e"] != 0 {
+		t.Errorf("C3: the export's grid counts %v", got)
+	}
+	if len(m.Branches) != 1 {
+		t.Fatalf("C3: %d branches", len(m.Branches))
+	}
+	if got := beneath(m.Branches[0].Grid); got["4e2b"] != 0 {
+		t.Errorf("C3: the branch counts %v", got)
+	}
+	var ctx view.Tableau
+	tabloGolden(t, "context-ben.detail", &ctx)
+	p = framed(t, "context", "person=ben@example.org", "", nil, nil)
+	p.Scripts = false
+	c := web.ContextualFrom(&ctx, web.EnvOf(p, web.Document))
+	if c.Wider == nil || len(c.Wider.Grid.Rows) != 6 {
+		t.Fatalf("C3: the export's wider grid is %+v", c.Wider)
+	}
+	for id, n := range beneath(c.Wider.Grid) {
+		if n != 0 {
+			t.Errorf("C3: %s of the wider grid counts %d rows not drawn", id, n)
+		}
 	}
 }
 

@@ -52,7 +52,7 @@ type Row struct {
 	Task     TaskRef
 	Depth    int
 	Parent   bool
-	Beneath  int      // the rows beneath this one, drawn or not
+	Beneath  int      // the rows beneath this one, drawn or not; with no control, those the grid does not draw
 	Expand   *Control // the address that draws them; nil when they are drawn or none exist
 	Collapse *Control // the address that folds them again; nil when they are not drawn
 	Sibling  bool     // a sibling of the person's tasks, in the person form

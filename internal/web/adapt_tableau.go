@@ -200,6 +200,21 @@ func beneathOf(rows []view.GridRow, id string) int {
 	return n
 }
 
+// notDrawn returns the rows beneath the row of id that the grid does not
+// draw: those of its subtree beneath a closed row, and those tablo keeps out
+// of the view. A row that takes no control states this count, so a parent
+// whose rows all stand drawn, in the export, states none.
+func notDrawn(rows []view.GridRow, id string, u *Unfolding) int {
+	n := 0
+	for _, r := range subtree(rows, id) {
+		if r.ID != id && !u.Draws(r.ID) {
+			n++
+		}
+		n += r.Hidden
+	}
+	return n
+}
+
 // nextOf returns the next gate of a row and the marks of its junction there,
 // from the row's cells, which stand one per gate of the legend: the first
 // cell after the status's whose kind is marks and which is not historical.
@@ -287,6 +302,9 @@ func (e Env) grid(d *view.Tableau, id string, rows []view.GridRow, u *Unfolding,
 			Fold:   e.Fold("detail", "n-"+id+"-"+r.ID, "", ""),
 		}
 		row.Expand, row.Collapse = u.Controls(r.ID)
+		if row.Expand == nil && row.Collapse == nil {
+			row.Beneath = notDrawn(rows, r.ID, u) // db74, finding C3
+		}
 		for _, c := range d.Columns {
 			if len(c.Gates) == 0 {
 				continue
