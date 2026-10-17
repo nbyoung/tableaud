@@ -549,8 +549,8 @@ func TestRealStructuralViews(t *testing.T) {
 // collapses to the address it left (T6); Ben's contextual tableau
 // draws his own 4e2b and c07d first and all six rows in its wider grid, the
 // siblings marked; the blockage tree shows its causes largest first; the
-// queue of ada@example.org shows four items in the order of VIEWS.md, and
-// that of ben@example.org five empty kinds.
+// queue of ada@example.org shows four items in the order of VIEWS.md and the
+// brief of one, and that of ben@example.org five empty kinds.
 func TestRealStatusViews(t *testing.T) {
 	dir, _ := realEntry(t, "weather-station")
 	d := newDaemon(t, realSource(t, dir), "ada@example.org")
@@ -622,6 +622,12 @@ func TestRealStatusViews(t *testing.T) {
 	}
 	if want := []string{"auth-3c5d", "ready-7b2e", "reaff-9f31", "waiting-9f31"}; !slices.Equal(items, want) {
 		t.Errorf("ada's queue holds %q, want %q", items, want)
+	}
+	// The brief of an item, as tabloio composes it from tablo's answer to
+	// the brief parameter (decision 10), stands in its textarea.
+	root = d.page("/queue?person=ada@example.org&brief=7b2e:defined")
+	if ta := root.find("textarea"); len(ta) != 1 || !strings.HasPrefix(ta[0].text(false), "Brief: 7b2e Gateway at defined") {
+		t.Errorf("the brief of 7b2e at defined reads %v", ta)
 	}
 	root = d.page("/queue?person=ben@example.org")
 	var kinds []string
