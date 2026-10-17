@@ -39,6 +39,8 @@
    },
    "File": "",
    "Commit": null,
+   "OwnCommit": null,
+   "ReadThere": false,
    "Reaffirmed": false,
    "Snapshot": {
     "Mark": {

@@ -2,6 +2,14 @@
  "View": "assignment",
  "Body": {
   "People": null,
-  "Sections": null
+  "Sections": null,
+  "Prov": {
+   "ID": "prov-assignment",
+   "Class": "prov",
+   "Open": false,
+   "Src": "",
+   "Alt": ""
+  },
+  "Commands": []
  }
 }

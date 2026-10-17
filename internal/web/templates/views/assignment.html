@@ -49,7 +49,10 @@
 {{end}}</ul>
 {{else}}<p class="empty">{{.Email}} has authority over no task.</p>
 {{end}}</details>
-{{end}}{{end}}{{end}}{{end}}
+{{end}}{{end}}{{if .Commands}}{{template "fold" .Prov}}<summary id="{{.Prov.ID}}-s">Provenance: the commands behind the assignment</summary>
+{{template "commands" .Commands}}
+</details>
+{{end}}{{end}}{{end}}
 
 {{define "assignment-counts"}}<td class="num">{{.Standing}}</td><td class="num">{{.Contributes}}</td><td class="num">{{.ContribNext}}</td><td class="num">{{.Reviews}}</td><td class="num">{{.ReviewsNext}}</td>{{end}}
 

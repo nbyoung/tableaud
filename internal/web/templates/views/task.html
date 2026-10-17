@@ -92,10 +92,13 @@
 
 {{define "requires-row"}}<tr><th scope="row">{{template "task" .Task}}{{if .Project}} in <code>{{.Project}}</code> at <code>{{.ReadAt}}</code>{{end}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{with .Status}}{{template "status" .}}{{end}}</td><td>{{.Condition}}</td></tr>{{end}}
 
-{{define "part/status"}}{{if .Commit}}<p>The status file is <code>{{.File}}</code>. Its deciding commit is {{if .Reaffirmed}}the newest commit that carries <code>Reaffirmed:</code> for the task{{else}}the newest commit that changes the file{{end}}.</p>
+{{define "part/status"}}{{if .Commit}}{{if .ReadThere}}<p>The status is read from the subproject <code>{{.Snapshot.URL}}</code>, task {{template "task" .Snapshot.Task}}, and its deciding commit there is the commit below.</p>{{else}}<p>The status file is <code>{{.File}}</code>. Its deciding commit is {{if .Reaffirmed}}the newest commit that carries <code>Reaffirmed:</code> for the task{{else}}the newest commit that changes the file{{end}}.</p>{{end}}
 <dl class="fields">
 {{template "commit" .Commit}}</dl>
 {{else}}<p>The task has no status file of its own: {{if .File}}no commit records one{{else}}its status derives from its children{{end}}.</p>
+{{end}}{{with .OwnCommit}}<p>The deciding commit of the task's own file:</p>
+<dl class="fields">
+{{template "commit" .}}</dl>
 {{end}}{{with .Snapshot}}<p>The state, the note and the date come from the subproject <code>{{.URL}}</code>, task {{template "task" .Task}}, read at <code>{{.Pin}}</code>, {{.Form}}; the task stands at {{template "sym" .Gate}} there.</p>
 {{end}}{{template "commands" .Commands}}{{end}}
 

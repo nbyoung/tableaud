@@ -25,6 +25,8 @@ type StatusProv struct {
 	Fold       Fold
 	File       string    // ".tableaux/status/e9c6.yaml"; "" for a parent
 	Commit     *Commit   // the deciding commit; nil for a roll-up
+	OwnCommit  *Commit   // a snapshot: the deciding commit of the task's own file
+	ReadThere  bool      // the status is a snapshot: Commit is the deciding commit in the subproject Snapshot names
 	Reaffirmed bool      // the deciding commit is a Reaffirmed: commit
 	Snapshot   *Snapshot // the subproject task a recursive next junction reads
 	Commands   []string
@@ -194,6 +196,10 @@ type EventRow struct {
 	Status *Status
 	Gate   *Sym // a reviewed event's gate
 	Pin    *PinChange
+	// Project and Sub name the subproject an event is taken from and its
+	// task there, by id and title; "" and nil for an event of the project.
+	Project string
+	Sub     *TaskRef
 }
 
 // PinChange is what a pin event records.

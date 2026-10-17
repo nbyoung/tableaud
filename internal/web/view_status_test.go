@@ -2,6 +2,7 @@ package web_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/nbyoung/tablo/view"
 
+	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -1251,27 +1253,6 @@ func TestStatusViewFilesDefineTheFrame(t *testing.T) {
 	}
 }
 
-// TestStatusRoutesServeThePlaceholder checks the seam: with no adapter
-// registered, each of the four routes draws what it drew before, the title and
-// the data as JSON, and no Part is listed.
-func TestStatusRoutesServeThePlaceholder(t *testing.T) {
-	for _, name := range []string{"tableau", "context", "blockage", "queue"} {
-		v, _ := web.Lookup(name)
-		if _, ok := web.Adapters[name]; ok {
-			t.Skipf("%s has an adapter", name)
-		}
-		if len(v.Parts) != 0 {
-			t.Errorf("%s lists the parts %q before its adapter lands", name, v.Parts)
-		}
-		p := pageOf(v, nil)
-		p.Data = map[string]any{}
-		want := fmt.Sprintf("<main id=\"main\" class=\"v-%s\"><h1>%s</h1>\n<pre>{}\n</pre>\n\n</main>", name, v.Title)
-		if got := mainElement(t, render(t, web.Document, p)); got != want {
-			t.Errorf("%s: the placeholder is %q, want %q", name, got, want)
-		}
-	}
-}
-
 // threeLevels is tablo's tableau of a tree of three levels: 1000 over 2000
 // and 3000, 2000 over 2001 and 2002, with one gate.
 func threeLevels() *view.Tableau {
@@ -1472,7 +1453,84 @@ func TestStatusAdaptersAgreeWithTablo(t *testing.T) {
 	if want := []string{"auth-3c5d", "ready-7b2e", "reaff-9f31", "waiting-9f31"}; !slices.Equal(items, want) || qm.Total != 4 || len(qm.Kinds) != 5 {
 		t.Errorf("ada's queue holds %q, want %q", items, want)
 	}
+	// The causes at glance, from each item's own facts (886d decision 15):
+	// the authorisation's why, and the reason's note.
+	causes := map[string]string{}
+	for _, k := range qm.Kinds {
+		for _, r := range k.Items {
+			for _, it := range r.Shown {
+				causes[it.Anchor] = it.Cause
+			}
+		}
+	}
+	if causes["auth-3c5d"] != "proposed: the deciding commit is not by an authority" ||
+		causes["waiting-9f31"] != "waits on the reason blocked: Barometer ICs on 14-week backorder" || causes["ready-7b2e"] != "" {
+		t.Errorf("the causes read %q", causes)
+	}
+	for why, want := range map[string]string{
+		"no_history": "proposed: the source has no history", "no_trunk": "proposed: the trunk is undetermined",
+		"off_trunk": "proposed: the ref lies off the trunk", "no_commit": "proposed: no commit on the trunk decides it",
+	} {
+		one := &view.Queue{Items: []view.QueueItem{{Kind: "authorisation", Task: view.TaskRef{ID: "3c5d"}, Gate: "defined", Why: why}}}
+		if got := web.QueueFrom(one, web.EnvOf(p, web.Document)).Kinds[1].Items[0].Shown[0].Cause; got != want {
+			t.Errorf("%s reads %q, want %q", why, got, want)
+		}
+	}
 	adapted(t, "queue", "detail", &q, nil)
+}
+
+// TestQueueBriefFromTabloio checks that the item the brief parameter names
+// prints, in its textarea, the text tabloio's package brief composes: over
+// the envelope of tabloio's own test of e4c7 at design, whose data holds the
+// brief and no items, with the item the page's second ask of Source gives
+// (49ce decision 18), the text equals tabloio's golden brief byte for byte.
+// A waiting brief composes no text, and the item then holds no Brief.
+func TestQueueBriefFromTabloio(t *testing.T) {
+	const mod, env = "github.com/nbyoung/tabloio", "TABLOIO_DIR"
+	var envelope struct {
+		Source struct{ Ref, Commit, Date string }
+		Params struct{ Person string }
+		Data   json.RawMessage
+	}
+	if err := json.Unmarshal(moduleFile(t, mod, env, "brief/testdata/e4c7-design.json"), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	var q view.Queue
+	dec := json.NewDecoder(bytes.NewReader(envelope.Data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&q); err != nil {
+		t.Fatalf("tabloio's envelope of e4c7: %v", err)
+	}
+	if q.QueueProvenance == nil || q.Brief == nil || len(q.Items) != 0 {
+		t.Fatalf("the data holds %d items and the brief %v", len(q.Items), q.QueueProvenance)
+	}
+	q.Items = []view.QueueItem{{Kind: "ready", Task: view.TaskRef{ID: "e4c7", Title: "Agent briefs"}, Gate: "design", ItemDetail: &view.ItemDetail{}}}
+	model := func() *web.QueueView {
+		v, _ := web.Lookup("queue")
+		p := pageOf(v, nil)
+		p.Project = &source.Project{Ref: envelope.Source.Ref, Commit: envelope.Source.Commit, Date: envelope.Source.Date}
+		p.Params.Person, p.Params.Brief, p.Params.Level = envelope.Params.Person, "e4c7:design", "provenance"
+		p.Data = &q
+		return web.QueueFrom(&q, web.EnvOf(p, web.Document))
+	}
+	m := model()
+	body := m.Kinds[2].Items[0].Shown[0].Body
+	want := string(moduleFile(t, mod, env, "brief/testdata/e4c7-design.txt"))
+	if body == nil || body.Brief == nil || body.Brief.Text != want {
+		t.Fatalf("the brief of e4c7 is %+v, want %.200q", body, want)
+	}
+	if b := body.Brief; b.ID != "brief-e4c7" || b.Fold.ID != "prov-ready-e4c7" || !b.Fold.Open || b.Rows != strings.Count(want, "\n") {
+		t.Errorf("the brief stands as %+v", b)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("queue"), m)))
+	if area := root.byID("brief-e4c7"); area == nil || area.Tag != "textarea" || area.text(false) != want {
+		t.Errorf("the textarea reads %v", area)
+	}
+
+	q.Brief.Kind, q.Brief.Causes = "waiting", []view.Wait{{Kind: "reason", Reason: "blocked"}}
+	if b := model().Kinds[2].Items[0].Shown[0].Body; b == nil || b.Brief != nil {
+		t.Errorf("a waiting brief gives %+v", b)
+	}
 }
 
 // TestContextNextGateFromCells checks that a row block reads its next gate

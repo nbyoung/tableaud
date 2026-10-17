@@ -30,7 +30,7 @@ var Views = []View{
 	{Name: "task", Title: "Task definition", Label: "Task", Question: "What is this task and where does it stand?", Params: []string{"task", "person"}, Parts: []string{"status", "authorisation", "edges", "sources", "reviews", "models", "events"}},
 	{Name: "assignment", Title: "Task assignment", Label: "Assignment", Question: "What does each person carry?", Params: []string{"person", "task"}, Parts: []string{"group"}},
 	{Name: "authority", Title: "Authority delegation", Label: "Authority", Question: "Who may accept what?", Params: []string{"task", "person", "proposed"}, Parts: []string{"node", "deciding", "kids", "commits"}},
-	{Name: "history", Title: "History", Label: "History", Question: "What happened, when, and who did it?", Params: []string{"task", "person"}},
+	{Name: "history", Title: "History", Label: "History", Question: "What happened, when, and who did it?", Params: []string{"task", "person"}, Parts: []string{"day", "sub", "commit"}},
 	{Name: "audit", Title: "Audit", Label: "Audit", Question: "Where do files and history disagree?", Params: []string{"task", "person", "stale", "minimum"}, Parts: []string{"rule"}},
 	{Name: "gates", Title: "Gate definition", Label: "Gates", Question: "What do the columns and symbols mean?", Params: []string{"task"}},
 }

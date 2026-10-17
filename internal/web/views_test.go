@@ -450,16 +450,16 @@ func tabloGolden(t *testing.T, name string, v any) {
 	tabloFile(t, filepath.Join("internal", "views", "testdata", "weather-station", name+".json"), v)
 }
 
-// tabloFile decodes a JSON file of tablo's module, by its path in the module,
-// into v. It finds the module through TABLO_DIR, else through go list, and
-// skips where neither answers.
-func tabloFile(t *testing.T, path string, v any) {
+// moduleFile returns a file of a required module, by its path in the
+// module. It finds the module through the variable env, else through go
+// list, and skips where neither answers.
+func moduleFile(t *testing.T, module, env, path string) []byte {
 	t.Helper()
-	dir := os.Getenv("TABLO_DIR")
+	dir := os.Getenv(env)
 	if dir == "" {
-		out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "github.com/nbyoung/tablo").Output()
+		out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", module).Output()
 		if err != nil || strings.TrimSpace(string(out)) == "" {
-			t.Skipf("go list finds no directory of tablo's module (%v); set TABLO_DIR to it", err)
+			t.Skipf("go list finds no directory of %s (%v); set %s to it", module, err, env)
 		}
 		dir = strings.TrimSpace(string(out))
 	}
@@ -467,6 +467,15 @@ func tabloFile(t *testing.T, path string, v any) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	return raw
+}
+
+// tabloFile decodes a JSON file of tablo's module, by its path in the module,
+// into v. It finds the module through TABLO_DIR, else through go list, and
+// skips where neither answers.
+func tabloFile(t *testing.T, path string, v any) {
+	t.Helper()
+	raw := moduleFile(t, "github.com/nbyoung/tablo", "TABLO_DIR", path)
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(v); err != nil {
@@ -526,8 +535,25 @@ func TestAdaptersAgreeWithTablo(t *testing.T) {
 	if !strings.Contains(glance, "a subproject does the work, firmware") {
 		t.Errorf("c07d: the status line lacks the snapshot: %q", glance)
 	}
-	if got := root.byID("prov-status").text(true); !strings.Contains(got, "f1a0 Weather node image, read at cf5b169, the submodule's pin") {
+	got := root.byID("prov-status").text(true)
+	if !strings.Contains(got, "f1a0 Weather node image, read at cf5b169, the submodule's pin") {
 		t.Errorf("c07d: the status commit lacks the snapshot: %.600s", got)
+	}
+	// After the status commit, the deciding commit of the task's own file;
+	// an event taken from the subproject names its task by id and title.
+	read := strings.Index(got, "The status is read from the subproject firmware, task f1a0 Weather node image, and its deciding commit there is the commit below.")
+	if read < 0 || strings.Contains(got, "The status file is") {
+		t.Errorf("c07d: the status commit does not say where the status is read: %.600s", got)
+	}
+	status, own := strings.Index(got, "cf5b169 Record the node image design"), strings.Index(got, "The deciding commit of the task's own file:")
+	if status < read {
+		t.Errorf("c07d: the status commit stands before the sentence that names it")
+	}
+	if status < 0 || own < status || !strings.Contains(got[own:], "97e4231 Pin the firmware at its design") {
+		t.Errorf("c07d: the own commit does not follow the status commit: %.900s", got)
+	}
+	if got := root.byID("prov-events").text(true); !strings.Contains(got, "Sleep scheduler in progress; in the subproject firmware, task f1a0 Weather node image") {
+		t.Errorf("c07d: the taken event reads %.900s", got)
 	}
 	if n := len(root.byClass("tr", "here")); n != 1 {
 		t.Errorf("c07d: %d rows here, want 1", n)

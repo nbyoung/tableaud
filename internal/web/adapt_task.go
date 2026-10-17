@@ -55,7 +55,10 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 	}
 	taskFile := ".tableaux/tasks/" + id + ".yaml"
 
-	v.StatusProv = StatusProv{Fold: e.Fold("prov", "prov-status", "status", ""), Snapshot: v.Status.Snapshot}
+	v.StatusProv = StatusProv{
+		Fold: e.Fold("prov", "prov-status", "status", ""), Snapshot: v.Status.Snapshot,
+		ReadThere: d.Status.Kind == "snapshot" && v.Status.Snapshot != nil,
+	}
 	if d.Status.Kind != "rollup" {
 		v.StatusProv.File = ".tableaux/status/" + id + ".yaml"
 	}
@@ -103,6 +106,7 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 	}
 	if d.TaskProvenance != nil {
 		v.StatusProv.Commit = commitOf(d.StatusCommit)
+		v.StatusProv.OwnCommit = commitOf(d.OwnCommit)
 		v.StatusProv.Commands = commands(d.Commands)
 		for _, ev := range d.Events {
 			if ev.Kind == "reaffirmed" && d.StatusCommit != nil && ev.Commit == d.StatusCommit.Hash {
@@ -434,7 +438,7 @@ func sourceRows(ss []view.Supplier, e Env, ref func(string) TaskRef) []SourceRow
 }
 
 // eventRow returns one event of the task. An event the Derivation takes from
-// a subproject shows as the task's own: the model has no place for its origin.
+// a subproject names the subproject and its task there, by id and title.
 func (e Env) eventRow(ev view.Event) EventRow {
 	row := EventRow{Date: ev.Date, Hash: short(ev.Commit), By: e.person(ev.By), Event: ev.Kind}
 	if ev.Recorded != nil {
@@ -447,6 +451,10 @@ func (e Env) eventRow(ev view.Event) EventRow {
 	}
 	if ev.Pin != nil {
 		row.Pin = &PinChange{URL: ev.Pin.URL, Old: short(ev.Pin.Old), New: short(ev.Pin.New)}
+	}
+	if s := ev.Subproject; s != nil {
+		t := e.subTask(s.URL, view.TaskRef{ID: s.Task, Title: s.Title})
+		row.Project, row.Sub = s.URL, &t
 	}
 	return row
 }

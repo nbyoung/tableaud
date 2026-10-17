@@ -998,3 +998,62 @@ func TestStructuralAdaptersAgreeWithTablo(t *testing.T) {
 		t.Errorf("the row of opus reads %q", opus)
 	}
 }
+
+// TestAmendedStructuralFacts checks the facts tablo's 493e decision 15 adds:
+// the top row of a subtree carries the authorities the view gives from above
+// it, and the root's are none (e2b6 decision 8, A4); the top row words its
+// relation from tablo's delegated, "the owner" at the root alone; the assignment's
+// provenance shows its commands, and below provenance holds no fold of them.
+func TestAmendedStructuralFacts(t *testing.T) {
+	d := &view.Delegation{
+		Rows: []view.DelegationRow{
+			{TaskRef: view.TaskRef{ID: "4e2b", Title: "Sensor node"}, Depth: 0, Assignee: "ben@example.org", Parent: true, Delegated: true},
+			{TaskRef: view.TaskRef{ID: "9f31", Title: "Sensor board"}, Depth: 1, Assignee: "ada@example.org", Delegated: true},
+		},
+		DelegationDetail: &view.DelegationDetail{
+			Authorities: []view.Authority{{Email: "ada@example.org", By: "a1c0"}},
+			Parents: []view.Chain{{TaskRef: view.TaskRef{ID: "4e2b"}, Assignee: "ben@example.org", Children: []string{"9f31"},
+				Authorities: []view.Authority{{Email: "ben@example.org", By: "4e2b"}, {Email: "ada@example.org", By: "a1c0"}}}},
+		},
+	}
+	m := authorityFrom(t, d, "task=4e2b&level=detail")
+	if b := m.Root.Body; b == nil || len(b.Authorities) != 1 || b.Authorities[0].Person.Email != "ada@example.org" || b.Authorities[0].By[0].ID != "a1c0" {
+		t.Fatalf("the top row of 4e2b carries %+v", m.Root.Body)
+	}
+	got := mustParse(t, render(t, web.Document, pageOf(viewNamed("authority"), m))).byID("t-4e2b").text(true)
+	if !strings.Contains(got, "Authorities, nearest firstada@example.org (a1c0)") || !strings.Contains(got, "Assigneeben@example.org, a delegation\n") || strings.Contains(got, "the owner\n") {
+		t.Errorf("the top row of 4e2b reads %.300q", got)
+	}
+	c07d := &view.Delegation{
+		Rows:             []view.DelegationRow{{TaskRef: view.TaskRef{ID: "c07d", Title: "Node firmware"}, Assignee: "ben@example.org"}},
+		DelegationDetail: &view.DelegationDetail{Authorities: []view.Authority{{Email: "ben@example.org", By: "4e2b"}}},
+	}
+	m = authorityFrom(t, c07d, "task=c07d&level=detail")
+	if got := mustParse(t, render(t, web.Document, pageOf(viewNamed("authority"), m))).byID("t-c07d").text(true); !strings.Contains(got, "Assigneeben@example.org, as the parent\n") {
+		t.Errorf("the top row of c07d reads %.300q", got)
+	}
+
+	var root view.Delegation
+	tabloGolden(t, "authority.provenance", &root)
+	if root.Authorities == nil || len(root.Authorities) != 0 {
+		t.Fatalf("tablo gives the root the authorities %v", root.Authorities)
+	}
+	if got := adapted(t, "authority", "detail", &root, nil).byID("t-a1c0").text(true); !strings.Contains(got, "None above; the owner alone authorises the root") || !strings.Contains(got, "Assigneeada@example.org, the owner") {
+		t.Errorf("the root reads %.300q", got)
+	}
+
+	a := &view.Assignment{
+		People:               []view.PersonRow{{Email: "ada@example.org"}},
+		AssignmentDetail:     &view.AssignmentDetail{Sections: []view.PersonSection{{Email: "ada@example.org"}}},
+		AssignmentProvenance: &view.AssignmentProvenance{Commands: []view.Command{{Text: "git grep -n '^assignee:' -- .tableaux/tasks"}}},
+	}
+	doc := adapted(t, "assignment", "provenance", a, nil)
+	prov := doc.byID("prov-assignment")
+	if prov == nil || !strings.Contains(prov.text(true), "Provenance: the commands behind the assignment") || !strings.Contains(prov.text(true), "git grep -n '^assignee:' -- .tableaux/tasks") {
+		t.Errorf("the assignment's provenance is %v", prov)
+	}
+	a.AssignmentProvenance = nil
+	if adapted(t, "assignment", "detail", a, nil).byID("prov-assignment") != nil {
+		t.Error("below provenance the page holds the fold of the commands")
+	}
+}

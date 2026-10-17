@@ -1,10 +1,13 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
 	"strconv"
 	"strings"
 
 	"github.com/nbyoung/tablo/view"
+	"github.com/nbyoung/tabloio/brief"
 )
 
 func init() {
@@ -35,9 +38,11 @@ var queueKinds = []struct{ kind, word, title, why string }{
 
 // QueueFrom builds the model of the contributor work queue from tablo's
 // view. The adapter sorts the items into the five kinds, folds a run of
-// alike items, words the cause of a waiting item and the age of a
-// reaffirmation, and opens the item the brief parameter names. tablo gives
-// the brief as an object, not as text, so no item holds a Brief.
+// alike items, words from each item's own facts, at every level, the cause
+// of a waiting item and of an authorisation and the age of a reaffirmation,
+// and opens the item the brief parameter names. tablo gives the brief as an
+// object; that item's Brief holds the text tabloio's package brief composes
+// from it (44bf decision 9).
 func QueueFrom(d *view.Queue, e Env) *QueueView {
 	p := e.Page
 	v := &QueueView{Person: p.Params.Person, Total: len(d.Items)}
@@ -49,6 +54,10 @@ func QueueFrom(d *view.Queue, e Env) *QueueView {
 		criteria[g.Key], names[g.Key] = g.Criteria, g.Name
 	}
 	briefTask, briefGate, _ := strings.Cut(p.Params.Brief, ":")
+	var text string
+	if d.QueueProvenance != nil && d.Brief != nil && p.Params.Brief != "" {
+		text = briefText(d.Brief, v.Person, p)
+	}
 	if len(d.Items) > 0 && p.Params.Brief == "" && v.Person == p.SeenBy().Email {
 		e = e.Focus("d-" + itemAnchor(d.Items[0]))
 	} else {
@@ -62,7 +71,14 @@ func QueueFrom(d *view.Queue, e Env) *QueueView {
 				continue
 			}
 			mine := it.Task.ID == briefTask && it.Gate == briefGate
-			items = append(items, e.queueItem(it, mine, v.Person, criteria, names))
+			q := e.queueItem(it, mine, v.Person, criteria, names)
+			if mine && text != "" && q.Body != nil {
+				q.Body.Brief = &Brief{
+					Fold: Fold{ID: "prov-" + q.Anchor, Class: "prov", Open: true}, // the brief parameter opens it
+					ID:   "brief-" + it.Task.ID, Text: text, Rows: strings.Count(text, "\n"),
+				}
+			}
+			items = append(items, q)
 		}
 		qk.Count = len(items)
 		if qk.Count == 0 {
@@ -88,6 +104,32 @@ func QueueFrom(d *view.Queue, e Env) *QueueView {
 	return v
 }
 
+// briefText returns the text tabloio's package brief composes from tablo's
+// brief of one item, for the person and the commit in view, as tablo's
+// envelope states them; "" where it composes none, as for a waiting item.
+func briefText(b *view.Brief, person string, p *Page) string {
+	raw, err := json.Marshal(b)
+	if err != nil {
+		return ""
+	}
+	var d brief.Data
+	if err := json.Unmarshal(raw, &d); err != nil {
+		return ""
+	}
+	d.Person = person
+	if pr := p.Project; pr != nil {
+		d.Ref = brief.Ref{Name: pr.Ref, Commit: pr.Commit, Date: pr.Date}
+	}
+	if p.Params.Ref != "" {
+		d.Ref.Name = p.Params.Ref
+	}
+	var out bytes.Buffer
+	if err := brief.Render(&out, d); err != nil {
+		return ""
+	}
+	return out.String()
+}
+
 // itemAnchor returns the anchor of an item: the word of its kind and its task.
 func itemAnchor(it view.QueueItem) string {
 	for _, k := range queueKinds {
@@ -106,6 +148,9 @@ func (e Env) queueItem(it view.QueueItem, mine bool, person string, criteria, na
 		Anchor: anchor, Task: e.taskRef(it.Task), Mine: mine, Gate: e.Legend.Gate(it.Gate),
 		Model: it.Model, Since: it.Since, Cause: waitCauses(it.Causes),
 		Fold: e.Fold("detail", "d-"+anchor, "item", anchor),
+	}
+	if it.Kind == "authorisation" {
+		q.Cause = proposedWhy[it.Why]
 	}
 	if it.Kind == "reaffirmation" {
 		q.Age = strconv.Itoa(it.Age) + " " + plural(it.Age, "day", "days")
@@ -170,7 +215,19 @@ func (e Env) ref() string {
 	return "HEAD"
 }
 
-// waitCauses words why a waiting item waits, in tablo's order.
+// proposedWhy words why an authorisation item's task stands proposed, by
+// tablo's why: the reason no commit decides it, or "" for a deciding commit
+// that is not by an authority.
+var proposedWhy = map[string]string{
+	"":           "proposed: the deciding commit is not by an authority",
+	"no_history": "proposed: the source has no history",
+	"no_trunk":   "proposed: the trunk is undetermined",
+	"off_trunk":  "proposed: the ref lies off the trunk",
+	"no_commit":  "proposed: no commit on the trunk decides it",
+}
+
+// waitCauses words why a waiting item waits, in tablo's order; a reason
+// carries the status's note.
 func waitCauses(ws []view.Wait) string {
 	var out []string
 	for _, w := range ws {
@@ -180,7 +237,11 @@ func waitCauses(ws []view.Wait) string {
 				out = append(out, "waits for "+w.Requires.Task.ID+" at "+w.Requires.From)
 			}
 		case "reason":
-			out = append(out, "waits on the reason "+w.Reason)
+			c := "waits on the reason " + w.Reason
+			if w.Note != "" {
+				c += ": " + w.Note
+			}
+			out = append(out, c)
 		case "authorisation":
 			out = append(out, "waits for authorisation by "+orNone(w.By))
 		case "review":

@@ -7,7 +7,7 @@ type HistoryView struct {
 	Events   int
 	Commits  int
 	From, To string      // the first and the last date
-	Counts   []KindCount // the six kinds, in the order of VIEWS.md
+	Counts   []KindCount // the six kinds, in tablo's order
 	Days     []Day       // in author-time order
 	Prov     Fold        // the provenance of the list; no part
 	Commands []string
