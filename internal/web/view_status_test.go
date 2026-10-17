@@ -2,6 +2,7 @@ package web_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/nbyoung/tablo/view"
 
+	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -1473,6 +1475,60 @@ func TestStatusAdaptersAgreeWithTablo(t *testing.T) {
 		t.Errorf("ada's queue holds %q, want %q", items, want)
 	}
 	adapted(t, "queue", "detail", &q, nil)
+}
+
+// TestQueueBriefFromTabloio checks that the item the brief parameter names
+// prints, in its textarea, the text tabloio's package brief composes: over
+// the envelope of tabloio's own test of e4c7 at design, whose data holds the
+// brief and no items, with the item the page's second ask of Source gives
+// (49ce decision 18), the text equals tabloio's golden brief byte for byte.
+// A waiting brief composes no text, and the item then holds no Brief.
+func TestQueueBriefFromTabloio(t *testing.T) {
+	const mod, env = "github.com/nbyoung/tabloio", "TABLOIO_DIR"
+	var envelope struct {
+		Source struct{ Ref, Commit, Date string }
+		Params struct{ Person string }
+		Data   json.RawMessage
+	}
+	if err := json.Unmarshal(moduleFile(t, mod, env, "brief/testdata/e4c7-design.json"), &envelope); err != nil {
+		t.Fatal(err)
+	}
+	var q view.Queue
+	dec := json.NewDecoder(bytes.NewReader(envelope.Data))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&q); err != nil {
+		t.Fatalf("tabloio's envelope of e4c7: %v", err)
+	}
+	if q.QueueProvenance == nil || q.Brief == nil || len(q.Items) != 0 {
+		t.Fatalf("the data holds %d items and the brief %v", len(q.Items), q.QueueProvenance)
+	}
+	q.Items = []view.QueueItem{{Kind: "ready", Task: view.TaskRef{ID: "e4c7", Title: "Agent briefs"}, Gate: "design", ItemDetail: &view.ItemDetail{}}}
+	model := func() *web.QueueView {
+		v, _ := web.Lookup("queue")
+		p := pageOf(v, nil)
+		p.Project = &source.Project{Ref: envelope.Source.Ref, Commit: envelope.Source.Commit, Date: envelope.Source.Date}
+		p.Params.Person, p.Params.Brief, p.Params.Level = envelope.Params.Person, "e4c7:design", "provenance"
+		p.Data = &q
+		return web.QueueFrom(&q, web.EnvOf(p, web.Document))
+	}
+	m := model()
+	body := m.Kinds[2].Items[0].Shown[0].Body
+	want := string(moduleFile(t, mod, env, "brief/testdata/e4c7-design.txt"))
+	if body == nil || body.Brief == nil || body.Brief.Text != want {
+		t.Fatalf("the brief of e4c7 is %+v, want %.200q", body, want)
+	}
+	if b := body.Brief; b.ID != "brief-e4c7" || b.Fold.ID != "prov-ready-e4c7" || !b.Fold.Open || b.Rows != strings.Count(want, "\n") {
+		t.Errorf("the brief stands as %+v", b)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("queue"), m)))
+	if area := root.byID("brief-e4c7"); area == nil || area.Tag != "textarea" || area.text(false) != want {
+		t.Errorf("the textarea reads %v", area)
+	}
+
+	q.Brief.Kind, q.Brief.Causes = "waiting", []view.Wait{{Kind: "reason", Reason: "blocked"}}
+	if b := model().Kinds[2].Items[0].Shown[0].Body; b == nil || b.Brief != nil {
+		t.Errorf("a waiting brief gives %+v", b)
+	}
 }
 
 // TestContextNextGateFromCells checks that a row block reads its next gate

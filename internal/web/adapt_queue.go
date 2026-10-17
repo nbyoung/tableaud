@@ -1,10 +1,13 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
 	"strconv"
 	"strings"
 
 	"github.com/nbyoung/tablo/view"
+	"github.com/nbyoung/tabloio/brief"
 )
 
 func init() {
@@ -37,7 +40,8 @@ var queueKinds = []struct{ kind, word, title, why string }{
 // view. The adapter sorts the items into the five kinds, folds a run of
 // alike items, words the cause of a waiting item and the age of a
 // reaffirmation, and opens the item the brief parameter names. tablo gives
-// the brief as an object, not as text, so no item holds a Brief.
+// the brief as an object; that item's Brief holds the text tabloio's package
+// brief composes from it (44bf decision 9).
 func QueueFrom(d *view.Queue, e Env) *QueueView {
 	p := e.Page
 	v := &QueueView{Person: p.Params.Person, Total: len(d.Items)}
@@ -49,6 +53,10 @@ func QueueFrom(d *view.Queue, e Env) *QueueView {
 		criteria[g.Key], names[g.Key] = g.Criteria, g.Name
 	}
 	briefTask, briefGate, _ := strings.Cut(p.Params.Brief, ":")
+	var text string
+	if d.QueueProvenance != nil && d.Brief != nil && p.Params.Brief != "" {
+		text = briefText(d.Brief, v.Person, p)
+	}
 	if len(d.Items) > 0 && p.Params.Brief == "" && v.Person == p.SeenBy().Email {
 		e = e.Focus("d-" + itemAnchor(d.Items[0]))
 	} else {
@@ -62,7 +70,14 @@ func QueueFrom(d *view.Queue, e Env) *QueueView {
 				continue
 			}
 			mine := it.Task.ID == briefTask && it.Gate == briefGate
-			items = append(items, e.queueItem(it, mine, v.Person, criteria, names))
+			q := e.queueItem(it, mine, v.Person, criteria, names)
+			if mine && text != "" && q.Body != nil {
+				q.Body.Brief = &Brief{
+					Fold: Fold{ID: "prov-" + q.Anchor, Class: "prov", Open: true}, // the brief parameter opens it
+					ID:   "brief-" + it.Task.ID, Text: text, Rows: strings.Count(text, "\n"),
+				}
+			}
+			items = append(items, q)
 		}
 		qk.Count = len(items)
 		if qk.Count == 0 {
@@ -86,6 +101,32 @@ func QueueFrom(d *view.Queue, e Env) *QueueView {
 		v.Kinds = append(v.Kinds, qk)
 	}
 	return v
+}
+
+// briefText returns the text tabloio's package brief composes from tablo's
+// brief of one item, for the person and the commit in view, as tablo's
+// envelope states them; "" where it composes none, as for a waiting item.
+func briefText(b *view.Brief, person string, p *Page) string {
+	raw, err := json.Marshal(b)
+	if err != nil {
+		return ""
+	}
+	var d brief.Data
+	if err := json.Unmarshal(raw, &d); err != nil {
+		return ""
+	}
+	d.Person = person
+	if pr := p.Project; pr != nil {
+		d.Ref = brief.Ref{Name: pr.Ref, Commit: pr.Commit, Date: pr.Date}
+	}
+	if p.Params.Ref != "" {
+		d.Ref.Name = p.Params.Ref
+	}
+	var out bytes.Buffer
+	if err := brief.Render(&out, d); err != nil {
+		return ""
+	}
+	return out.String()
 }
 
 // itemAnchor returns the anchor of an item: the word of its kind and its task.

@@ -450,16 +450,16 @@ func tabloGolden(t *testing.T, name string, v any) {
 	tabloFile(t, filepath.Join("internal", "views", "testdata", "weather-station", name+".json"), v)
 }
 
-// tabloFile decodes a JSON file of tablo's module, by its path in the module,
-// into v. It finds the module through TABLO_DIR, else through go list, and
-// skips where neither answers.
-func tabloFile(t *testing.T, path string, v any) {
+// moduleFile returns a file of a required module, by its path in the
+// module. It finds the module through the variable env, else through go
+// list, and skips where neither answers.
+func moduleFile(t *testing.T, module, env, path string) []byte {
 	t.Helper()
-	dir := os.Getenv("TABLO_DIR")
+	dir := os.Getenv(env)
 	if dir == "" {
-		out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", "github.com/nbyoung/tablo").Output()
+		out, err := exec.Command("go", "list", "-m", "-f", "{{.Dir}}", module).Output()
 		if err != nil || strings.TrimSpace(string(out)) == "" {
-			t.Skipf("go list finds no directory of tablo's module (%v); set TABLO_DIR to it", err)
+			t.Skipf("go list finds no directory of %s (%v); set %s to it", module, err, env)
 		}
 		dir = strings.TrimSpace(string(out))
 	}
@@ -467,6 +467,15 @@ func tabloFile(t *testing.T, path string, v any) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	return raw
+}
+
+// tabloFile decodes a JSON file of tablo's module, by its path in the module,
+// into v. It finds the module through TABLO_DIR, else through go list, and
+// skips where neither answers.
+func tabloFile(t *testing.T, path string, v any) {
+	t.Helper()
+	raw := moduleFile(t, "github.com/nbyoung/tablo", "TABLO_DIR", path)
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(v); err != nil {

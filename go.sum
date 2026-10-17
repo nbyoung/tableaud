@@ -1,8 +1,10 @@
 github.com/nbyoung/tablo v0.0.0-20261017000822-620473c299bd h1:zZkztLcsaAoN1UbIBQ0IDn2GvumSZGHIRkyVaBSs0LM=
 github.com/nbyoung/tablo v0.0.0-20261017000822-620473c299bd/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
+github.com/nbyoung/tabloio v0.0.0-20261017005742-c1e56af49750 h1:IwzFdX/SdI2la17+QST38+hedxeq8aXDERfBC7rTqrM=
+github.com/nbyoung/tabloio v0.0.0-20261017005742-c1e56af49750/go.mod h1:m60oYqwHGxmPfRBZH2z+W7l8AlczlqTRa7/k8UJWuJo=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3/go.mod h1:JXeL+ps8p7/KNMjDQk3TCwPpBy0wYklyWTfbkIzdIFU=
-golang.org/x/text v0.14.0 h1:ScX5w1eTa3QqT8oi6+ziP7dTV1S2+ALU0bI+0zXKWiQ=
-golang.org/x/text v0.14.0/go.mod h1:18ZOQIKpY8NJVqYksKHtTdi31H5itFRjB5/qKTNYzSU=
+golang.org/x/text v0.42.0 h1:JbOZXgfeCPU9gacVtYliJqOhD+zhrEqK4LfdpmlUZqI=
+golang.org/x/text v0.42.0/go.mod h1:ojzP1Z+2QtioaF8DTtO8K5q7JWVVYwZKenzujK0Zd0E=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
