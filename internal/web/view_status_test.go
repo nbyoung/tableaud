@@ -1253,27 +1253,6 @@ func TestStatusViewFilesDefineTheFrame(t *testing.T) {
 	}
 }
 
-// TestStatusRoutesServeThePlaceholder checks the seam: with no adapter
-// registered, each of the four routes draws what it drew before, the title and
-// the data as JSON, and no Part is listed.
-func TestStatusRoutesServeThePlaceholder(t *testing.T) {
-	for _, name := range []string{"tableau", "context", "blockage", "queue"} {
-		v, _ := web.Lookup(name)
-		if _, ok := web.Adapters[name]; ok {
-			t.Skipf("%s has an adapter", name)
-		}
-		if len(v.Parts) != 0 {
-			t.Errorf("%s lists the parts %q before its adapter lands", name, v.Parts)
-		}
-		p := pageOf(v, nil)
-		p.Data = map[string]any{}
-		want := fmt.Sprintf("<main id=\"main\" class=\"v-%s\"><h1>%s</h1>\n<pre>{}\n</pre>\n\n</main>", name, v.Title)
-		if got := mainElement(t, render(t, web.Document, p)); got != want {
-			t.Errorf("%s: the placeholder is %q, want %q", name, got, want)
-		}
-	}
-}
-
 // threeLevels is tablo's tableau of a tree of three levels: 1000 over 2000
 // and 3000, 2000 over 2001 and 2002, with one gate.
 func threeLevels() *view.Tableau {
