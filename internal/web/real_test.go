@@ -542,3 +542,94 @@ func TestRealStructuralViews(t *testing.T) {
 		t.Errorf("the row of opus reads %q", opus)
 	}
 }
+
+// TestRealStatusViews is T13 of design 44bf through the real source: over the
+// copied weather-station at main, the global tableau shows six rows at
+// detail and 🔴⛔ named "stalled, blocked" at 9f31, and each row it expands
+// collapses to the address it left (T6); Ben's contextual tableau
+// draws his own 4e2b and c07d first and all six rows in its wider grid, the
+// siblings marked; the blockage tree shows its causes largest first; the
+// queue of ada@example.org shows four items in the order of VIEWS.md, and
+// that of ben@example.org five empty kinds.
+func TestRealStatusViews(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	d := newDaemon(t, realSource(t, dir), "ada@example.org")
+	rows := func(root *Node, grid string) []string {
+		var out []string
+		for _, tr := range root.byID(grid).find("tbody")[0].find("tr") {
+			out = append(out, strings.TrimPrefix(tr.Attr["id"], grid+"-"))
+		}
+		return out
+	}
+	root := d.page("/tableau?level=detail")
+	if got := rows(root, "grid"); len(got) != 6 {
+		t.Errorf("the tableau draws %q at detail", got)
+	}
+	if got := root.byID("grid-9f31").text(false); !strings.Contains(got, "🔴⛔stalled, blocked") {
+		t.Errorf("9f31 reads %q", got)
+	}
+
+	// T6's arithmetic: from each canonical start, an expand and then the
+	// collapse of the same row return the start's address.
+	walked := 0
+	for _, start := range []string{"/tableau", "/tableau?level=detail", "/tableau?open="} {
+		for _, a := range d.page(start).byClass("a", "fold") {
+			if strings.HasPrefix(a.text(true), "fold the") {
+				continue
+			}
+			walked++
+			back := d.page(a.Attr["href"]).byID(a.Attr["id"])
+			if back == nil || !strings.HasPrefix(back.text(true), "fold the") || back.Attr["href"] != start {
+				t.Errorf("%s: %s expands to %s, and its row then reads %v", start, a.Attr["id"], a.Attr["href"], back)
+			}
+		}
+	}
+	if walked == 0 {
+		t.Error("no row of the tableau expands")
+	}
+
+	root = d.page("/context?person=ben@example.org")
+	if got := rows(root, "grid"); !slices.Equal(got, []string{"4e2b", "c07d"}) {
+		t.Errorf("Ben's first grid draws %q", got)
+	}
+	if got := rows(root, "wider"); !slices.Equal(got, []string{"a1c0", "4e2b", "9f31", "c07d", "7b2e", "3c5d"}) {
+		t.Errorf("Ben's wider grid draws %q", got)
+	}
+	var siblings []string
+	for _, id := range rows(root, "wider") {
+		if strings.Contains(root.byID("wider-"+id).text(true), "· sibling") {
+			siblings = append(siblings, id)
+		}
+	}
+	if !slices.Equal(siblings, []string{"9f31", "7b2e", "3c5d"}) {
+		t.Errorf("the siblings are %q", siblings)
+	}
+
+	root = d.page("/blockage")
+	var holds []string
+	for _, s := range root.byClass("span", "holds") {
+		holds = append(holds, s.text(false))
+	}
+	if !slices.Equal(holds, []string{"holds 3", "holds 2", "holds 1"}) || root.byID("next-3c5d") == nil {
+		t.Errorf("the causes hold %q", holds)
+	}
+
+	var items []string
+	for _, li := range d.page("/queue?person=ada@example.org").byClass("ol", "items") {
+		for _, it := range li.find("li") {
+			items = append(items, it.Attr["id"])
+		}
+	}
+	if want := []string{"auth-3c5d", "ready-7b2e", "reaff-9f31", "waiting-9f31"}; !slices.Equal(items, want) {
+		t.Errorf("ada's queue holds %q, want %q", items, want)
+	}
+	root = d.page("/queue?person=ben@example.org")
+	var kinds []string
+	for _, h := range root.find("h3") {
+		kinds = append(kinds, h.text(true))
+	}
+	want := []string{"1. Reviews owed: none", "2. Authorisations owed: none", "3. Work ready: none", "4. Reaffirmations: none", "5. Work waiting: none"}
+	if !slices.Equal(kinds, want) || len(root.byClass("p", "empty")) != 5 || len(root.byClass("ol", "items")) != 0 {
+		t.Errorf("Ben's queue reads %q", kinds)
+	}
+}
