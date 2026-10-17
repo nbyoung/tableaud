@@ -14,6 +14,7 @@ import (
 
 	"github.com/nbyoung/tablo/view"
 
+	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -996,6 +997,52 @@ func TestStructuralAdaptersAgreeWithTablo(t *testing.T) {
 	opus := rows[3].text(true)
 	if !strings.Contains(opus, "opus@example.org") || !strings.Contains(opus, "claude-opus-5-5") || !strings.Contains(opus, "000") {
 		t.Errorf("the row of opus reads %q", opus)
+	}
+}
+
+// TestAuthorityOffTrunk checks the source of the off-trunk note: the project's
+// on_trunk, as the history reads it, at every level. A ref off the trunk shows
+// the note at glance, detail and provenance; a ref on the trunk, or a project
+// with no trunk, shows none, even where tablo lists rows undecided off the
+// trunk.
+func TestAuthorityOffTrunk(t *testing.T) {
+	var full view.Delegation
+	tabloGolden(t, "authority.provenance", &full)
+	full.Undecided = append(full.Undecided, view.Undecided{Why: "off_trunk", Tasks: []string{"3c5d"}})
+	const note = "The ref lies off the trunk, so every task reads as proposed"
+	for _, level := range []string{"glance", "detail", "provenance"} {
+		d := full
+		switch level {
+		case "glance":
+			d.DelegationDetail, d.DelegationProvenance = nil, nil
+		case "detail":
+			d.DelegationProvenance = nil
+		}
+		for _, c := range []struct {
+			name    string
+			project *source.Project
+			off     bool
+		}{
+			{"off the trunk", &source.Project{Root: "a1c0", Ref: "W3", Trunk: "main"}, true},
+			{"on the trunk", &source.Project{Root: "a1c0", Ref: "main", Trunk: "main", OnTrunk: true}, false},
+			{"no trunk", &source.Project{Root: "a1c0", Ref: "main"}, false},
+			{"no project", nil, false},
+		} {
+			v := viewNamed("authority")
+			p := pageOf(v, nil)
+			p.Data, p.Params.Level, p.Project = &d, level, c.project
+			m := web.AuthorityFrom(&d, web.EnvOf(p, web.Document))
+			if m.OffTrunk != c.off {
+				t.Errorf("%s, %s: off the trunk %v, want %v", level, c.name, m.OffTrunk, c.off)
+			}
+			if c.project == nil {
+				continue // the frame needs a project
+			}
+			got := mustParse(t, render(t, web.Document, p)).byID("main").text(true)
+			if strings.Contains(got, note) != c.off {
+				t.Errorf("%s, %s: the page holds the note %v, want %v", level, c.name, !c.off, c.off)
+			}
+		}
 	}
 }
 

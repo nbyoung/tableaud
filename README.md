@@ -46,9 +46,11 @@ proposes Go as the implementation language.
 
 The module is `github.com/nbyoung/tableaud`. It uses the standard library alone
 for the server, the templates and the embedding, and it shares one skeleton
-shape with the other three subprojects. Until `tablo` releases its views, the
-daemon serves the weather-station fixture of `internal/source/sourcetest`; the
-adapter over `tablo` replaces it.
+shape with the other three subprojects. The daemon and the export read the
+repository through the adapter over `tablo`'s library in
+`internal/source/tablo.go`. The tests read the weather-station fixture of
+`internal/source/sourcetest`, and those that find the built corpus read its
+entry through the adapter.
 
 ```
 cmd/tableaud/            # the command: main.go dispatches version, serve and export; serve.go and export.go parse the options
@@ -113,9 +115,12 @@ a policy:
   minor and raises the minimum with each `tablo` minor it adopts. From
   `tablo` v1, the range is the major version, as Go's import compatibility
   rule intends.
-- `go.mod` carries no `require` for `tablo` until `tablo` tags a release,
-  since a requirement that resolves to nothing breaks every `go` command.
-  Adding the requirement is the first step of the server task.
+- Until `tablo` tags its first release, `go.mod` requires `tablo` at a
+  pseudo-version of its `main`, which the module proxy resolves, and the
+  requirement moves to that release's tag when `tablo` tags it. A second
+  requirement, on `github.com/nbyoung/tabloio`, gives the exported `brief`
+  package, so that the queue's brief and tabloio's are one text; it follows
+  the same rule, a pseudo-version of tabloio's `main` until its first release.
 - `go.mod` never carries a `replace`. Day-to-day work across the subprojects
   uses a personal `go.work` in the directory above the checkouts, which points
   at `./tablo` and the others and stays uncommitted, as the tooling plan's next

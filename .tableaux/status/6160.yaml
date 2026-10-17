@@ -1,3 +1,3 @@
-gate: unit
+gate: integrate
 state: nominal
-note: T1 to T14 and T17 pass through go test on the fake source and the fixture, T8 reading the ten mockups of the tableaux checkout; T15 and T16 wait at integrate for tablo Source and the templates adapters; integrate needs both and the require line
+note: T1 to T17 pass; T15 exports the copied weather-station through tablo's adapter as the 32 golden files and the style sheet, and the tooling plan at ccb3947 as 93 and the sheet; T16 reads every source line; T14 runs on the real entry; validate needs a browser on the bundle from the file system and under a path prefix; the adapter's own git waits for tablo's owed snapshot and date calls (49ce decision 19)

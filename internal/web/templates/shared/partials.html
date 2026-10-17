@@ -43,7 +43,7 @@
 
 {{/* references: a list of references; an absolute address is a link where the adapter gives an Href. */}}
 {{define "references"}}<ul class="notes">
-{{range .}}<li>{{.Text}}{{if .URL}}, {{if .Href}}<a href="{{.Href}}"><code>{{.URL}}</code></a>{{else}}<code>{{.URL}}</code>{{end}}{{end}}{{with .By}}, stated by {{template "task" .}}{{end}}</li>
+{{range .}}<li>{{.Text}}{{if .URL}}{{if .Text}}, {{end}}{{if .Href}}<a href="{{.Href}}"><code>{{.URL}}</code></a>{{else}}<code>{{.URL}}</code>{{end}}{{end}}{{with .By}}, stated by {{template "task" .}}{{end}}</li>
 {{end}}</ul>{{end}}
 
 {{/* junction-row: one row of a junction table: gate, marks, contributor, model, reviewer. */}}
