@@ -26,6 +26,7 @@ type StatusProv struct {
 	File       string    // ".tableaux/status/e9c6.yaml"; "" for a parent
 	Commit     *Commit   // the deciding commit; nil for a roll-up
 	OwnCommit  *Commit   // a snapshot: the deciding commit of the task's own file
+	ReadThere  bool      // the status is a snapshot: Commit is the deciding commit in the subproject Snapshot names
 	Reaffirmed bool      // the deciding commit is a Reaffirmed: commit
 	Snapshot   *Snapshot // the subproject task a recursive next junction reads
 	Commands   []string

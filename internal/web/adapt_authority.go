@@ -108,8 +108,9 @@ func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 			Proposed: r.Proposed, Differs: r.DiffersFromTrunk,
 			Fold: e.Fold("detail", "t-"+r.ID, "node", r.ID),
 		}
+		root := parent[i] < 0 && (p.Params.Task == "" || (p.Project != nil && p.Params.Task == p.Project.Root))
 		switch {
-		case parent[i] < 0 && (p.Params.Task == "" || (p.Project != nil && p.Params.Task == p.Project.Root)):
+		case root:
 			n.Relation = "the owner" // the top of a tree that starts at the root
 		case !r.Delegated:
 			n.Relation, n.Same = "as the parent", true
@@ -124,7 +125,7 @@ func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 			continue // a lazy node holds no body
 		}
 		b := &AuthBody{
-			Task: n.Task, Assignee: r.Assignee, Delegation: r.Delegated,
+			Task: n.Task, Assignee: r.Assignee, Root: root, Delegation: r.Delegated,
 			Authorised: !r.Proposed, CommitsHref: "#deciding",
 		}
 		if j := parent[i]; j >= 0 {

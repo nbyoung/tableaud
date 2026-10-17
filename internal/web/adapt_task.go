@@ -55,7 +55,10 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 	}
 	taskFile := ".tableaux/tasks/" + id + ".yaml"
 
-	v.StatusProv = StatusProv{Fold: e.Fold("prov", "prov-status", "status", ""), Snapshot: v.Status.Snapshot}
+	v.StatusProv = StatusProv{
+		Fold: e.Fold("prov", "prov-status", "status", ""), Snapshot: v.Status.Snapshot,
+		ReadThere: d.Status.Kind == "snapshot" && v.Status.Snapshot != nil,
+	}
 	if d.Status.Kind != "rollup" {
 		v.StatusProv.File = ".tableaux/status/" + id + ".yaml"
 	}

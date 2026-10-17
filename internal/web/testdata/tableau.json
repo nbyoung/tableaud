@@ -241,6 +241,7 @@
         ]
        },
        "OwnCommit": null,
+       "ReadThere": false,
        "Reaffirmed": false,
        "Snapshot": null,
        "Commands": [
@@ -705,6 +706,7 @@
           ]
          },
          "OwnCommit": null,
+         "ReadThere": false,
          "Reaffirmed": false,
          "Snapshot": null,
          "Commands": [

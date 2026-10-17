@@ -23,7 +23,7 @@
 
 {{define "part/node"}}<div class="body">
 <dl class="fields">
-<dt>Assignee</dt><dd>{{.Assignee}}{{with .From}}, {{if $.Delegation}}a delegation at{{else}}as{{end}} {{template "task" .}}{{else}}, the owner{{end}}</dd>
+<dt>Assignee</dt><dd>{{.Assignee}}{{with .From}}, {{if $.Delegation}}a delegation at{{else}}as{{end}} {{template "task" .}}{{else}}{{if .Root}}, the owner{{else if .Delegation}}, a delegation{{else}}, as the parent{{end}}{{end}}</dd>
 <dt>Authorities, nearest first</dt><dd>{{range $i, $a := .Authorities}}{{if $i}}; then {{end}}{{$a.Person.Email}} ({{range $j, $t := $a.By}}{{if $j}}, {{end}}{{template "task" $t}}{{end}}){{else}}None above; the owner alone authorises the root{{end}}</dd>
 <dt>Authorisation</dt><dd>{{if .Authorised}}Authorised by <code>{{.Decided}}</code>, {{.Date}}{{else}}<span class="proposed">Proposed</span>: the deciding commit is not by an authority{{end}}</dd>
 <dt>More</dt><dd>{{if .Task.Href}}<a href="{{.Task.Href}}">The task definition of {{.Task.ID}}</a>{{else}}The task definition of <code class="id">{{.Task.ID}}</code>{{end}}</dd>

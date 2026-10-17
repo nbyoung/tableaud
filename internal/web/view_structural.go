@@ -36,6 +36,7 @@ type AuthBody struct {
 	Task        TaskRef
 	Assignee    string
 	From        *TaskRef // the ancestor the assignee comes from or is delegated at
+	Root        bool     // the top of a tree that starts at the root: its assignee is the owner
 	Delegation  bool
 	Authorities []Authority // nearest first; empty for the root
 	Authorised  bool

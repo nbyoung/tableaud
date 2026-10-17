@@ -1001,7 +1001,8 @@ func TestStructuralAdaptersAgreeWithTablo(t *testing.T) {
 
 // TestAmendedStructuralFacts checks the facts tablo's 493e decision 15 adds:
 // the top row of a subtree carries the authorities the view gives from above
-// it, and the root's are none (e2b6 decision 8, A4); the assignment's
+// it, and the root's are none (e2b6 decision 8, A4); the top row words its
+// relation from tablo's delegated, "the owner" at the root alone; the assignment's
 // provenance shows its commands, and below provenance holds no fold of them.
 func TestAmendedStructuralFacts(t *testing.T) {
 	d := &view.Delegation{
@@ -1019,8 +1020,17 @@ func TestAmendedStructuralFacts(t *testing.T) {
 	if b := m.Root.Body; b == nil || len(b.Authorities) != 1 || b.Authorities[0].Person.Email != "ada@example.org" || b.Authorities[0].By[0].ID != "a1c0" {
 		t.Fatalf("the top row of 4e2b carries %+v", m.Root.Body)
 	}
-	if got := mustParse(t, render(t, web.Document, pageOf(viewNamed("authority"), m))).byID("t-4e2b").text(true); !strings.Contains(got, "Authorities, nearest firstada@example.org (a1c0)") {
+	got := mustParse(t, render(t, web.Document, pageOf(viewNamed("authority"), m))).byID("t-4e2b").text(true)
+	if !strings.Contains(got, "Authorities, nearest firstada@example.org (a1c0)") || !strings.Contains(got, "Assigneeben@example.org, a delegation\n") || strings.Contains(got, "the owner\n") {
 		t.Errorf("the top row of 4e2b reads %.300q", got)
+	}
+	c07d := &view.Delegation{
+		Rows:             []view.DelegationRow{{TaskRef: view.TaskRef{ID: "c07d", Title: "Node firmware"}, Assignee: "ben@example.org"}},
+		DelegationDetail: &view.DelegationDetail{Authorities: []view.Authority{{Email: "ben@example.org", By: "4e2b"}}},
+	}
+	m = authorityFrom(t, c07d, "task=c07d&level=detail")
+	if got := mustParse(t, render(t, web.Document, pageOf(viewNamed("authority"), m))).byID("t-c07d").text(true); !strings.Contains(got, "Assigneeben@example.org, as the parent\n") {
+		t.Errorf("the top row of c07d reads %.300q", got)
 	}
 
 	var root view.Delegation
@@ -1028,7 +1038,7 @@ func TestAmendedStructuralFacts(t *testing.T) {
 	if root.Authorities == nil || len(root.Authorities) != 0 {
 		t.Fatalf("tablo gives the root the authorities %v", root.Authorities)
 	}
-	if got := adapted(t, "authority", "detail", &root, nil).byID("t-a1c0").text(true); !strings.Contains(got, "None above; the owner alone authorises the root") {
+	if got := adapted(t, "authority", "detail", &root, nil).byID("t-a1c0").text(true); !strings.Contains(got, "None above; the owner alone authorises the root") || !strings.Contains(got, "Assigneeada@example.org, the owner") {
 		t.Errorf("the root reads %.300q", got)
 	}
 

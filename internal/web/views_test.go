@@ -541,7 +541,14 @@ func TestAdaptersAgreeWithTablo(t *testing.T) {
 	}
 	// After the status commit, the deciding commit of the task's own file;
 	// an event taken from the subproject names its task by id and title.
+	read := strings.Index(got, "The status is read from the subproject firmware, task f1a0 Weather node image, and its deciding commit there is the commit below.")
+	if read < 0 || strings.Contains(got, "The status file is") {
+		t.Errorf("c07d: the status commit does not say where the status is read: %.600s", got)
+	}
 	status, own := strings.Index(got, "cf5b169 Record the node image design"), strings.Index(got, "The deciding commit of the task's own file:")
+	if status < read {
+		t.Errorf("c07d: the status commit stands before the sentence that names it")
+	}
 	if status < 0 || own < status || !strings.Contains(got[own:], "97e4231 Pin the firmware at its design") {
 		t.Errorf("c07d: the own commit does not follow the status commit: %.900s", got)
 	}
