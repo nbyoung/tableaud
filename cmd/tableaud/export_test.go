@@ -89,7 +89,7 @@ func TestExportCommand(t *testing.T) {
 	if code != 0 || m == nil || m[3] != out || m[4] != "main" || m[6] != "2026-09-30" {
 		t.Fatalf("status %d, line %q, standard error %q", code, stdout, stderr)
 	}
-	if strings.Count(stdout, "\n") != 1 || !strings.Contains(stderr, "fixture") {
+	if strings.Count(stdout, "\n") != 1 || stderr != "" {
 		t.Errorf("standard output %q, standard error %q", stdout, stderr)
 	}
 	for _, f := range []string{"index.html", "manifest.json", "static/tableaud.css", "task-9f31.html"} {
@@ -150,10 +150,10 @@ func TestExportCommand(t *testing.T) {
 	}
 }
 
-// TestTabloVersion checks the version tablo reports while the module requires
-// none.
+// TestTabloVersion checks that the binary reports the version of tablo the
+// module requires: a pseudo-version of tablo's main until its first release.
 func TestTabloVersion(t *testing.T) {
-	if got := tabloVersion(); got == "" {
-		t.Error("an empty tablo version")
+	if got := tabloVersion(); !strings.HasPrefix(got, "v0.") {
+		t.Errorf("tablo version %q", got)
 	}
 }
