@@ -1,444 +1,2918 @@
 {
-  "view": "global-tableau",
-  "ref": "main",
-  "level": "detail",
-  "window": 1,
-  "cell_rule": "state-at-gate",
-  "next_gates_in_view": [
-    "defined",
-    "mockup",
-    "performance",
-    "implementation"
-  ],
+  "legend": {
+    "gates": [
+      {
+        "key": "undefined",
+        "symbol": "❔",
+        "name": "Undefined",
+        "criteria": "No one has started work on the definition"
+      },
+      {
+        "key": "defined",
+        "symbol": "📝",
+        "name": "Defined",
+        "criteria": "Title, description, assignee and references exist"
+      },
+      {
+        "key": "mockup",
+        "symbol": "📌",
+        "name": "Mockup",
+        "criteria": "A non-technical mockup of the outcome exists"
+      },
+      {
+        "key": "function",
+        "symbol": "⚙️",
+        "name": "Functional prototype",
+        "criteria": "A technical demonstration of function exists"
+      },
+      {
+        "key": "performance",
+        "symbol": "⚡",
+        "name": "Performance prototype",
+        "criteria": "Target performance shown in the deliverable's technology"
+      },
+      {
+        "key": "reliability",
+        "symbol": "⚓",
+        "name": "Reliability prototype",
+        "criteria": "Target reliability shown in the fundamental technology"
+      },
+      {
+        "key": "design",
+        "symbol": "📐",
+        "name": "Design",
+        "criteria": "A model and sufficient tests exist"
+      },
+      {
+        "key": "implementation",
+        "symbol": "🛠️",
+        "name": "Implementation",
+        "criteria": "Artifacts suffice for unit, integration and validation tests"
+      },
+      {
+        "key": "unit",
+        "symbol": "🧩",
+        "name": "Unit test",
+        "criteria": "All prescribed tests pass"
+      },
+      {
+        "key": "integrate",
+        "symbol": "🖼️",
+        "name": "Integration",
+        "criteria": "Assembled with neighbouring components"
+      },
+      {
+        "key": "validate",
+        "symbol": "🌍",
+        "name": "Validation",
+        "criteria": "Passes user and field tests"
+      },
+      {
+        "key": "release",
+        "symbol": "🚀",
+        "name": "Release",
+        "criteria": "All variants documented and approved"
+      }
+    ],
+    "states": [
+      {
+        "key": "undefined",
+        "symbol": "⚪",
+        "severity": 0,
+        "synopsis": "The work has not yet been defined"
+      },
+      {
+        "key": "nominal",
+        "symbol": "🟢",
+        "severity": 1,
+        "synopsis": "The work is proceeding as expected"
+      },
+      {
+        "key": "at_risk",
+        "symbol": "🟡",
+        "severity": 2,
+        "synopsis": "The work is at risk of stalling"
+      },
+      {
+        "key": "stalled",
+        "symbol": "🔴",
+        "severity": 3,
+        "synopsis": "Practically all progress has stalled"
+      },
+      {
+        "key": "complete",
+        "symbol": "✅",
+        "severity": 0,
+        "synopsis": "All deliverables satisfy their requirements"
+      }
+    ],
+    "reasons": [
+      {
+        "key": "overloaded",
+        "symbol": "🪫",
+        "synopsis": "The assigned resource is overloaded",
+        "reserved": false
+      },
+      {
+        "key": "blocked",
+        "symbol": "⛔",
+        "synopsis": "An external resource is unavailable",
+        "reserved": false
+      }
+    ],
+    "marks": [
+      {
+        "key": "person",
+        "symbol": "🧑",
+        "meaning": "A person contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "agent",
+        "symbol": "🤖",
+        "meaning": "An agent contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "reviewer",
+        "symbol": "👀",
+        "meaning": "A reviewer accepts",
+        "junction": "plain"
+      },
+      {
+        "key": "subproject",
+        "symbol": "🪆",
+        "meaning": "A subproject does the work",
+        "junction": "recursive"
+      },
+      {
+        "key": "exempt",
+        "symbol": "—",
+        "meaning": "The gate does not apply",
+        "junction": "not_applicable"
+      }
+    ]
+  },
+  "subject": null,
   "columns": [
     {
-      "gate": "undefined",
-      "symbol": "❔"
+      "gates": [
+        "undefined"
+      ],
+      "folded": false,
+      "count": 1,
+      "by_gate": [
+        1
+      ]
     },
     {
-      "gate": "defined",
-      "symbol": "📝"
+      "gates": [
+        "defined"
+      ],
+      "folded": false,
+      "count": 2,
+      "by_gate": [
+        2
+      ]
     },
     {
-      "gate": "mockup",
-      "symbol": "📌"
-    },
-    {
-      "gate": "function",
-      "symbol": "⚙️"
-    },
-    {
-      "gate": "performance",
-      "symbol": "⚡"
-    },
-    {
-      "gate": "reliability",
-      "symbol": "⚓"
-    },
-    {
-      "gate": "design",
-      "symbol": "📐"
-    },
-    {
-      "gate": "implementation",
-      "symbol": "🛠️"
-    },
-    {
-      "gate": "unit",
-      "symbol": "🧩"
-    }
-  ],
-  "folded": [
-    {
-      "side": "after",
-      "from": "integrate",
-      "to": "release",
+      "gates": [
+        "mockup"
+      ],
+      "folded": false,
       "count": 0,
-      "by_gate": {
-        "integrate": 0,
-        "release": 0,
-        "validate": 0
-      }
+      "by_gate": [
+        0
+      ]
+    },
+    {
+      "gates": [
+        "function"
+      ],
+      "folded": false,
+      "count": 2,
+      "by_gate": [
+        2
+      ]
+    },
+    {
+      "gates": [
+        "performance"
+      ],
+      "folded": false,
+      "count": 0,
+      "by_gate": [
+        0
+      ]
+    },
+    {
+      "gates": [
+        "reliability"
+      ],
+      "folded": false,
+      "count": 0,
+      "by_gate": [
+        0
+      ]
+    },
+    {
+      "gates": [
+        "design"
+      ],
+      "folded": false,
+      "count": 1,
+      "by_gate": [
+        1
+      ]
+    },
+    {
+      "gates": [
+        "implementation"
+      ],
+      "folded": false,
+      "count": 0,
+      "by_gate": [
+        0
+      ]
+    },
+    {
+      "gates": [
+        "unit"
+      ],
+      "folded": false,
+      "count": 0,
+      "by_gate": [
+        0
+      ]
+    },
+    {
+      "gates": [
+        "integrate",
+        "validate",
+        "release"
+      ],
+      "folded": true,
+      "count": 0,
+      "by_gate": [
+        0,
+        0,
+        0
+      ]
     }
   ],
   "rows": [
     {
       "id": "a1c0",
       "title": "Weather station",
+      "under": "",
       "depth": 0,
       "parent": true,
-      "authorised": true,
+      "hidden": 0,
+      "label": "",
       "status": {
+        "kind": "rollup",
         "gate": "defined",
         "state": "nominal",
+        "reason": "",
+        "note": "",
         "date": "2026-09-17",
-        "rolled_up_from": "3c5d",
-        "derived": true
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
       },
-      "next_gate": "mockup",
+      "leaf": {
+        "task": {
+          "id": "3c5d",
+          "title": "Dashboard"
+        },
+        "url": ""
+      },
       "cells": [
         {
-          "gate": "undefined",
-          "kind": "blank",
-          "symbols": ""
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
         },
         {
-          "gate": "defined",
           "kind": "status",
-          "symbols": "🟢"
+          "historical": false,
+          "state": "nominal",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        }
+      ],
+      "status_commit": {
+        "hash": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+        "subject": "Record the dashboard definition",
+        "date": "2026-09-22",
+        "author_time": "2026-09-22T12:00:00Z",
+        "author": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "committer": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "parents": [
+          "63a1f88f84354726d5e1b431df5e11a518854cdb"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/3c5d.yaml",
+            "change": "added"
+          }
+        ]
+      },
+      "own_commit": null,
+      "chain": [
+        {
+          "task": {
+            "id": "a1c0",
+            "title": "Weather station"
+          },
+          "url": "",
+          "status": {
+            "kind": "rollup",
+            "gate": "defined",
+            "state": "nominal",
+            "reason": "",
+            "note": "",
+            "date": "2026-09-17",
+            "recorder": "",
+            "derived": true,
+            "why": "",
+            "uncommitted": false,
+            "from": {
+              "kind": "rollup",
+              "task": {
+                "id": "3c5d",
+                "title": "Dashboard"
+              },
+              "url": "",
+              "pin": "",
+              "gate": ""
+            }
+          }
+        },
+        {
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "status": {
+            "kind": "recorded",
+            "gate": "defined",
+            "state": "nominal",
+            "reason": "",
+            "note": "",
+            "date": "2026-09-22",
+            "recorder": "dan@example.org",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          }
+        }
+      ],
+      "junctions": [
+        {
+          "gate": "defined",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "mockup",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "function",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "performance",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "reliability",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "design",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "implementation",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "unit",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "integrate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "validate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "release",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         }
-      ]
+      ],
+      "sources": [],
+      "linkages": []
     },
     {
       "id": "4e2b",
       "title": "Sensor node",
+      "under": "a1c0",
       "depth": 1,
       "parent": true,
-      "authorised": true,
+      "hidden": 0,
+      "label": "",
       "status": {
+        "kind": "rollup",
         "gate": "function",
         "state": "stalled",
         "reason": "blocked",
         "note": "Barometer ICs on 14-week backorder",
         "date": "2026-09-17",
-        "rolled_up_from": "9f31",
-        "derived": true
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "9f31",
+            "title": "Sensor board"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
       },
-      "next_gate": "performance",
+      "leaf": {
+        "task": {
+          "id": "9f31",
+          "title": "Sensor board"
+        },
+        "url": ""
+      },
       "cells": [
         {
-          "gate": "undefined",
-          "kind": "blank",
-          "symbols": ""
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
         },
         {
-          "gate": "defined",
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "status",
+          "historical": false,
+          "state": "stalled",
+          "reason": "blocked",
+          "marks": [],
+          "acts": false
+        },
+        {
           "kind": "marks",
-          "symbols": "🧑"
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        }
+      ],
+      "status_commit": {
+        "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+        "subject": "Weekly review: no change",
+        "date": "2026-09-28",
+        "author_time": "2026-09-28T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "1b8cfb16a248f50eeefb76e0994234693ff4f4a6"
+        ],
+        "trailers": [
+          "Reaffirmed: 9f31"
+        ],
+        "files": []
+      },
+      "own_commit": null,
+      "chain": [
+        {
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "status": {
+            "kind": "rollup",
+            "gate": "function",
+            "state": "stalled",
+            "reason": "blocked",
+            "note": "Barometer ICs on 14-week backorder",
+            "date": "2026-09-17",
+            "recorder": "",
+            "derived": true,
+            "why": "",
+            "uncommitted": false,
+            "from": {
+              "kind": "rollup",
+              "task": {
+                "id": "9f31",
+                "title": "Sensor board"
+              },
+              "url": "",
+              "pin": "",
+              "gate": ""
+            }
+          }
+        },
+        {
+          "task": {
+            "id": "9f31",
+            "title": "Sensor board"
+          },
+          "url": "",
+          "status": {
+            "kind": "recorded",
+            "gate": "function",
+            "state": "stalled",
+            "reason": "blocked",
+            "note": "Barometer ICs on 14-week backorder",
+            "date": "2026-09-28",
+            "recorder": "ada@example.org",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          }
+        }
+      ],
+      "junctions": [
+        {
+          "gate": "defined",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "mockup",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "ben@example.org",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": [
+            "4e2b"
+          ]
         },
         {
           "gate": "function",
-          "kind": "status",
-          "symbols": "🔴⛔"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "performance",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "reliability",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "design",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "implementation",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "unit",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "integrate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "validate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "release",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "",
+          "reviewed": false,
+          "from": []
         }
-      ]
+      ],
+      "sources": [
+        {
+          "gate": "mockup",
+          "field": "reviewer",
+          "value": "ben@example.org",
+          "by": "4e2b",
+          "key": "junctions.mockup.reviewer",
+          "file": ".tableaux/tasks/4e2b.yaml",
+          "line": 10,
+          "col": 23
+        }
+      ],
+      "linkages": []
     },
     {
       "id": "9f31",
       "title": "Sensor board",
+      "under": "4e2b",
       "depth": 2,
       "parent": false,
-      "authorised": true,
+      "hidden": 0,
+      "label": "",
       "status": {
+        "kind": "recorded",
         "gate": "function",
         "state": "stalled",
         "reason": "blocked",
         "note": "Barometer ICs on 14-week backorder",
         "date": "2026-09-28",
         "recorder": "ada@example.org",
-        "commit": "W13"
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
       },
-      "next_gate": "performance",
+      "leaf": null,
       "cells": [
         {
-          "gate": "undefined",
-          "kind": "blank",
-          "symbols": ""
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
         },
         {
-          "gate": "defined",
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "status",
+          "historical": false,
+          "state": "stalled",
+          "reason": "blocked",
+          "marks": [],
+          "acts": false
+        },
+        {
           "kind": "marks",
-          "symbols": "🧑"
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person",
+            "reviewer"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        }
+      ],
+      "status_commit": {
+        "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+        "subject": "Weekly review: no change",
+        "date": "2026-09-28",
+        "author_time": "2026-09-28T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "1b8cfb16a248f50eeefb76e0994234693ff4f4a6"
+        ],
+        "trailers": [
+          "Reaffirmed: 9f31"
+        ],
+        "files": []
+      },
+      "own_commit": null,
+      "chain": [
+        {
+          "task": {
+            "id": "9f31",
+            "title": "Sensor board"
+          },
+          "url": "",
+          "status": {
+            "kind": "recorded",
+            "gate": "function",
+            "state": "stalled",
+            "reason": "blocked",
+            "note": "Barometer ICs on 14-week backorder",
+            "date": "2026-09-28",
+            "recorder": "ada@example.org",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          }
+        }
+      ],
+      "junctions": [
+        {
+          "gate": "defined",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "passed",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "mockup",
-          "kind": "marks",
-          "symbols": "🧑👀"
+          "kind": "plain",
+          "marks": [
+            "person",
+            "reviewer"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "ben@example.org",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "passed",
+          "reviewed": true,
+          "from": [
+            "4e2b"
+          ]
         },
         {
           "gate": "function",
-          "kind": "status",
-          "symbols": "🔴⛔"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "here",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "performance",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [
+            {
+              "text": "Power budget",
+              "url": "docs/sensor-board.md#power-budget"
+            }
+          ],
+          "stands": "next",
+          "reviewed": false,
+          "from": [
+            "9f31"
+          ]
         },
         {
           "gate": "reliability",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "design",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "implementation",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "unit",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "integrate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "validate",
+          "kind": "plain",
+          "marks": [
+            "person",
+            "reviewer"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "ben@example.org",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": [
+            "9f31"
+          ]
+        },
+        {
+          "gate": "release",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         }
-      ]
+      ],
+      "sources": [
+        {
+          "gate": "mockup",
+          "field": "reviewer",
+          "value": "ben@example.org",
+          "by": "4e2b",
+          "key": "junctions.mockup.reviewer",
+          "file": ".tableaux/tasks/4e2b.yaml",
+          "line": 10,
+          "col": 23
+        },
+        {
+          "gate": "performance",
+          "field": "references",
+          "value": "1",
+          "by": "9f31",
+          "key": "junctions.performance.references",
+          "file": ".tableaux/tasks/9f31.yaml",
+          "line": 11,
+          "col": 3
+        },
+        {
+          "gate": "validate",
+          "field": "reviewer",
+          "value": "ben@example.org",
+          "by": "9f31",
+          "key": "junctions.validate.reviewer",
+          "file": ".tableaux/tasks/9f31.yaml",
+          "line": 12,
+          "col": 28
+        }
+      ],
+      "linkages": []
     },
     {
       "id": "c07d",
       "title": "Node firmware",
+      "under": "4e2b",
       "depth": 2,
       "parent": false,
-      "authorised": true,
+      "hidden": 0,
+      "label": "",
       "status": {
+        "kind": "snapshot",
         "gate": "design",
         "state": "nominal",
+        "reason": "",
         "note": "Sleep scheduler in progress",
         "date": "2026-09-17",
         "recorder": "ben@example.org",
-        "commit": "F2",
-        "subproject_snapshot": true
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "snapshot",
+          "task": {
+            "id": "f1a0",
+            "title": "Weather node image"
+          },
+          "url": "firmware",
+          "pin": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "gate": "design"
+        }
       },
-      "next_gate": "implementation",
+      "leaf": {
+        "task": {
+          "id": "f1a0",
+          "title": "Weather node image"
+        },
+        "url": "firmware"
+      },
       "cells": [
         {
-          "gate": "undefined",
-          "kind": "blank",
-          "symbols": ""
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
         },
         {
-          "gate": "defined",
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "status",
+          "historical": false,
+          "state": "nominal",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
           "kind": "marks",
-          "symbols": "🧑"
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "subproject"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "agent",
+            "reviewer"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        }
+      ],
+      "status_commit": {
+        "hash": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+        "subject": "Record the node image design",
+        "date": "2026-09-17",
+        "author_time": "2026-09-17T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "79e0237eea866c2951968e2e401552dde5b6f9b8"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/f1a0.yaml",
+            "change": "changed"
+          }
+        ]
+      },
+      "own_commit": {
+        "hash": "97e423122790a250e4e067d7d33bbf88622b00d5",
+        "subject": "Pin the firmware at its design",
+        "date": "2026-09-26",
+        "author_time": "2026-09-26T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "a2393fb3090844dd83d44a39739ad486e1fcecd2"
+        ],
+        "trailers": [
+          "Reviewed: c07d mockup"
+        ],
+        "files": [
+          {
+            "path": ".tableaux/status/c07d.yaml",
+            "change": "added"
+          },
+          {
+            "path": "firmware",
+            "change": "pin"
+          }
+        ]
+      },
+      "chain": [
+        {
+          "task": {
+            "id": "c07d",
+            "title": "Node firmware"
+          },
+          "url": "",
+          "status": {
+            "kind": "snapshot",
+            "gate": "design",
+            "state": "nominal",
+            "reason": "",
+            "note": "Sleep scheduler in progress",
+            "date": "2026-09-17",
+            "recorder": "ben@example.org",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": {
+              "kind": "snapshot",
+              "task": {
+                "id": "f1a0",
+                "title": "Weather node image"
+              },
+              "url": "firmware",
+              "pin": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+              "gate": "design"
+            }
+          }
+        },
+        {
+          "task": {
+            "id": "f1a0",
+            "title": "Weather node image"
+          },
+          "url": "firmware",
+          "status": {
+            "kind": "recorded",
+            "gate": "design",
+            "state": "nominal",
+            "reason": "",
+            "note": "Sleep scheduler in progress",
+            "date": "2026-09-17",
+            "recorder": "ben@example.org",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          }
+        }
+      ],
+      "junctions": [
+        {
+          "gate": "defined",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "passed",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "mockup",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "ben@example.org",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "passed",
+          "reviewed": true,
+          "from": [
+            "4e2b"
+          ]
         },
         {
           "gate": "function",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "passed",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "performance",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "passed",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "reliability",
-          "kind": "exempt",
-          "symbols": "—"
+          "kind": "not_applicable",
+          "marks": [
+            "exempt"
+          ],
+          "acts": false,
+          "contributor": "",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "exempt",
+          "reviewed": false,
+          "from": [
+            "c07d"
+          ]
         },
         {
           "gate": "design",
-          "kind": "status",
-          "symbols": "🟢"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "here",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "implementation",
-          "kind": "marks",
-          "symbols": "🪆"
+          "kind": "recursive",
+          "marks": [
+            "subproject"
+          ],
+          "acts": false,
+          "contributor": "",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": {
+            "url": "firmware",
+            "id": "f1a0",
+            "task": {
+              "id": "f1a0",
+              "title": "Weather node image"
+            },
+            "form": "submodule",
+            "commit": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+            "why": ""
+          },
+          "references": [],
+          "stands": "next",
+          "reviewed": false,
+          "from": [
+            "c07d"
+          ]
         },
         {
           "gate": "unit",
-          "kind": "marks",
-          "symbols": "🤖👀"
+          "kind": "plain",
+          "marks": [
+            "agent",
+            "reviewer"
+          ],
+          "acts": false,
+          "contributor": "opus@example.org",
+          "model": "claude-opus-5-5",
+          "reviewer": "ben@example.org",
+          "reviewer_by_default": true,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": [
+            "c07d"
+          ]
+        },
+        {
+          "gate": "integrate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "validate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "release",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ben@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        }
+      ],
+      "sources": [
+        {
+          "gate": "mockup",
+          "field": "reviewer",
+          "value": "ben@example.org",
+          "by": "4e2b",
+          "key": "junctions.mockup.reviewer",
+          "file": ".tableaux/tasks/4e2b.yaml",
+          "line": 10,
+          "col": 23
+        },
+        {
+          "gate": "reliability",
+          "field": "applies",
+          "value": "false",
+          "by": "c07d",
+          "key": "junctions.reliability.applies",
+          "file": ".tableaux/tasks/c07d.yaml",
+          "line": 8,
+          "col": 3
+        },
+        {
+          "gate": "implementation",
+          "field": "subproject",
+          "value": "firmware",
+          "by": "c07d",
+          "key": "junctions.implementation.subproject",
+          "file": ".tableaux/tasks/c07d.yaml",
+          "line": 9,
+          "col": 3
+        },
+        {
+          "gate": "unit",
+          "field": "contributor",
+          "value": "opus@example.org",
+          "by": "c07d",
+          "key": "junctions.unit.contributor",
+          "file": ".tableaux/tasks/c07d.yaml",
+          "line": 10,
+          "col": 34
+        },
+        {
+          "gate": "unit",
+          "field": "model",
+          "value": "claude-opus-5-5",
+          "by": "c07d",
+          "key": "junctions.unit.model",
+          "file": ".tableaux/tasks/c07d.yaml",
+          "line": 10,
+          "col": 59
+        },
+        {
+          "gate": "unit",
+          "field": "reviewer",
+          "value": "ben@example.org",
+          "by": "assignee",
+          "key": "assignee",
+          "file": "",
+          "line": 0,
+          "col": 0
+        }
+      ],
+      "linkages": [
+        {
+          "gates": [
+            "implementation"
+          ],
+          "url": "firmware",
+          "id": "f1a0",
+          "task": {
+            "id": "f1a0",
+            "title": "Weather node image"
+          },
+          "form": "submodule",
+          "commit": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "why": "",
+          "by": "c07d",
+          "key": "junctions.implementation.subproject.url",
+          "file": ".tableaux/tasks/c07d.yaml",
+          "line": 9,
+          "col": 40,
+          "stated_commit": "",
+          "recorded": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "moved": false,
+          "trunk": "main",
+          "tip": "fa834b3a6ebb21647295b9a293297aa8eaa9db39",
+          "on_trunk": "yes",
+          "behind": "yes",
+          "pinned": {
+            "hash": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+            "subject": "Record the node image design",
+            "date": "2026-09-17",
+            "author_time": "2026-09-17T12:00:00Z",
+            "author": {
+              "name": "Ben Okafor",
+              "email": "ben@example.org"
+            },
+            "committer": {
+              "name": "Ben Okafor",
+              "email": "ben@example.org"
+            },
+            "parents": [
+              "79e0237eea866c2951968e2e401552dde5b6f9b8"
+            ],
+            "trailers": [],
+            "files": [
+              {
+                "path": ".tableaux/status/f1a0.yaml",
+                "change": "changed"
+              }
+            ]
+          },
+          "set_by": {
+            "hash": "97e423122790a250e4e067d7d33bbf88622b00d5",
+            "subject": "Pin the firmware at its design",
+            "date": "2026-09-26",
+            "author_time": "2026-09-26T12:00:00Z",
+            "author": {
+              "name": "Ben Okafor",
+              "email": "ben@example.org"
+            },
+            "committer": {
+              "name": "Ben Okafor",
+              "email": "ben@example.org"
+            },
+            "parents": [
+              "a2393fb3090844dd83d44a39739ad486e1fcecd2"
+            ],
+            "trailers": [
+              "Reviewed: c07d mockup"
+            ],
+            "files": [
+              {
+                "path": ".tableaux/status/c07d.yaml",
+                "change": "added"
+              },
+              {
+                "path": "firmware",
+                "change": "pin"
+              }
+            ]
+          }
         }
       ]
     },
     {
       "id": "7b2e",
       "title": "Gateway",
+      "under": "a1c0",
       "depth": 1,
       "parent": false,
-      "authorised": true,
+      "hidden": 0,
+      "label": "",
       "status": {
+        "kind": "absent",
         "gate": "undefined",
         "state": "undefined",
+        "reason": "",
+        "note": "",
         "date": "2026-09-15",
-        "recorder": "ada@example.org",
-        "commit": "W1"
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
       },
-      "next_gate": "defined",
+      "leaf": null,
       "cells": [
         {
-          "gate": "undefined",
           "kind": "status",
-          "symbols": "⚪"
+          "historical": false,
+          "state": "undefined",
+          "reason": "",
+          "marks": [],
+          "acts": false
         },
         {
-          "gate": "defined",
           "kind": "marks",
-          "symbols": "🧑"
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        }
+      ],
+      "status_commit": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "subject": "Plan the weather station",
+        "date": "2026-09-15",
+        "author_time": "2026-09-15T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/gates.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/4e2b.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/7b2e.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/a1c0.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/version.yaml",
+            "change": "added"
+          }
+        ]
+      },
+      "own_commit": null,
+      "chain": [
+        {
+          "task": {
+            "id": "7b2e",
+            "title": "Gateway"
+          },
+          "url": "",
+          "status": {
+            "kind": "absent",
+            "gate": "undefined",
+            "state": "undefined",
+            "reason": "",
+            "note": "",
+            "date": "2026-09-15",
+            "recorder": "",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          }
+        }
+      ],
+      "junctions": [
+        {
+          "gate": "defined",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "next",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "mockup",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "function",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "performance",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "reliability",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "design",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "implementation",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "unit",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "integrate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "validate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "release",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "ada@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         }
-      ]
+      ],
+      "sources": [],
+      "linkages": []
     },
     {
       "id": "3c5d",
       "title": "Dashboard",
+      "under": "a1c0",
       "depth": 1,
       "parent": false,
-      "authorised": false,
+      "hidden": 0,
+      "label": "",
       "status": {
+        "kind": "recorded",
         "gate": "defined",
         "state": "nominal",
+        "reason": "",
+        "note": "",
         "date": "2026-09-22",
         "recorder": "dan@example.org",
-        "commit": "W8"
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
       },
-      "next_gate": "mockup",
+      "leaf": null,
       "cells": [
         {
-          "gate": "undefined",
-          "kind": "blank",
-          "symbols": ""
+          "kind": "empty",
+          "historical": true,
+          "state": "",
+          "reason": "",
+          "marks": [],
+          "acts": false
         },
         {
-          "gate": "defined",
           "kind": "status",
-          "symbols": "🟢"
+          "historical": false,
+          "state": "nominal",
+          "reason": "",
+          "marks": [],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        },
+        {
+          "kind": "marks",
+          "historical": false,
+          "state": "",
+          "reason": "",
+          "marks": [
+            "person"
+          ],
+          "acts": false
+        }
+      ],
+      "status_commit": {
+        "hash": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+        "subject": "Record the dashboard definition",
+        "date": "2026-09-22",
+        "author_time": "2026-09-22T12:00:00Z",
+        "author": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "committer": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "parents": [
+          "63a1f88f84354726d5e1b431df5e11a518854cdb"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/3c5d.yaml",
+            "change": "added"
+          }
+        ]
+      },
+      "own_commit": null,
+      "chain": [
+        {
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "status": {
+            "kind": "recorded",
+            "gate": "defined",
+            "state": "nominal",
+            "reason": "",
+            "note": "",
+            "date": "2026-09-22",
+            "recorder": "dan@example.org",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          }
+        }
+      ],
+      "junctions": [
+        {
+          "gate": "defined",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "here",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "mockup",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "next",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "function",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "performance",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "reliability",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "design",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "implementation",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         },
         {
           "gate": "unit",
-          "kind": "marks",
-          "symbols": "🧑"
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "integrate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "validate",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
+        },
+        {
+          "gate": "release",
+          "kind": "plain",
+          "marks": [
+            "person"
+          ],
+          "acts": false,
+          "contributor": "dan@example.org",
+          "model": "",
+          "reviewer": "",
+          "reviewer_by_default": false,
+          "subproject": null,
+          "references": [],
+          "stands": "later",
+          "reviewed": false,
+          "from": []
         }
-      ]
+      ],
+      "sources": [],
+      "linkages": []
+    }
+  ],
+  "commands": [
+    {
+      "text": "git log --format='%H %as %ae %ce %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/status",
+      "comment": ""
     }
   ]
 }

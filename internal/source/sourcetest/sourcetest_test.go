@@ -10,6 +10,7 @@ import (
 
 	"github.com/nbyoung/tableaud/internal/source"
 	"github.com/nbyoung/tableaud/internal/source/sourcetest"
+	"github.com/nbyoung/tablo/view"
 )
 
 func TestFixture(t *testing.T) {
@@ -21,6 +22,12 @@ func TestFixture(t *testing.T) {
 	}
 	if res.Data == nil || res.Project.Root != sourcetest.Root || !res.Project.Worktree || res.Project.Ref != "main" {
 		t.Errorf("result %+v", res.Project)
+	}
+	if _, ok := res.Data.(*view.Tableau); !ok {
+		t.Errorf("the tableau is %T, not tablo's view type", res.Data)
+	}
+	if _, ok := res.Legend.(*view.Gates); !ok || res.Project.Version != "0.3.1" || res.Project.Trunk != "main" || !res.Project.OnTrunk {
+		t.Errorf("legend %T, project %+v", res.Legend, res.Project)
 	}
 	if res.Viewer.Role() != "owner" {
 		t.Errorf("viewer %+v", res.Viewer)
@@ -101,7 +108,7 @@ func TestIndex(t *testing.T) {
 	if got := strings.Join(ix.People, " "); got != "ada@example.org ben@example.org dan@example.org opus@example.org" || !slices.IsSorted(ix.People) {
 		t.Errorf("people %s", got)
 	}
-	if got := ix.Date.Format(time.DateOnly); got != "2026-09-30" {
+	if got := ix.Date.Format(time.DateOnly); got != "2026-09-28" {
 		t.Errorf("date %s", got)
 	}
 	proj, _, err := f.Describe(ctx, "", "main", "")

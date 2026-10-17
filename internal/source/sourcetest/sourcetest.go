@@ -1,9 +1,10 @@
 // Package sourcetest holds a source.Source over JSON fixtures, for the tests
 // of every package that asks tablo for a view.
 //
-// The fixtures are the output of the tablo prototypes on the weather-station
-// entry of the corpus: one state of the project, which every ref and focus
-// receives unchanged. The Fixture knows the project's six tasks, the refs
+// The fixtures are the data of tablo's views on the weather-station entry of
+// the corpus, as the adapter in package source gives them (TestRegenerateFixture
+// writes them): one state of the project, typed as tablo's package view types
+// it, which every ref and focus receives unchanged. The Fixture knows the project's six tasks, the refs
 // main, HEAD and W1 to W13, the gates of gates.yaml and one subproject,
 // firmware, and it checks each request against them as tablo does.
 package sourcetest
@@ -21,6 +22,7 @@ import (
 	"time"
 
 	"github.com/nbyoung/tableaud/internal/source"
+	"github.com/nbyoung/tablo/view"
 )
 
 //go:embed testdata
@@ -35,12 +37,22 @@ const (
 	SubprojectID = "f1a0"     // the root task of Subproject
 )
 
-// files names the fixture of each view.
-var files = map[string]string{
-	"gates": "gate.json", "task": "task.json", "authority": "authority.json",
-	"assignment": "assignment.json", "queue": "queue.json", "blockage": "blockage.json",
-	"tableau": "tableau.json", "context": "contextual.json", "history": "history.json",
-	"audit": "dada.txt",
+// files names the fixture of each view, with the type of tablo's data that it
+// decodes into.
+var files = map[string]struct {
+	name string
+	data func() any
+}{
+	"gates":      {"gate.json", func() any { return new(view.Gates) }},
+	"task":       {"task.json", func() any { return new(view.Task) }},
+	"authority":  {"authority.json", func() any { return new(view.Delegation) }},
+	"assignment": {"assignment.json", func() any { return new(view.Assignment) }},
+	"queue":      {"queue.json", func() any { return new(view.Queue) }},
+	"blockage":   {"blockage.json", func() any { return new(view.Blockage) }},
+	"tableau":    {"tableau.json", func() any { return new(view.Tableau) }},
+	"context":    {"contextual.json", func() any { return new(view.Tableau) }},
+	"history":    {"history.json", func() any { return new(view.History) }},
+	"audit":      {"audit.json", func() any { return new(view.Audit) }},
 }
 
 // Fixture is a source.Source over the fixtures. The zero value is not ready:
@@ -77,32 +89,16 @@ func New() *Fixture {
 		},
 		roles: map[string][]string{Owner: {"owner"}, Contributor: {"contributor"}},
 	}
-	for view, name := range files {
-		b, err := testdata.ReadFile("testdata/" + name)
-		if err != nil {
-			panic(err)
+	for name, file := range files {
+		v := file.data()
+		dec := json.NewDecoder(strings.NewReader(mustRead(file.name)))
+		dec.DisallowUnknownFields()
+		if err := dec.Decode(v); err != nil {
+			panic(fmt.Sprintf("%s: %v", file.name, err))
 		}
-		if strings.HasSuffix(name, ".txt") {
-			f.data[view] = string(b)
-			continue
-		}
-		var v any
-		if err := json.Unmarshal(b, &v); err != nil {
-			panic(fmt.Sprintf("%s: %v", name, err))
-		}
-		f.data[view] = v
+		f.data[name] = v
 	}
-	var gate struct {
-		Detail struct {
-			Gates []struct {
-				Key string `json:"key"`
-			} `json:"gates"`
-		} `json:"detail"`
-	}
-	if err := json.Unmarshal([]byte(mustRead("gate.json")), &gate); err != nil {
-		panic(err)
-	}
-	for _, g := range gate.Detail.Gates {
+	for _, g := range f.data["gates"].(*view.Gates).Legend.Gates {
 		f.gates[g.Key] = true
 	}
 	sc := bufio.NewScanner(strings.NewReader(mustRead("labels.txt")))
@@ -222,7 +218,10 @@ func (f *Fixture) describe(project, ref, viewer string) (source.Project, source.
 	if err != nil {
 		return source.Project{}, source.Viewer{}, err
 	}
-	p := source.Project{Title: "Weather station", Root: Root, Ref: ref, Commit: commit, Date: "2026-09-30", Worktree: ref == ""}
+	p := source.Project{
+		Title: "Weather station", Root: Root, Ref: ref, Commit: commit, Date: f.index.Date.Format(time.DateOnly),
+		Worktree: ref == "", Version: "0.3.1", Trunk: "main", OnTrunk: true,
+	}
 	if ref == "" {
 		p.Ref = "main"
 	}

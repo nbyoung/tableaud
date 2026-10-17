@@ -1,72 +1,727 @@
 {
-  "view": "work-blockage-tree",
-  "ref": "main",
+  "legend": {
+    "gates": [
+      {
+        "key": "undefined",
+        "symbol": "❔",
+        "name": "Undefined",
+        "criteria": "No one has started work on the definition"
+      },
+      {
+        "key": "defined",
+        "symbol": "📝",
+        "name": "Defined",
+        "criteria": "Title, description, assignee and references exist"
+      },
+      {
+        "key": "mockup",
+        "symbol": "📌",
+        "name": "Mockup",
+        "criteria": "A non-technical mockup of the outcome exists"
+      },
+      {
+        "key": "function",
+        "symbol": "⚙️",
+        "name": "Functional prototype",
+        "criteria": "A technical demonstration of function exists"
+      },
+      {
+        "key": "performance",
+        "symbol": "⚡",
+        "name": "Performance prototype",
+        "criteria": "Target performance shown in the deliverable's technology"
+      },
+      {
+        "key": "reliability",
+        "symbol": "⚓",
+        "name": "Reliability prototype",
+        "criteria": "Target reliability shown in the fundamental technology"
+      },
+      {
+        "key": "design",
+        "symbol": "📐",
+        "name": "Design",
+        "criteria": "A model and sufficient tests exist"
+      },
+      {
+        "key": "implementation",
+        "symbol": "🛠️",
+        "name": "Implementation",
+        "criteria": "Artifacts suffice for unit, integration and validation tests"
+      },
+      {
+        "key": "unit",
+        "symbol": "🧩",
+        "name": "Unit test",
+        "criteria": "All prescribed tests pass"
+      },
+      {
+        "key": "integrate",
+        "symbol": "🖼️",
+        "name": "Integration",
+        "criteria": "Assembled with neighbouring components"
+      },
+      {
+        "key": "validate",
+        "symbol": "🌍",
+        "name": "Validation",
+        "criteria": "Passes user and field tests"
+      },
+      {
+        "key": "release",
+        "symbol": "🚀",
+        "name": "Release",
+        "criteria": "All variants documented and approved"
+      }
+    ],
+    "states": [
+      {
+        "key": "undefined",
+        "symbol": "⚪",
+        "severity": 0,
+        "synopsis": "The work has not yet been defined"
+      },
+      {
+        "key": "nominal",
+        "symbol": "🟢",
+        "severity": 1,
+        "synopsis": "The work is proceeding as expected"
+      },
+      {
+        "key": "at_risk",
+        "symbol": "🟡",
+        "severity": 2,
+        "synopsis": "The work is at risk of stalling"
+      },
+      {
+        "key": "stalled",
+        "symbol": "🔴",
+        "severity": 3,
+        "synopsis": "Practically all progress has stalled"
+      },
+      {
+        "key": "complete",
+        "symbol": "✅",
+        "severity": 0,
+        "synopsis": "All deliverables satisfy their requirements"
+      }
+    ],
+    "reasons": [
+      {
+        "key": "overloaded",
+        "symbol": "🪫",
+        "synopsis": "The assigned resource is overloaded",
+        "reserved": false
+      },
+      {
+        "key": "blocked",
+        "symbol": "⛔",
+        "synopsis": "An external resource is unavailable",
+        "reserved": false
+      }
+    ],
+    "marks": [
+      {
+        "key": "person",
+        "symbol": "🧑",
+        "meaning": "A person contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "agent",
+        "symbol": "🤖",
+        "meaning": "An agent contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "reviewer",
+        "symbol": "👀",
+        "meaning": "A reviewer accepts",
+        "junction": "plain"
+      },
+      {
+        "key": "subproject",
+        "symbol": "🪆",
+        "meaning": "A subproject does the work",
+        "junction": "recursive"
+      },
+      {
+        "key": "exempt",
+        "symbol": "—",
+        "meaning": "The gate does not apply",
+        "junction": "not_applicable"
+      }
+    ]
+  },
   "causes": [
     {
       "kind": "status",
-      "cause": "9f31 Sensor board is stalled at function: Barometer ICs on 14-week backorder",
-      "task": "9f31",
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "url": "",
+      "gate": "function",
+      "status": {
+        "kind": "recorded",
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "2026-09-28",
+        "recorder": "ada@example.org",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "pin": "",
+      "tip": "",
       "resolver": "ada@example.org",
-      "action": "clear the blocked reason, or record a new status",
-      "holds": 2,
-      "tree": [
+      "mark": "person",
+      "act": "records",
+      "advance": "",
+      "holds": 3,
+      "held": [
         {
-          "task": "9f31",
-          "title": "Sensor board",
-          "gate": "performance"
+          "task": {
+            "id": "9f31",
+            "title": "Sensor board"
+          },
+          "gate": "performance",
+          "parent": false,
+          "via": "self",
+          "child": "",
+          "requires": null,
+          "contributor": "ada@example.org",
+          "also": [],
+          "held": [
+            {
+              "task": {
+                "id": "4e2b",
+                "title": "Sensor node"
+              },
+              "gate": "performance",
+              "parent": true,
+              "via": "parent",
+              "child": "9f31",
+              "requires": null,
+              "contributor": "",
+              "also": [],
+              "held": []
+            },
+            {
+              "task": {
+                "id": "c07d",
+                "title": "Node firmware"
+              },
+              "gate": "implementation",
+              "parent": false,
+              "via": "requirement",
+              "child": "",
+              "requires": {
+                "task": {
+                  "id": "9f31",
+                  "title": "Sensor board"
+                },
+                "from": "design",
+                "to": "implementation",
+                "text": "Pin map and sensor bus",
+                "met": false,
+                "due": true,
+                "condition": "unmet",
+                "why": "",
+                "status": {
+                  "kind": "recorded",
+                  "gate": "function",
+                  "state": "stalled",
+                  "reason": "blocked",
+                  "note": "Barometer ICs on 14-week backorder",
+                  "date": "2026-09-28",
+                  "recorder": "ada@example.org",
+                  "derived": false,
+                  "why": "",
+                  "uncommitted": false,
+                  "from": null
+                },
+                "subproject": "",
+                "commit": "",
+                "at_trunk": "unknown"
+              },
+              "contributor": "",
+              "also": [
+                3
+              ],
+              "held": []
+            }
+          ]
+        }
+      ],
+      "status_commit": {
+        "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+        "subject": "Weekly review: no change",
+        "date": "2026-09-28",
+        "author_time": "2026-09-28T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
         },
-        {
-          "task": "c07d",
-          "title": "Node firmware",
-          "gate": "implementation"
-        }
-      ]
-    },
-    {
-      "kind": "unmet-requirement",
-      "cause": "9f31 Sensor board has not passed design",
-      "task": "9f31",
-      "resolver": "ada@example.org",
-      "action": "record 9f31 through design",
-      "holds": 1,
-      "tree": [
-        {
-          "task": "c07d",
-          "title": "Node firmware",
-          "gate": "implementation"
-        }
-      ]
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "1b8cfb16a248f50eeefb76e0994234693ff4f4a6"
+        ],
+        "trailers": [
+          "Reaffirmed: 9f31"
+        ],
+        "files": []
+      },
+      "junction": {
+        "gate": "performance",
+        "kind": "plain",
+        "marks": [
+          "person"
+        ],
+        "acts": false,
+        "contributor": "ada@example.org",
+        "model": "",
+        "reviewer": "",
+        "reviewer_by_default": false,
+        "subproject": null,
+        "references": [
+          {
+            "text": "Power budget",
+            "url": "docs/sensor-board.md#power-budget"
+          }
+        ],
+        "stands": "next",
+        "reviewed": false,
+        "from": [
+          "9f31"
+        ]
+      },
+      "authorisation": null,
+      "linkage": null,
+      "resolve": []
     },
     {
       "kind": "authorisation",
-      "cause": "3c5d Dashboard is proposed",
-      "task": "3c5d",
+      "task": {
+        "id": "3c5d",
+        "title": "Dashboard"
+      },
+      "url": "",
+      "gate": "defined",
+      "status": {
+        "kind": "recorded",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "2026-09-22",
+        "recorder": "dan@example.org",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "pin": "",
+      "tip": "",
       "resolver": "ada@example.org",
-      "action": "commit a trailer: Authorised: 3c5d",
-      "holds": 1,
-      "tree": [
+      "mark": "",
+      "act": "authorises",
+      "advance": "",
+      "holds": 2,
+      "held": [
         {
-          "task": "3c5d",
-          "title": "Dashboard",
-          "gate": "mockup"
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "gate": "mockup",
+          "parent": false,
+          "via": "self",
+          "child": "",
+          "requires": null,
+          "contributor": "dan@example.org",
+          "also": [],
+          "held": [
+            {
+              "task": {
+                "id": "a1c0",
+                "title": "Weather station"
+              },
+              "gate": "mockup",
+              "parent": true,
+              "via": "parent",
+              "child": "3c5d",
+              "requires": null,
+              "contributor": "",
+              "also": [],
+              "held": []
+            }
+          ]
+        }
+      ],
+      "status_commit": {
+        "hash": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+        "subject": "Record the dashboard definition",
+        "date": "2026-09-22",
+        "author_time": "2026-09-22T12:00:00Z",
+        "author": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "committer": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "parents": [
+          "63a1f88f84354726d5e1b431df5e11a518854cdb"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/3c5d.yaml",
+            "change": "added"
+          }
+        ]
+      },
+      "junction": {
+        "gate": "mockup",
+        "kind": "plain",
+        "marks": [
+          "person"
+        ],
+        "acts": false,
+        "contributor": "dan@example.org",
+        "model": "",
+        "reviewer": "",
+        "reviewer_by_default": false,
+        "subproject": null,
+        "references": [],
+        "stands": "next",
+        "reviewed": false,
+        "from": []
+      },
+      "authorisation": {
+        "commit": {
+          "hash": "1b8cfb16a248f50eeefb76e0994234693ff4f4a6",
+          "subject": "Revise the dashboard scope",
+          "date": "2026-09-27",
+          "author_time": "2026-09-27T12:00:00Z",
+          "author": {
+            "name": "Dan Reyes",
+            "email": "dan@example.org"
+          },
+          "committer": {
+            "name": "Dan Reyes",
+            "email": "dan@example.org"
+          },
+          "parents": [
+            "97e423122790a250e4e067d7d33bbf88622b00d5"
+          ],
+          "trailers": [],
+          "files": [
+            {
+              "path": ".tableaux/tasks/3c5d.yaml",
+              "change": "changed"
+            }
+          ]
+        },
+        "way": "change",
+        "by": "",
+        "email": "dan@example.org",
+        "judges": [
+          "ada@example.org"
+        ],
+        "why": "",
+        "differs_from_trunk": false,
+        "uncommitted": false
+      },
+      "linkage": null,
+      "resolve": [
+        {
+          "text": "git commit --allow-empty --trailer 'Authorised: 3c5d'",
+          "comment": ""
+        }
+      ]
+    },
+    {
+      "kind": "snapshot",
+      "task": {
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      "url": "firmware",
+      "gate": "design",
+      "status": {
+        "kind": "snapshot",
+        "gate": "design",
+        "state": "nominal",
+        "reason": "",
+        "note": "Sleep scheduler in progress",
+        "date": "2026-09-17",
+        "recorder": "ben@example.org",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "snapshot",
+          "task": {
+            "id": "f1a0",
+            "title": "Weather node image"
+          },
+          "url": "firmware",
+          "pin": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "gate": "design"
+        }
+      },
+      "pin": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+      "tip": "fa834b3a6ebb21647295b9a293297aa8eaa9db39",
+      "resolver": "ben@example.org",
+      "mark": "subproject",
+      "act": "advances",
+      "advance": "pin",
+      "holds": 1,
+      "held": [
+        {
+          "task": {
+            "id": "c07d",
+            "title": "Node firmware"
+          },
+          "gate": "implementation",
+          "parent": false,
+          "via": "self",
+          "child": "",
+          "requires": null,
+          "contributor": "",
+          "also": [
+            1
+          ],
+          "held": []
+        }
+      ],
+      "status_commit": {
+        "hash": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+        "subject": "Record the node image design",
+        "date": "2026-09-17",
+        "author_time": "2026-09-17T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "79e0237eea866c2951968e2e401552dde5b6f9b8"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/f1a0.yaml",
+            "change": "changed"
+          }
+        ]
+      },
+      "junction": {
+        "gate": "implementation",
+        "kind": "recursive",
+        "marks": [
+          "subproject"
+        ],
+        "acts": false,
+        "contributor": "",
+        "model": "",
+        "reviewer": "",
+        "reviewer_by_default": false,
+        "subproject": {
+          "url": "firmware",
+          "id": "f1a0",
+          "task": {
+            "id": "f1a0",
+            "title": "Weather node image"
+          },
+          "form": "submodule",
+          "commit": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "why": ""
+        },
+        "references": [],
+        "stands": "next",
+        "reviewed": false,
+        "from": [
+          "c07d"
+        ]
+      },
+      "authorisation": null,
+      "linkage": {
+        "gates": [
+          "implementation"
+        ],
+        "url": "firmware",
+        "id": "f1a0",
+        "task": {
+          "id": "f1a0",
+          "title": "Weather node image"
+        },
+        "form": "submodule",
+        "commit": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+        "why": "",
+        "by": "c07d",
+        "key": "junctions.implementation.subproject.url",
+        "file": ".tableaux/tasks/c07d.yaml",
+        "line": 9,
+        "col": 40,
+        "stated_commit": "",
+        "recorded": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+        "moved": false,
+        "trunk": "main",
+        "tip": "fa834b3a6ebb21647295b9a293297aa8eaa9db39",
+        "on_trunk": "yes",
+        "behind": "yes",
+        "pinned": {
+          "hash": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "subject": "Record the node image design",
+          "date": "2026-09-17",
+          "author_time": "2026-09-17T12:00:00Z",
+          "author": {
+            "name": "Ben Okafor",
+            "email": "ben@example.org"
+          },
+          "committer": {
+            "name": "Ben Okafor",
+            "email": "ben@example.org"
+          },
+          "parents": [
+            "79e0237eea866c2951968e2e401552dde5b6f9b8"
+          ],
+          "trailers": [],
+          "files": [
+            {
+              "path": ".tableaux/status/f1a0.yaml",
+              "change": "changed"
+            }
+          ]
+        },
+        "set_by": {
+          "hash": "97e423122790a250e4e067d7d33bbf88622b00d5",
+          "subject": "Pin the firmware at its design",
+          "date": "2026-09-26",
+          "author_time": "2026-09-26T12:00:00Z",
+          "author": {
+            "name": "Ben Okafor",
+            "email": "ben@example.org"
+          },
+          "committer": {
+            "name": "Ben Okafor",
+            "email": "ben@example.org"
+          },
+          "parents": [
+            "a2393fb3090844dd83d44a39739ad486e1fcecd2"
+          ],
+          "trailers": [
+            "Reviewed: c07d mockup"
+          ],
+          "files": [
+            {
+              "path": ".tableaux/status/c07d.yaml",
+              "change": "added"
+            },
+            {
+              "path": "firmware",
+              "change": "pin"
+            }
+          ]
+        }
+      },
+      "resolve": []
+    }
+  ],
+  "kinds": [
+    {
+      "kind": "requirement",
+      "count": 0
+    },
+    {
+      "kind": "status",
+      "count": 1
+    },
+    {
+      "kind": "review",
+      "count": 0
+    },
+    {
+      "kind": "authorisation",
+      "count": 1
+    },
+    {
+      "kind": "snapshot",
+      "count": 1
+    }
+  ],
+  "not_due_count": 1,
+  "not_due_unmet": 1,
+  "not_due": [
+    {
+      "task": {
+        "id": "3c5d",
+        "title": "Dashboard"
+      },
+      "status": {
+        "kind": "recorded",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "2026-09-22",
+        "recorder": "dan@example.org",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "next": "mockup",
+      "requires": [
+        {
+          "task": {
+            "id": "7b2e",
+            "title": "Gateway"
+          },
+          "from": "function",
+          "to": "integrate",
+          "text": "Readings API",
+          "met": false,
+          "due": false,
+          "condition": "pending",
+          "why": "",
+          "status": {
+            "kind": "absent",
+            "gate": "undefined",
+            "state": "undefined",
+            "reason": "",
+            "note": "",
+            "date": "2026-09-15",
+            "recorder": "",
+            "derived": false,
+            "why": "",
+            "uncommitted": false,
+            "from": null
+          },
+          "subproject": "",
+          "commit": "",
+          "at_trunk": "unknown"
         }
       ]
     }
   ],
-  "not_yet_due": [
+  "commands": [
     {
-      "task": "3c5d",
-      "requires": "7b2e",
-      "from": "function",
-      "to": "integrate",
-      "text": "Readings API",
-      "met": false,
-      "due": false,
-      "condition": "pending"
+      "text": "git log --format='%H %as %ae %ce %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/status .tableaux/tasks",
+      "comment": ""
     }
-  ],
-  "not_derived": [
-    "review outstanding",
-    "subproject pin not advanced"
   ]
 }

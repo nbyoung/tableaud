@@ -1,112 +1,1840 @@
-[
-  {
-    "date": "2026-09-16",
-    "commit": "22a758b",
-    "by": "ben@example.org",
-    "task": "c07d",
-    "event": "task"
+{
+  "legend": {
+    "gates": [
+      {
+        "key": "undefined",
+        "symbol": "❔",
+        "name": "Undefined",
+        "criteria": "No one has started work on the definition"
+      },
+      {
+        "key": "defined",
+        "symbol": "📝",
+        "name": "Defined",
+        "criteria": "Title, description, assignee and references exist"
+      },
+      {
+        "key": "mockup",
+        "symbol": "📌",
+        "name": "Mockup",
+        "criteria": "A non-technical mockup of the outcome exists"
+      },
+      {
+        "key": "function",
+        "symbol": "⚙️",
+        "name": "Functional prototype",
+        "criteria": "A technical demonstration of function exists"
+      },
+      {
+        "key": "performance",
+        "symbol": "⚡",
+        "name": "Performance prototype",
+        "criteria": "Target performance shown in the deliverable's technology"
+      },
+      {
+        "key": "reliability",
+        "symbol": "⚓",
+        "name": "Reliability prototype",
+        "criteria": "Target reliability shown in the fundamental technology"
+      },
+      {
+        "key": "design",
+        "symbol": "📐",
+        "name": "Design",
+        "criteria": "A model and sufficient tests exist"
+      },
+      {
+        "key": "implementation",
+        "symbol": "🛠️",
+        "name": "Implementation",
+        "criteria": "Artifacts suffice for unit, integration and validation tests"
+      },
+      {
+        "key": "unit",
+        "symbol": "🧩",
+        "name": "Unit test",
+        "criteria": "All prescribed tests pass"
+      },
+      {
+        "key": "integrate",
+        "symbol": "🖼️",
+        "name": "Integration",
+        "criteria": "Assembled with neighbouring components"
+      },
+      {
+        "key": "validate",
+        "symbol": "🌍",
+        "name": "Validation",
+        "criteria": "Passes user and field tests"
+      },
+      {
+        "key": "release",
+        "symbol": "🚀",
+        "name": "Release",
+        "criteria": "All variants documented and approved"
+      }
+    ],
+    "states": [
+      {
+        "key": "undefined",
+        "symbol": "⚪",
+        "severity": 0,
+        "synopsis": "The work has not yet been defined"
+      },
+      {
+        "key": "nominal",
+        "symbol": "🟢",
+        "severity": 1,
+        "synopsis": "The work is proceeding as expected"
+      },
+      {
+        "key": "at_risk",
+        "symbol": "🟡",
+        "severity": 2,
+        "synopsis": "The work is at risk of stalling"
+      },
+      {
+        "key": "stalled",
+        "symbol": "🔴",
+        "severity": 3,
+        "synopsis": "Practically all progress has stalled"
+      },
+      {
+        "key": "complete",
+        "symbol": "✅",
+        "severity": 0,
+        "synopsis": "All deliverables satisfy their requirements"
+      }
+    ],
+    "reasons": [
+      {
+        "key": "overloaded",
+        "symbol": "🪫",
+        "synopsis": "The assigned resource is overloaded",
+        "reserved": false
+      },
+      {
+        "key": "blocked",
+        "symbol": "⛔",
+        "synopsis": "An external resource is unavailable",
+        "reserved": false
+      }
+    ],
+    "marks": [
+      {
+        "key": "person",
+        "symbol": "🧑",
+        "meaning": "A person contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "agent",
+        "symbol": "🤖",
+        "meaning": "An agent contributes",
+        "junction": "plain"
+      },
+      {
+        "key": "reviewer",
+        "symbol": "👀",
+        "meaning": "A reviewer accepts",
+        "junction": "plain"
+      },
+      {
+        "key": "subproject",
+        "symbol": "🪆",
+        "meaning": "A subproject does the work",
+        "junction": "recursive"
+      },
+      {
+        "key": "exempt",
+        "symbol": "—",
+        "meaning": "The gate does not apply",
+        "junction": "not_applicable"
+      }
+    ]
   },
-  {
-    "date": "2026-09-18",
-    "commit": "91aa774",
-    "by": "ada@example.org",
-    "task": "9f31",
-    "event": "task"
+  "subject": {
+    "id": "a1c0",
+    "title": "Weather station"
   },
-  {
-    "date": "2026-09-19",
-    "commit": "f9e8746",
-    "by": "ben@example.org",
-    "task": "9f31",
-    "event": "authorised"
-  },
-  {
-    "date": "2026-09-20",
-    "commit": "06c6679",
-    "by": "dan@example.org",
-    "task": "3c5d",
-    "event": "task"
-  },
-  {
-    "date": "2026-09-21",
-    "commit": "74bc0b8",
-    "by": "ada@example.org",
-    "task": "3c5d",
-    "event": "authorised"
-  },
-  {
-    "date": "2026-09-22",
-    "commit": "63a1f88",
-    "by": "ada@example.org",
-    "task": "9f31",
-    "event": "status",
-    "gate": "mockup",
-    "state": "nominal"
-  },
-  {
-    "date": "2026-09-22",
-    "commit": "55f57c1",
-    "by": "dan@example.org",
-    "task": "3c5d",
-    "event": "status",
-    "gate": "defined",
-    "state": "nominal"
-  },
-  {
-    "date": "2026-09-24",
-    "commit": "85adb9b",
-    "by": "ben@example.org",
-    "task": "9f31",
-    "event": "reviewed",
-    "gate": "mockup"
-  },
-  {
-    "date": "2026-09-25",
-    "commit": "a2393fb",
-    "by": "ada@example.org",
-    "task": "9f31",
-    "event": "status",
-    "gate": "function",
-    "state": "stalled",
-    "reason": "blocked",
-    "note": "Barometer ICs on 14-week backorder"
-  },
-  {
-    "date": "2026-09-26",
-    "commit": "97e4231",
-    "by": "ben@example.org",
-    "task": "c07d",
-    "event": "reviewed",
-    "gate": "mockup"
-  },
-  {
-    "date": "2026-09-26",
-    "commit": "97e4231",
-    "by": "ben@example.org",
-    "task": "c07d",
-    "event": "status",
-    "gate": "design"
-  },
-  {
-    "date": "2026-09-26",
-    "commit": "97e4231",
-    "by": "ben@example.org",
-    "task": "c07d",
-    "event": "pin",
-    "note": "pin firmware at cf5b169"
-  },
-  {
-    "date": "2026-09-27",
-    "commit": "1b8cfb1",
-    "by": "dan@example.org",
-    "task": "3c5d",
-    "event": "task"
-  },
-  {
-    "date": "2026-09-28",
-    "commit": "edb30d2",
-    "by": "ada@example.org",
-    "task": "9f31",
-    "event": "reaffirmed"
-  }
-]
+  "events": 17,
+  "commits": 13,
+  "kinds": [
+    {
+      "kind": "task",
+      "count": 7
+    },
+    {
+      "kind": "authorised",
+      "count": 2
+    },
+    {
+      "kind": "status",
+      "count": 4
+    },
+    {
+      "kind": "reaffirmed",
+      "count": 1
+    },
+    {
+      "kind": "reviewed",
+      "count": 2
+    },
+    {
+      "kind": "pin",
+      "count": 1
+    }
+  ],
+  "days": [
+    {
+      "date": "2026-09-15",
+      "events": 3,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "task",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "date": "2026-09-16",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "task",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-18",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "task",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-19",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "authorised",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-20",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "task",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-21",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "authorised",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "events": 2,
+      "commits": 2,
+      "kinds": [
+        {
+          "kind": "status",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "reviewed",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "status",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-26",
+      "events": 3,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "status",
+          "count": 1
+        },
+        {
+          "kind": "reviewed",
+          "count": 1
+        },
+        {
+          "kind": "pin",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-27",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "task",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "date": "2026-09-28",
+      "events": 1,
+      "commits": 1,
+      "kinds": [
+        {
+          "kind": "reaffirmed",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "lines": [
+    {
+      "task": {
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-10",
+          "commit": "79e0237eea866c2951968e2e401552dde5b6f9b8",
+          "by": "ben@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": {
+            "url": "firmware",
+            "task": "f1a0",
+            "title": "Weather node image"
+          }
+        },
+        {
+          "date": "2026-09-10",
+          "commit": "79e0237eea866c2951968e2e401552dde5b6f9b8",
+          "by": "ben@example.org",
+          "kind": "status",
+          "recorded": {
+            "gate": "defined",
+            "state": "nominal",
+            "reason": "",
+            "note": ""
+          },
+          "gate": "",
+          "pin": null,
+          "subproject": {
+            "url": "firmware",
+            "task": "f1a0",
+            "title": "Weather node image"
+          }
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": null,
+      "effect": "authorised_commit",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "79e0237eea866c2951968e2e401552dde5b6f9b8",
+        "subject": "Plan the firmware",
+        "date": "2026-09-10",
+        "author_time": "2026-09-10T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/gates.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/status/f1a0.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/b7d2.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/f1a0.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/version.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "a1c0",
+        "title": "Weather station"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-15",
+          "commit": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+          "by": "ada@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "unchanged": false,
+      "subject_after": null,
+      "effect": "authorised_commit",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "subject": "Plan the weather station",
+        "date": "2026-09-15",
+        "author_time": "2026-09-15T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/gates.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/4e2b.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/7b2e.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/a1c0.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/version.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "4e2b",
+        "title": "Sensor node"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-15",
+          "commit": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+          "by": "ada@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "authorised_commit",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "subject": "Plan the weather station",
+        "date": "2026-09-15",
+        "author_time": "2026-09-15T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/gates.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/4e2b.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/7b2e.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/a1c0.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/version.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "7b2e",
+        "title": "Gateway"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-15",
+          "commit": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+          "by": "ada@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "authorised_commit",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
+        "subject": "Plan the weather station",
+        "date": "2026-09-15",
+        "author_time": "2026-09-15T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/gates.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/4e2b.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/7b2e.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/tasks/a1c0.yaml",
+            "change": "added"
+          },
+          {
+            "path": ".tableaux/version.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-16",
+          "commit": "22a758bec2a079fd908bba970db5eb51ecccd0c6",
+          "by": "ben@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "authorised_commit",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "22a758bec2a079fd908bba970db5eb51ecccd0c6",
+        "subject": "Define the node firmware task",
+        "date": "2026-09-16",
+        "author_time": "2026-09-16T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "68d9021206ec627755e2ead99b6be3f2c06ae815"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/tasks/c07d.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-17",
+          "commit": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "by": "ben@example.org",
+          "kind": "status",
+          "recorded": {
+            "gate": "design",
+            "state": "nominal",
+            "reason": "",
+            "note": "Sleep scheduler in progress"
+          },
+          "gate": "",
+          "pin": null,
+          "subproject": {
+            "url": "firmware",
+            "task": "f1a0",
+            "title": "Weather node image"
+          }
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "design",
+        "state": "nominal",
+        "reason": "",
+        "note": "Sleep scheduler in progress",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": null,
+      "effect": "",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+        "subject": "Record the node image design",
+        "date": "2026-09-17",
+        "author_time": "2026-09-17T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "79e0237eea866c2951968e2e401552dde5b6f9b8"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/f1a0.yaml",
+            "change": "changed"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-18",
+          "commit": "91aa7747f22ef4bb66becb6eab5d5f1f9c28836d",
+          "by": "ada@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "proposed",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "91aa7747f22ef4bb66becb6eab5d5f1f9c28836d",
+        "subject": "Propose the sensor board task",
+        "date": "2026-09-18",
+        "author_time": "2026-09-18T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "22a758bec2a079fd908bba970db5eb51ecccd0c6"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/tasks/9f31.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-19",
+          "commit": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
+          "by": "ben@example.org",
+          "kind": "authorised",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": true,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "authorised_merge",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
+        "subject": "Merge the sensor board task",
+        "date": "2026-09-19",
+        "author_time": "2026-09-19T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "22a758bec2a079fd908bba970db5eb51ecccd0c6",
+          "91aa7747f22ef4bb66becb6eab5d5f1f9c28836d"
+        ],
+        "trailers": [
+          "Authorised: 9f31"
+        ],
+        "files": [
+          {
+            "path": ".tableaux/tasks/9f31.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "3c5d",
+        "title": "Dashboard"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-20",
+          "commit": "06c66797486ffeba2831d49b1b9d65f5f99e1b17",
+          "by": "dan@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "proposed",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "06c66797486ffeba2831d49b1b9d65f5f99e1b17",
+        "subject": "Propose the dashboard task",
+        "date": "2026-09-20",
+        "author_time": "2026-09-20T12:00:00Z",
+        "author": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "committer": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "parents": [
+          "f9e8746736beb13aeab99f2cd2ff7e315596e616"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/tasks/3c5d.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "3c5d",
+        "title": "Dashboard"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-21",
+          "commit": "74bc0b87ba05bcb97443b8299db14fcf15fe5074",
+          "by": "ada@example.org",
+          "kind": "authorised",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "absent",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": true,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "undefined",
+        "state": "undefined",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "authorised_trailer",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "74bc0b87ba05bcb97443b8299db14fcf15fe5074",
+        "subject": "Accept the dashboard task",
+        "date": "2026-09-21",
+        "author_time": "2026-09-21T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "06c66797486ffeba2831d49b1b9d65f5f99e1b17"
+        ],
+        "trailers": [
+          "Authorised: 3c5d"
+        ],
+        "files": []
+      }
+    },
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-22",
+          "commit": "63a1f88f84354726d5e1b431df5e11a518854cdb",
+          "by": "ada@example.org",
+          "kind": "status",
+          "recorded": {
+            "gate": "mockup",
+            "state": "nominal",
+            "reason": "",
+            "note": ""
+          },
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "mockup",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "mockup",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "4e2b",
+            "title": "Sensor node"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "63a1f88f84354726d5e1b431df5e11a518854cdb",
+        "subject": "Record the sensor board mockup",
+        "date": "2026-09-22",
+        "author_time": "2026-09-22T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "74bc0b87ba05bcb97443b8299db14fcf15fe5074"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/9f31.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "3c5d",
+        "title": "Dashboard"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-22",
+          "commit": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+          "by": "dan@example.org",
+          "kind": "status",
+          "recorded": {
+            "gate": "defined",
+            "state": "nominal",
+            "reason": "",
+            "note": ""
+          },
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+        "subject": "Record the dashboard definition",
+        "date": "2026-09-22",
+        "author_time": "2026-09-22T12:00:00Z",
+        "author": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "committer": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "parents": [
+          "63a1f88f84354726d5e1b431df5e11a518854cdb"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/3c5d.yaml",
+            "change": "added"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-24",
+          "commit": "85adb9bd07783927046f987a17471c42eee97b87",
+          "by": "ben@example.org",
+          "kind": "reviewed",
+          "recorded": null,
+          "gate": "mockup",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "mockup",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": true,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "accepts",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "85adb9bd07783927046f987a17471c42eee97b87",
+        "subject": "Accept the sensor board mockup",
+        "date": "2026-09-24",
+        "author_time": "2026-09-24T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9"
+        ],
+        "trailers": [
+          "Reviewed: 9f31 mockup"
+        ],
+        "files": []
+      }
+    },
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-25",
+          "commit": "a2393fb3090844dd83d44a39739ad486e1fcecd2",
+          "by": "ada@example.org",
+          "kind": "status",
+          "recorded": {
+            "gate": "function",
+            "state": "stalled",
+            "reason": "blocked",
+            "note": "Barometer ICs on 14-week backorder"
+          },
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "a2393fb3090844dd83d44a39739ad486e1fcecd2",
+        "subject": "Record the sensor board function prototype",
+        "date": "2026-09-25",
+        "author_time": "2026-09-25T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "85adb9bd07783927046f987a17471c42eee97b87"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/status/9f31.yaml",
+            "change": "changed"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "c07d",
+        "title": "Node firmware"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-26",
+          "commit": "97e423122790a250e4e067d7d33bbf88622b00d5",
+          "by": "ben@example.org",
+          "kind": "status",
+          "recorded": {
+            "gate": "design",
+            "state": "",
+            "reason": "",
+            "note": ""
+          },
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        },
+        {
+          "date": "2026-09-26",
+          "commit": "97e423122790a250e4e067d7d33bbf88622b00d5",
+          "by": "ben@example.org",
+          "kind": "reviewed",
+          "recorded": null,
+          "gate": "mockup",
+          "pin": null,
+          "subproject": null
+        },
+        {
+          "date": "2026-09-26",
+          "commit": "97e423122790a250e4e067d7d33bbf88622b00d5",
+          "by": "ben@example.org",
+          "kind": "pin",
+          "recorded": null,
+          "gate": "",
+          "pin": {
+            "url": "firmware",
+            "old": "",
+            "new": "cf5b16964dba7f8f1c8842a8202878fd572ad835"
+          },
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "snapshot",
+        "gate": "design",
+        "state": "nominal",
+        "reason": "",
+        "note": "Sleep scheduler in progress",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "snapshot",
+          "task": {
+            "id": "f1a0",
+            "title": "Weather node image"
+          },
+          "url": "firmware",
+          "pin": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
+          "gate": "design"
+        }
+      },
+      "unchanged": false,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "accepts",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "97e423122790a250e4e067d7d33bbf88622b00d5",
+        "subject": "Pin the firmware at its design",
+        "date": "2026-09-26",
+        "author_time": "2026-09-26T12:00:00Z",
+        "author": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "committer": {
+          "name": "Ben Okafor",
+          "email": "ben@example.org"
+        },
+        "parents": [
+          "a2393fb3090844dd83d44a39739ad486e1fcecd2"
+        ],
+        "trailers": [
+          "Reviewed: c07d mockup"
+        ],
+        "files": [
+          {
+            "path": ".tableaux/status/c07d.yaml",
+            "change": "added"
+          },
+          {
+            "path": "firmware",
+            "change": "pin"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "3c5d",
+        "title": "Dashboard"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-27",
+          "commit": "1b8cfb16a248f50eeefb76e0994234693ff4f4a6",
+          "by": "dan@example.org",
+          "kind": "task",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": true,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "proposed",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "1b8cfb16a248f50eeefb76e0994234693ff4f4a6",
+        "subject": "Revise the dashboard scope",
+        "date": "2026-09-27",
+        "author_time": "2026-09-27T12:00:00Z",
+        "author": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "committer": {
+          "name": "Dan Reyes",
+          "email": "dan@example.org"
+        },
+        "parents": [
+          "97e423122790a250e4e067d7d33bbf88622b00d5"
+        ],
+        "trailers": [],
+        "files": [
+          {
+            "path": ".tableaux/tasks/3c5d.yaml",
+            "change": "changed"
+          }
+        ]
+      }
+    },
+    {
+      "task": {
+        "id": "9f31",
+        "title": "Sensor board"
+      },
+      "proposal": false,
+      "events": [
+        {
+          "date": "2026-09-28",
+          "commit": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+          "by": "ada@example.org",
+          "kind": "reaffirmed",
+          "recorded": null,
+          "gate": "",
+          "pin": null,
+          "subproject": null
+        }
+      ],
+      "after": {
+        "kind": "recorded",
+        "gate": "function",
+        "state": "stalled",
+        "reason": "blocked",
+        "note": "Barometer ICs on 14-week backorder",
+        "date": "",
+        "recorder": "",
+        "derived": false,
+        "why": "",
+        "uncommitted": false,
+        "from": null
+      },
+      "unchanged": true,
+      "subject_after": {
+        "kind": "rollup",
+        "gate": "defined",
+        "state": "nominal",
+        "reason": "",
+        "note": "",
+        "date": "",
+        "recorder": "",
+        "derived": true,
+        "why": "",
+        "uncommitted": false,
+        "from": {
+          "kind": "rollup",
+          "task": {
+            "id": "3c5d",
+            "title": "Dashboard"
+          },
+          "url": "",
+          "pin": "",
+          "gate": ""
+        }
+      },
+      "effect": "",
+      "model": "",
+      "check": null,
+      "committer": "",
+      "commit": {
+        "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+        "subject": "Weekly review: no change",
+        "date": "2026-09-28",
+        "author_time": "2026-09-28T12:00:00Z",
+        "author": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "committer": {
+          "name": "Ada Byron",
+          "email": "ada@example.org"
+        },
+        "parents": [
+          "1b8cfb16a248f50eeefb76e0994234693ff4f4a6"
+        ],
+        "trailers": [
+          "Reaffirmed: 9f31"
+        ],
+        "files": []
+      }
+    }
+  ],
+  "commands": [
+    {
+      "text": "git log --format='%H %as %ae %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/tasks .tableaux/status firmware",
+      "comment": ""
+    },
+    {
+      "text": "git log --format='%H %as %ae %s' -E --grep='^(Authorised|Reaffirmed): ([0-9a-f]{4})$' --grep='^Reviewed: ([0-9a-f]{4}) ' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+      "comment": ""
+    }
+  ]
+}

@@ -86,7 +86,7 @@ func TestExportCommand(t *testing.T) {
 	// The bundle: the success line and the files.
 	code, stdout, stderr := runLive(t, "export", "-C", dir, "--out", out, "--ref", "main")
 	m := successLine.FindStringSubmatch(stdout)
-	if code != 0 || m == nil || m[3] != out || m[4] != "main" || m[6] != "2026-09-30" {
+	if code != 0 || m == nil || m[3] != out || m[4] != "main" || m[6] != "2026-09-28" {
 		t.Fatalf("status %d, line %q, standard error %q", code, stdout, stderr)
 	}
 	if strings.Count(stdout, "\n") != 1 || stderr != "" {
