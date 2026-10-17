@@ -546,9 +546,10 @@ func TestRealStructuralViews(t *testing.T) {
 // TestRealStatusViews is T13 of design 44bf through the real source: over the
 // copied weather-station at main, the global tableau shows six rows at
 // detail and 🔴⛔ named "stalled, blocked" at 9f31, and each row it expands
-// collapses to the address it left (T6); Ben's contextual tableau
-// draws his own 4e2b and c07d first and all six rows in its wider grid, the
-// siblings marked; the blockage tree shows its causes largest first; the
+// collapses to the address it left (T6); the task form of 4e2b draws 4e2b
+// and the rows beneath it; Ben's contextual tableau draws his own 4e2b and
+// c07d first and all six rows in its wider grid, the siblings marked; the
+// blockage tree shows its causes largest first; the
 // queue of ada@example.org shows four items in the order of VIEWS.md and the
 // brief of one, and that of ben@example.org five empty kinds.
 func TestRealStatusViews(t *testing.T) {
@@ -603,6 +604,12 @@ func TestRealStatusViews(t *testing.T) {
 	}
 	if !slices.Equal(siblings, []string{"9f31", "7b2e", "3c5d"}) {
 		t.Errorf("the siblings are %q", siblings)
+	}
+
+	// The task form draws the task and the rows beneath it, though tablo
+	// gives the spine and the siblings beside them.
+	if got := rows(d.page("/context?task=4e2b"), "grid"); !slices.Equal(got, []string{"4e2b", "9f31", "c07d"}) {
+		t.Errorf("the task form of 4e2b draws %q", got)
 	}
 
 	root = d.page("/blockage")

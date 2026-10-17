@@ -74,9 +74,9 @@ func TableauFrom(d *view.Tableau, e Env) *TableauView {
 }
 
 // ContextualFrom builds the model of the contextual tableau from tablo's
-// view: the task form when tablo names a subject, else the person form, whose
-// first grid holds the person's own rows and whose wider grid adds the spine
-// and the siblings.
+// view: the task form when tablo names a subject, whose grid holds the task
+// and the rows beneath it, else the person form, whose first grid holds the
+// person's own rows and whose wider grid adds the spine and the siblings.
 func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	v := &ContextualView{}
 	var own []view.GridRow
@@ -84,7 +84,13 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	if d.Subject != nil {
 		t := e.taskRef(*d.Subject)
 		v.Task = &t
-		own = d.Rows
+		// The task form draws the task and the rows beneath it; tablo may
+		// add the spine and the siblings, labelled, which it draws not.
+		for _, r := range d.Rows {
+			if r.Label == "" {
+				own = append(own, r)
+			}
+		}
 	} else {
 		v.Person = e.Page.Params.Person
 		if v.Person == "" {
