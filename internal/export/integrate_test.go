@@ -7,9 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/nbyoung/tableaud/internal/source"
 )
@@ -168,7 +170,63 @@ func TestRealBundle(t *testing.T) {
 
 // TestSourceLine is T16: each page's context line holds the ref, the
 // abbreviated commit and the date, and reads "viewer: an observer"; no page
-// holds the day of the run.
+// holds the day of the run. The run takes a zone fourteen hours east of UTC,
+// for git and for this process, in which the commit of 12:00 UTC falls on the
+// next day: a page that wrote a date in the run's zone would show it.
 func TestSourceLine(t *testing.T) {
-	t.Skip("waits at the integrate gate for tablo's Source and the templates' adapters, which draw the pages of a real run")
+	dir := corpusEntry(t, "weather-station")
+	east, err := time.LoadLocation("Pacific/Kiritimati")
+	if err != nil {
+		t.Skipf("no zone database: %v", err)
+	}
+	t.Setenv("TZ", "Pacific/Kiritimati")
+	local := time.Local
+	time.Local = east
+	t.Cleanup(func() { time.Local = local })
+
+	o := realOptions(t, "main")
+	res, err := Run(context.Background(), tabloSource(t, dir), o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commit := time.Date(2026, 9, 28, 12, 0, 0, 0, time.UTC)
+	if res.Project.Short() != "edb30d2" || res.Project.Date != commit.Format(time.DateOnly) {
+		t.Fatalf("the export reads %s of %s, want edb30d2 of the corpus's head", res.Project.Short(), res.Project.Date)
+	}
+	now := time.Now()
+	foreign := map[string]string{
+		now.UTC().Format(time.DateOnly):       "the day of the run in UTC",
+		now.In(east).Format(time.DateOnly):    "the day of the run in its zone",
+		commit.In(east).Format(time.DateOnly): "the commit's day in the run's zone",
+	}
+	if _, ok := foreign[res.Project.Date]; ok {
+		t.Fatalf("the run falls on the commit's day, %s, so no page can show the day of the run apart", res.Project.Date)
+	}
+
+	const line = "<code>main</code> at <code>edb30d2</code>, 2026-09-28 · viewer: an observer"
+	pages := 0
+	for p, b := range readBundle(t, o.Out) {
+		for day, what := range foreign {
+			if strings.Contains(b, day) {
+				t.Errorf("%s holds %s, %s", p, day, what)
+			}
+		}
+		if !strings.HasSuffix(p, ".html") {
+			continue
+		}
+		pages++
+		m := reContext.FindStringSubmatch(b)
+		if len(m) != 2 || strings.Count(b, `<p class="context`) != 1 {
+			t.Errorf("%s: no single context line", p)
+			continue
+		}
+		if !strings.Contains(m[1], line) {
+			t.Errorf("%s: the context line reads %q, want %q in it", p, m[1], line)
+		}
+	}
+	if pages != 31 {
+		t.Errorf("%d pages, want the 31 of the golden list and none more", pages)
+	}
 }
+
+var reContext = regexp.MustCompile(`<p class="context[^"]*">(.*?)</p>`)
