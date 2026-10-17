@@ -42,8 +42,7 @@ func corpusEntry(t *testing.T, name string) string {
 	return dir
 }
 
-// tabloSource opens the tablo adapter on the project at dir, which is its own
-// working tree.
+// tabloSource opens the tablo adapter on the project at dir.
 func tabloSource(t *testing.T, dir string) source.Source {
 	t.Helper()
 	src, err := source.NewTablo(context.Background(), dir)
