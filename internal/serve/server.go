@@ -23,7 +23,7 @@ var zeroTime time.Time
 type Config struct {
 	Source  source.Source
 	Digest  Digester      // what changes without a request; see Watcher
-	Viewer  string        // the viewer for a loopback peer: --as, else user.email; may be empty
+	Viewer  string        // the viewer for a loopback peer: --as, else GIT_AUTHOR_EMAIL, else user.email; may be empty
 	Ref     string        // the ref a page reads when its address states none; empty: the working tree
 	Poll    time.Duration // how often an open page asks whether it changed; 0 turns the poll off
 	Allow   []string      // Host names to accept beside the loopback names
