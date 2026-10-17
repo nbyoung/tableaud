@@ -535,8 +535,18 @@ func TestAdaptersAgreeWithTablo(t *testing.T) {
 	if !strings.Contains(glance, "a subproject does the work, firmware") {
 		t.Errorf("c07d: the status line lacks the snapshot: %q", glance)
 	}
-	if got := root.byID("prov-status").text(true); !strings.Contains(got, "f1a0 Weather node image, read at cf5b169, the submodule's pin") {
+	got := root.byID("prov-status").text(true)
+	if !strings.Contains(got, "f1a0 Weather node image, read at cf5b169, the submodule's pin") {
 		t.Errorf("c07d: the status commit lacks the snapshot: %.600s", got)
+	}
+	// After the status commit, the deciding commit of the task's own file;
+	// an event taken from the subproject names its task by id and title.
+	status, own := strings.Index(got, "cf5b169 Record the node image design"), strings.Index(got, "The deciding commit of the task's own file:")
+	if status < 0 || own < status || !strings.Contains(got[own:], "97e4231 Pin the firmware at its design") {
+		t.Errorf("c07d: the own commit does not follow the status commit: %.900s", got)
+	}
+	if got := root.byID("prov-events").text(true); !strings.Contains(got, "Sleep scheduler in progress; in the subproject firmware, task f1a0 Weather node image") {
+		t.Errorf("c07d: the taken event reads %.900s", got)
 	}
 	if n := len(root.byClass("tr", "here")); n != 1 {
 		t.Errorf("c07d: %d rows here, want 1", n)

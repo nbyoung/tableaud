@@ -242,6 +242,7 @@
          "Model: claude-opus-5-5"
         ]
        },
+       "OwnCommit": null,
        "Reaffirmed": false,
        "Snapshot": null,
        "Commands": [
@@ -664,6 +665,7 @@
           "Model: claude-opus-5-5"
          ]
         },
+        "OwnCommit": null,
         "Reaffirmed": false,
         "Snapshot": null,
         "Commands": [
@@ -1040,6 +1042,7 @@
          "Model: claude-opus-5-5"
         ]
        },
+       "OwnCommit": null,
        "Reaffirmed": false,
        "Snapshot": null,
        "Commands": [

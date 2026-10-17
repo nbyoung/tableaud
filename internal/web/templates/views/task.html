@@ -96,6 +96,9 @@
 <dl class="fields">
 {{template "commit" .Commit}}</dl>
 {{else}}<p>The task has no status file of its own: {{if .File}}no commit records one{{else}}its status derives from its children{{end}}.</p>
+{{end}}{{with .OwnCommit}}<p>The deciding commit of the task's own file:</p>
+<dl class="fields">
+{{template "commit" .}}</dl>
 {{end}}{{with .Snapshot}}<p>The state, the note and the date come from the subproject <code>{{.URL}}</code>, task {{template "task" .Task}}, read at <code>{{.Pin}}</code>, {{.Form}}; the task stands at {{template "sym" .Gate}} there.</p>
 {{end}}{{template "commands" .Commands}}{{end}}
 

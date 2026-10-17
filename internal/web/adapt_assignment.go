@@ -28,7 +28,10 @@ func init() {
 // where each junction stands, groups the junctions by gate under the fold
 // rule, and sums the counts; the counts by gate are tablo's.
 func AssignmentFrom(d *view.Assignment, e Env) *AssignmentView {
-	v := &AssignmentView{}
+	v := &AssignmentView{Prov: e.Fold("prov", "prov-assignment", "", "")}
+	if d.AssignmentProvenance != nil {
+		v.Commands = commands(d.Commands)
+	}
 	anchors := anchorsOf(emails(d.People))
 	sections := map[string]view.PersonSection{}
 	if d.AssignmentDetail != nil {

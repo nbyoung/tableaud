@@ -103,6 +103,7 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 	}
 	if d.TaskProvenance != nil {
 		v.StatusProv.Commit = commitOf(d.StatusCommit)
+		v.StatusProv.OwnCommit = commitOf(d.OwnCommit)
 		v.StatusProv.Commands = commands(d.Commands)
 		for _, ev := range d.Events {
 			if ev.Kind == "reaffirmed" && d.StatusCommit != nil && ev.Commit == d.StatusCommit.Hash {

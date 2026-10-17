@@ -75,6 +75,8 @@ type WayCount struct {
 type AssignmentView struct {
 	People   []PersonRow
 	Sections []PersonSection // one per email in view
+	Prov     Fold            // the provenance of the view: the commands; no part
+	Commands []string        // the commands that show the assignment; empty below provenance
 }
 
 // PersonRow is the glance row of one email.

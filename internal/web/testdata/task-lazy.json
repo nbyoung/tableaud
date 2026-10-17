@@ -53,6 +53,7 @@
      "Model: claude-opus-5-5"
     ]
    },
+   "OwnCommit": null,
    "Reaffirmed": false,
    "Snapshot": {
     "Mark": {
@@ -689,7 +690,9 @@
       "Snapshot": null
      },
      "Gate": null,
-     "Pin": null
+     "Pin": null,
+     "Project": "",
+     "Sub": null
     },
     {
      "Date": "2026-09-30",
@@ -704,7 +707,9 @@
       "Glyph": "📐",
       "Name": "design"
      },
-     "Pin": null
+     "Pin": null,
+     "Project": "",
+     "Sub": null
     },
     {
      "Date": "2026-09-29",
@@ -720,7 +725,9 @@
       "URL": "subprojects/tableaud",
       "Old": "cffbfa6",
       "New": "e6ec4ec"
-     }
+     },
+     "Project": "",
+     "Sub": null
     }
    ],
    "Earlier": 5,

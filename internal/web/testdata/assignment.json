@@ -334,6 +334,14 @@
      }
     ]
    }
-  ]
+  ],
+  "Prov": {
+   "ID": "prov-assignment",
+   "Class": "prov",
+   "Open": false,
+   "Src": "",
+   "Alt": ""
+  },
+  "Commands": []
  }
 }

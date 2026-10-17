@@ -19,10 +19,12 @@ func init() {
 }
 
 // AuthorityFrom builds the model of the authority delegation from tablo's
-// view, which holds every task in view. The adapter builds the tree from the
-// rows' depths, words each relation, applies the proposed-only filter, which
-// keeps the proposed tasks and their ancestors, and groups the deciding
-// commits by commit, in the order display order first meets each.
+// view, which holds every task in view. The top row takes its authorities
+// from the view, every other row from its parent's chain. The adapter builds
+// the tree from the rows' depths, words each relation, applies the
+// proposed-only filter, which keeps the proposed tasks and their ancestors,
+// and groups the deciding commits by commit, in the order display order
+// first meets each.
 func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 	p := e.Page
 	v := &AuthorityView{
@@ -129,6 +131,8 @@ func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 			from := ref(d.Rows[j].ID)
 			b.From = &from
 			b.Authorities = authorities(chains[d.Rows[j].ID].Authorities, e, ref)
+		} else if d.DelegationDetail != nil {
+			b.Authorities = authorities(d.Authorities, e, ref) // the top row's, from above the subtree; none at the root
 		}
 		if c, ok := chains[r.ID]; ok {
 			b.ChildCount = len(c.Children)

@@ -1474,6 +1474,29 @@ func TestStatusAdaptersAgreeWithTablo(t *testing.T) {
 	if want := []string{"auth-3c5d", "ready-7b2e", "reaff-9f31", "waiting-9f31"}; !slices.Equal(items, want) || qm.Total != 4 || len(qm.Kinds) != 5 {
 		t.Errorf("ada's queue holds %q, want %q", items, want)
 	}
+	// The causes at glance, from each item's own facts (886d decision 15):
+	// the authorisation's why, and the reason's note.
+	causes := map[string]string{}
+	for _, k := range qm.Kinds {
+		for _, r := range k.Items {
+			for _, it := range r.Shown {
+				causes[it.Anchor] = it.Cause
+			}
+		}
+	}
+	if causes["auth-3c5d"] != "proposed: the deciding commit is not by an authority" ||
+		causes["waiting-9f31"] != "waits on the reason blocked: Barometer ICs on 14-week backorder" || causes["ready-7b2e"] != "" {
+		t.Errorf("the causes read %q", causes)
+	}
+	for why, want := range map[string]string{
+		"no_history": "proposed: the source has no history", "no_trunk": "proposed: the trunk is undetermined",
+		"off_trunk": "proposed: the ref lies off the trunk", "no_commit": "proposed: no commit on the trunk decides it",
+	} {
+		one := &view.Queue{Items: []view.QueueItem{{Kind: "authorisation", Task: view.TaskRef{ID: "3c5d"}, Gate: "defined", Why: why}}}
+		if got := web.QueueFrom(one, web.EnvOf(p, web.Document)).Kinds[1].Items[0].Shown[0].Cause; got != want {
+			t.Errorf("%s reads %q, want %q", why, got, want)
+		}
+	}
 	adapted(t, "queue", "detail", &q, nil)
 }
 
