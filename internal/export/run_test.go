@@ -765,6 +765,24 @@ func TestRunWritesOnlyThere(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	writesOnlyThere(t, work, func(out string) {
+		o := options(t)
+		o.Out = out
+		src, fr := newRun(t)
+		fr.assets = []string{"tableaud.css"}
+		if _, err := run(context.Background(), src, fr.render, o); err != nil {
+			t.Fatal(err)
+		}
+	})
+}
+
+// writesOnlyThere runs export from the working tree work, with TMPDIR, HOME
+// and XDG_CACHE_HOME at empty directories, into an output directory in a
+// parent of its own. Afterwards every file and directory of work, .git
+// included, holds what it held before, the three directories stay empty, and
+// the parent holds the output alone.
+func writesOnlyThere(t *testing.T, work string, export func(out string)) {
+	t.Helper()
 	var homes []string
 	for _, env := range []string{"TMPDIR", "HOME", "XDG_CACHE_HOME"} {
 		d := t.TempDir()
@@ -774,20 +792,18 @@ func TestRunWritesOnlyThere(t *testing.T) {
 	t.Chdir(work)
 	before := hashTree(t, work)
 	parent := t.TempDir()
-	o := options(t)
-	o.Out = filepath.Join(parent, "public")
-	src, fr := newRun(t)
-	fr.assets = []string{"tableaud.css"}
-	if _, err := run(context.Background(), src, fr.render, o); err != nil {
-		t.Fatal(err)
+	export(filepath.Join(parent, "public"))
+	after := hashTree(t, work)
+	for p, c := range before {
+		if a, ok := after[p]; !ok {
+			t.Errorf("%s is gone", p)
+		} else if a != c {
+			t.Errorf("%s changed", p)
+		}
 	}
-	if after := hashTree(t, work); len(after) != len(before) {
-		t.Errorf("the working tree has %d entries, then %d", len(before), len(after))
-	} else {
-		for p, c := range before {
-			if after[p] != c {
-				t.Errorf("%s changed", p)
-			}
+	for p := range after {
+		if _, ok := before[p]; !ok {
+			t.Errorf("%s is new", p)
 		}
 	}
 	for _, d := range homes {

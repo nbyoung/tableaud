@@ -91,21 +91,29 @@ func files(t *testing.T, dir string) []string {
 // source and the templates' adapters holds the golden file list, with the
 // style sheet beside it, and passes the walk, the scan, the determinism and
 // the base-path tests; the Tableaux tooling plan at ccb3947 gives 93 files
-// beside its assets; the test logs both sizes.
+// beside its assets; the test logs both sizes. T14 runs again on the first
+// export, where tablo and git do the reading.
 func TestRealBundle(t *testing.T) {
-	dir := corpusEntry(t, "weather-station")
-	o := realOptions(t, "main")
-	res, err := Run(context.Background(), tabloSource(t, dir), o)
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	var want []string
 	for _, r := range tsv(t, "files-weather-station.txt") {
 		want = append(want, r[0])
 	}
 	want = append(want, assetsOfTheTemplates...)
 	slices.Sort(want)
+
+	dir := corpusEntry(t, "weather-station")
+	o := realOptions(t, "main")
+	var res Result
+	// T14 at integrate: tablo and git read the copied entry, and the run
+	// writes nothing in it, .git included, and nothing outside the output.
+	writesOnlyThere(t, dir, func(out string) {
+		o.Out = out
+		var err error
+		if res, err = Run(context.Background(), tabloSource(t, dir), o); err != nil {
+			t.Fatal(err)
+		}
+	})
+
 	got := files(t, o.Out)
 	if !slices.Equal(got, want) {
 		t.Errorf("the files\n%s\nwant\n%s", strings.Join(got, "\n"), strings.Join(want, "\n"))
