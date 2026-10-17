@@ -409,6 +409,56 @@ func TestReferenceLinks(t *testing.T) {
 	}
 }
 
+// TestReferenceWithoutText checks the owner's ruling of 2026-10-17: a
+// reference with no text prints its url alone, with no comma before it, in
+// the task page's list and in a queue item's detail, linked or as code; a
+// reference with a text keeps the text and the comma.
+func TestReferenceWithoutText(t *testing.T) {
+	refs := []web.Reference{
+		{URL: "docs/sensor-board.md"},
+		{URL: "https://example.org/bare", Href: "https://example.org/bare"},
+		{Text: "Power budget", URL: "docs/sensor-board.md#power-budget"},
+	}
+
+	f := fixtureNamed(t, "task")
+	m := clone(t, f.Model.(*web.TaskView))
+	m.About.References = refs
+	out := render(t, web.Document, pageOf(f.View, m))
+	for _, want := range []string{
+		`<li><code>docs/sensor-board.md</code></li>`,
+		`<li><a href="https://example.org/bare"><code>https://example.org/bare</code></a></li>`,
+		`<li>Power budget, <code>docs/sensor-board.md#power-budget</code></li>`,
+	} {
+		if !strings.Contains(out, want) {
+			t.Errorf("the task page lacks %s", want)
+		}
+	}
+	if strings.Contains(out, "<li>, ") {
+		t.Error("the task page prints a comma before a url with no text")
+	}
+
+	qf := statusFixtureNamed(t, "queue")
+	qm := clone(t, qf.Model.(*web.QueueView))
+	items := 0
+	for _, it := range statusQueueItems(qm) {
+		if it.Body != nil {
+			it.Body.References = refs
+			items++
+		}
+	}
+	if items == 0 {
+		t.Fatal("the queue fixture holds no item with a detail")
+	}
+	out = render(t, web.Document, pageOf(qf.View, qm))
+	want := `<dd><code>docs/sensor-board.md</code>; <a href="https://example.org/bare"><code>https://example.org/bare</code></a>; Power budget, <code>docs/sensor-board.md#power-budget</code></dd>`
+	if strings.Count(out, want) != items {
+		t.Errorf("%d of %d items read %s", strings.Count(out, want), items, want)
+	}
+	if strings.Contains(out, "<dd>, ") || strings.Contains(out, "; , ") {
+		t.Error("the queue prints a comma before a url with no text")
+	}
+}
+
 // TestContextLine checks that the context line states the parameters in force,
 // the task an address: "· task 9f31 · person ben@example.org".
 func TestContextLine(t *testing.T) {

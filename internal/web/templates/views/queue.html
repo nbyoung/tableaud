@@ -22,7 +22,7 @@
 <dt>Gate</dt><dd>{{template "sym" .Gate}}, {{.GateName}}: {{.Criteria}}</dd>
 <dt>Contributor</dt><dd>{{.Contributor}}{{if .Model}}, an agent on model <code>{{.Model}}</code>{{end}}{{with .ContribBy}}, from {{template "task" .}}{{end}}</dd>
 <dt>Reviewer</dt><dd>{{if .Self}}{{.Reviewer}}, the assignee, since the junction states no reviewer; the agent reviews its own work{{else if .Reviewer}}{{.Reviewer}}{{with .ReviewerBy}}, from {{template "task" .}}{{end}}{{else}}None{{end}}</dd>
-<dt>References</dt><dd>{{if .References}}{{range $i, $r := .References}}{{if $i}}; {{end}}{{$r.Text}}, {{if $r.Href}}<a href="{{$r.Href}}"><code>{{$r.URL}}</code></a>{{else}}<code>{{$r.URL}}</code>{{end}}{{end}}{{else}}None{{end}}</dd>
+<dt>References</dt><dd>{{if .References}}{{range $i, $r := .References}}{{if $i}}; {{end}}{{with $r.Text}}{{.}}, {{end}}{{if $r.Href}}<a href="{{$r.Href}}"><code>{{$r.URL}}</code></a>{{else}}<code>{{$r.URL}}</code>{{end}}{{end}}{{else}}None{{end}}</dd>
 <dt>Requires</dt>{{range .Requires}}<dd>{{template "edge" .}}</dd>{{else}}<dd>Nothing</dd>{{end}}
 <dt>Unblocks</dt>{{range .Unblocks}}<dd>{{template "edge" .}}</dd>{{else}}<dd>Nothing</dd>{{end}}
 <dt>Status</dt><dd>{{template "status" .Status}}, {{.Status.Date}}, {{.Status.Recorder}}, <code>{{.Commit}}</code>{{if .Status.Note}}: {{.Status.Note}}{{end}}</dd>
