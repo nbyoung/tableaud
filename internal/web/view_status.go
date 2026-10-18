@@ -16,7 +16,7 @@ type ContextualView struct {
 	Task   *TaskRef   // the task form
 	Person string     // the person form
 	Grid   Grid       // the task and its children, or the person's own tasks
-	Wider  *Wider     // the person form's spine and siblings
+	Wider  *Wider     // the spine and siblings, in either form
 	Blocks []RowBlock // one per row of Grid, in row order
 }
 
@@ -36,6 +36,9 @@ type Grid struct {
 	Rows    []Row
 	Notes   bool         // the last column holds each row's date and note
 	Control *ColumnsForm // the column choice, which task db74 fills; nil draws none
+	// Apart is the hidden text after the task of each fold control, which
+	// tells the control from that of the same row in another grid of the page.
+	Apart string
 }
 
 // Column is one gate column, or one run of folded gates.
@@ -91,7 +94,7 @@ type MarkProv struct {
 	Own         bool
 }
 
-// Wider is the person form at detail: the person's tasks with their spine and siblings.
+// Wider is either form at detail: its first grid's tasks with their spine and siblings.
 type Wider struct {
 	Fold Fold
 	Grid Grid

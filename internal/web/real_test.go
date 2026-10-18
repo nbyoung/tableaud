@@ -606,8 +606,8 @@ func TestRealStatusViews(t *testing.T) {
 		t.Errorf("the siblings are %q", siblings)
 	}
 
-	// The task form draws the task and the rows beneath it, though tablo
-	// gives the spine and the siblings beside them.
+	// The task form's first grid draws the task and the rows beneath it;
+	// TestRealContextTaskFormDrawsWider tests its wider grid.
 	if got := rows(d.page("/context?task=4e2b"), "grid"); !slices.Equal(got, []string{"4e2b", "9f31", "c07d"}) {
 		t.Errorf("the task form of 4e2b draws %q", got)
 	}
@@ -728,6 +728,55 @@ func TestRealTemporalViews(t *testing.T) {
 		}
 		if strings.Contains(root.text(true), "No finding: files and history agree") {
 			t.Errorf("%s: the audit reads clean", c.entry)
+		}
+	}
+}
+
+// TestRealContextTaskFormDrawsWider is T7 of design 44bf as decision 12 (a)
+// reads it, through the real source: over the copied weather-station at main,
+// the task form of 4e2b draws, like the person form, a wider grid with the
+// spine and the siblings, each sibling marked "· sibling", in a detail fold
+// that arrives closed at glance and open at detail and at provenance. For the
+// owner, Ben and an observer, at the role's arrival and at each level, the
+// page passes check, checkAccess and disclosure.
+func TestRealContextTaskFormDrawsWider(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	src := realSource(t, dir)
+	for _, viewer := range []string{"ada@example.org", "ben@example.org", ""} {
+		d := newDaemon(t, src, viewer)
+		for _, level := range []string{"", "glance", "detail", "provenance"} {
+			target := "/context?task=4e2b"
+			if level != "" {
+				target += "&level=" + level
+			}
+			root := d.page(target)
+			for _, b := range append(check(root), checkAccess(root)...) {
+				t.Errorf("%s for %q: %s", target, viewer, b)
+			}
+			for _, b := range disclosure(&d, target, root, true) {
+				t.Errorf("for %q: %s", viewer, b)
+			}
+			var drawn, siblings []string
+			for _, tr := range root.byID("wider").find("tbody")[0].find("tr") {
+				id := strings.TrimPrefix(tr.Attr["id"], "wider-")
+				drawn = append(drawn, id)
+				if strings.Contains(tr.find("th")[0].text(true), "· sibling") {
+					siblings = append(siblings, id)
+				}
+			}
+			if want := []string{"a1c0", "4e2b", "9f31", "c07d", "7b2e", "3c5d"}; !slices.Equal(drawn, want) {
+				t.Errorf("%s for %q: the wider grid draws %q, want %q", target, viewer, drawn, want)
+			}
+			if want := []string{"7b2e", "3c5d"}; !slices.Equal(siblings, want) {
+				t.Errorf("%s for %q: the siblings are %q, want %q", target, viewer, siblings, want)
+			}
+			fold := root.byID("d-wider")
+			if fold == nil || !fold.hasClass("detail") || strings.TrimSpace(fold.find("summary")[0].text(true)) != "Spine, siblings and notes" {
+				t.Fatalf("%s for %q: the wider fold is %v", target, viewer, fold)
+			}
+			if _, open := fold.Attr["open"]; level != "" && open != (level != "glance") {
+				t.Errorf("%s for %q: the wider fold arrives open %v", target, viewer, open)
+			}
 		}
 	}
 }

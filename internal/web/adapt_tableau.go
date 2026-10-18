@@ -74,9 +74,11 @@ func TableauFrom(d *view.Tableau, e Env) *TableauView {
 }
 
 // ContextualFrom builds the model of the contextual tableau from tablo's
-// view: the task form when tablo names a subject, whose grid holds the task
-// and the rows beneath it, else the person form, whose first grid holds the
-// person's own rows and whose wider grid adds the spine and the siblings.
+// view: the task form when tablo names a subject, whose first grid holds the
+// task and the rows beneath it, else the person form, whose first grid holds
+// the person's own rows. In both forms the wider grid adds the spine and the
+// siblings, which tablo labels (44bf decision 12 a); the task form draws it
+// only when tablo gives such a row, so the root's form draws one grid.
 func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	v := &ContextualView{}
 	var own []view.GridRow
@@ -84,8 +86,8 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	if d.Subject != nil {
 		t := e.taskRef(*d.Subject)
 		v.Task = &t
-		// The task form draws the task and the rows beneath it; tablo may
-		// add the spine and the siblings, labelled, which it draws not.
+		// The first grid draws the task and the rows beneath it; the spine
+		// and the siblings, labelled, stand in the wider grid alone.
 		for _, r := range d.Rows {
 			if r.Label == "" {
 				own = append(own, r)
@@ -132,10 +134,17 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	v.Grid = e.grid(d, "grid", own, u, false)
 	v.Grid.Control = ColumnsOf(e, gateChoices(d))
 	v.Grid.Caption = caption(len(v.Grid.Rows), len(own))
-	if v.Task == nil {
-		wu := Unfold(e.Page, treeRows(d.Rows), entry)
+	if v.Task == nil || len(own) < len(d.Rows) {
+		wider := entry
+		if v.Task != nil {
+			// The wider grid of the task form opens on the task's spine and
+			// the task, as the person form's opens on the spine.
+			wider = Unfolded{IDs: append(spineOf(d.Rows, top), top)}
+		}
+		wu := Unfold(e.Page, treeRows(d.Rows), wider)
 		v.Wider = &Wider{Fold: e.Fold("detail", "d-wider", "", ""), Grid: e.grid(d, "wider", d.Rows, wu, true)}
 		v.Wider.Grid.Caption = caption(len(v.Wider.Grid.Rows), len(d.Rows))
+		v.Wider.Grid.Apart = widerApart
 	}
 	for i := range v.Grid.Rows {
 		b := RowBlock{Row: &v.Grid.Rows[i]}
@@ -143,6 +152,27 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 		v.Blocks = append(v.Blocks, b)
 	}
 	return v
+}
+
+// widerApart is the hidden text that tells a fold control of the wider grid
+// from that of the same row in the first grid, which may lead elsewhere with
+// the same words (N3 of 5a2f).
+const widerApart = ", among the spine and siblings"
+
+// spineOf returns the ancestors of the row of id among rows, from its parent
+// up.
+func spineOf(rows []view.GridRow, id string) []string {
+	under := map[string]string{}
+	for _, r := range rows {
+		under[r.ID] = r.Under
+	}
+	var out []string
+	seen := map[string]bool{id: true}
+	for up := under[id]; up != "" && !seen[up]; up = under[up] {
+		seen[up] = true
+		out = append(out, up)
+	}
+	return out
 }
 
 // tasksIn counts the tasks of a tableau: its rows and the tasks beneath them
