@@ -144,9 +144,9 @@ func stated(level string) web.Level {
 // closed, and falls back to its hx-get address with its own fragment; that
 // address answers an HTMX request with a fragment, and as a document with the
 // fold open; d asks each address once, and a nil d asks none. Where the address states a level, a fold that is not lazy
-// arrives open exactly where ByLevel opens its class, but for the folds of
-// unfolded and for the wider grid of a contextual tableau whose address
-// states the open rows, which opens for every viewer. With scripts, the frame
+// arrives open exactly where ByLevel opens its class, but for the wider grid
+// of a contextual tableau whose address states the open rows, which opens for
+// every viewer. With scripts, the frame
 // holds the four links of the level control, the one the address states
 // current, none with an hx- attribute; without, it holds none.
 func disclosure(d *daemon, target string, root *Node, scripts bool) []string {
@@ -213,7 +213,7 @@ func disclosure(d *daemon, target string, root *Node, scripts bool) []string {
 			}
 			continue
 		}
-		if level != "" && !unfolded[id] && (!rows || id != "d-wider") {
+		if level != "" && (!rows || id != "d-wider") {
 			if want := web.ByLevel(stated(level)).Opens(web.View{}, class, id); open != want {
 				fail("at %s the %s fold %s arrives open %v, want %v", level, class, id, open, want)
 			}
@@ -249,11 +249,6 @@ func disclosure(d *daemon, target string, root *Node, scripts bool) []string {
 	}
 	return bad
 }
-
-// unfolded names the folds that no level opens: the four provenances of the
-// gate definition's tables, which its template draws with no fold, as the
-// draft of design 438a does.
-var unfolded = map[string]bool{"prov-gates": true, "prov-states": true, "prov-reasons": true, "prov-marks": true}
 
 // realAddresses are the pages TestRealPagesKeepTheRules asks of the daemon:
 // every view, the task definition of each kind of task, the filtered tree and
@@ -338,11 +333,10 @@ func TestRealPagesKeepTheRules(t *testing.T) {
 
 // TestRealBundleKeepsTheRules exports the copied weather-station at main
 // through tablo's adapter: every page of the bundle passes check and
-// disclosure as a page with no scripts, at the observer's glance, and every
-// page of a view passes checkAccess. The three lists of focuses are the
-// export's own pages and no view's.
+// disclosure as a page with no scripts, at the observer's glance, and
+// checkAccess, the three lists of focuses among them, whose links of one text
+// tell their focus apart (6160 decision 15).
 func TestRealBundleKeepsTheRules(t *testing.T) {
-	lists := map[string]bool{"context.html": true, "queue.html": true, "task.html": true}
 	dir, _ := realEntry(t, "weather-station")
 	out := filepath.Join(t.TempDir(), "public")
 	if _, err := export.Run(context.Background(), realSource(t, dir), export.Options{Out: out, Ref: "main", Tableaud: "0.1.0", Tablo: "0.1.0"}); err != nil {
@@ -365,11 +359,7 @@ func TestRealBundleKeepsTheRules(t *testing.T) {
 		}
 		rel, _ := filepath.Rel(out, name)
 		root := mustParse(t, string(b))
-		bad := check(root)
-		if !lists[rel] {
-			bad = append(bad, checkAccess(root)...)
-		}
-		for _, b := range bad {
+		for _, b := range append(check(root), checkAccess(root)...) {
 			t.Errorf("%s: %s", rel, b)
 		}
 		for _, bad := range disclosure(nil, "/"+rel+"?level=glance", root, false) {
@@ -606,8 +596,8 @@ func TestRealStatusViews(t *testing.T) {
 		t.Errorf("the siblings are %q", siblings)
 	}
 
-	// The task form draws the task and the rows beneath it, though tablo
-	// gives the spine and the siblings beside them.
+	// The task form's first grid draws the task and the rows beneath it;
+	// TestRealContextTaskFormDrawsWider tests its wider grid.
 	if got := rows(d.page("/context?task=4e2b"), "grid"); !slices.Equal(got, []string{"4e2b", "9f31", "c07d"}) {
 		t.Errorf("the task form of 4e2b draws %q", got)
 	}
@@ -728,6 +718,85 @@ func TestRealTemporalViews(t *testing.T) {
 		}
 		if strings.Contains(root.text(true), "No finding: files and history agree") {
 			t.Errorf("%s: the audit reads clean", c.entry)
+		}
+	}
+}
+
+// TestRealGateSourcesFold covers 438a decision 20 through the real source:
+// over the copied weather-station at main, the four sources of the gate
+// definition's tables are prov folds that arrive closed at glance and at
+// detail and open at provenance, for the owner and for an observer, and each
+// page passes disclosure.
+func TestRealGateSourcesFold(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	src := realSource(t, dir)
+	for _, viewer := range []string{"ada@example.org", ""} {
+		d := newDaemon(t, src, viewer)
+		for _, level := range []string{"glance", "detail", "provenance"} {
+			target := "/gates?level=" + level
+			root := d.page(target)
+			for _, b := range disclosure(&d, target, root, true) {
+				t.Errorf("for %q: %s", viewer, b)
+			}
+			for _, id := range []string{"prov-gates", "prov-states", "prov-reasons", "prov-marks"} {
+				f := root.byID(id)
+				if f == nil || f.Tag != "details" || !f.hasClass("prov") {
+					t.Errorf("%s for %q: %s is %v", target, viewer, id, f)
+					continue
+				}
+				if _, open := f.Attr["open"]; open != (level == "provenance") {
+					t.Errorf("%s for %q: %s arrives open %v", target, viewer, id, open)
+				}
+			}
+		}
+	}
+}
+
+// TestRealContextTaskFormDrawsWider is T7 of design 44bf as decision 12 (a)
+// reads it, through the real source: over the copied weather-station at main,
+// the task form of 4e2b draws, like the person form, a wider grid with the
+// spine and the siblings, each sibling marked "· sibling", in a detail fold
+// that arrives closed at glance and open at detail and at provenance. For the
+// owner, Ben and an observer, at the role's arrival and at each level, the
+// page passes check, checkAccess and disclosure.
+func TestRealContextTaskFormDrawsWider(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	src := realSource(t, dir)
+	for _, viewer := range []string{"ada@example.org", "ben@example.org", ""} {
+		d := newDaemon(t, src, viewer)
+		for _, level := range []string{"", "glance", "detail", "provenance"} {
+			target := "/context?task=4e2b"
+			if level != "" {
+				target += "&level=" + level
+			}
+			root := d.page(target)
+			for _, b := range append(check(root), checkAccess(root)...) {
+				t.Errorf("%s for %q: %s", target, viewer, b)
+			}
+			for _, b := range disclosure(&d, target, root, true) {
+				t.Errorf("for %q: %s", viewer, b)
+			}
+			var drawn, siblings []string
+			for _, tr := range root.byID("wider").find("tbody")[0].find("tr") {
+				id := strings.TrimPrefix(tr.Attr["id"], "wider-")
+				drawn = append(drawn, id)
+				if strings.Contains(tr.find("th")[0].text(true), "· sibling") {
+					siblings = append(siblings, id)
+				}
+			}
+			if want := []string{"a1c0", "4e2b", "9f31", "c07d", "7b2e", "3c5d"}; !slices.Equal(drawn, want) {
+				t.Errorf("%s for %q: the wider grid draws %q, want %q", target, viewer, drawn, want)
+			}
+			if want := []string{"7b2e", "3c5d"}; !slices.Equal(siblings, want) {
+				t.Errorf("%s for %q: the siblings are %q, want %q", target, viewer, siblings, want)
+			}
+			fold := root.byID("d-wider")
+			if fold == nil || !fold.hasClass("detail") || strings.TrimSpace(fold.find("summary")[0].text(true)) != "Spine, siblings and notes" {
+				t.Fatalf("%s for %q: the wider fold is %v", target, viewer, fold)
+			}
+			if _, open := fold.Attr["open"]; level != "" && open != (level != "glance") {
+				t.Errorf("%s for %q: the wider fold arrives open %v", target, viewer, open)
+			}
 		}
 	}
 }

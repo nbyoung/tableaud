@@ -851,7 +851,7 @@ func TestRunFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(list), `<a href="queue-ben@example.org.html">queue</a>`) || !strings.Contains(string(list), `<a href="context-ada@example.org.html">corner</a>`) {
+	if !strings.Contains(string(list), `<a href="queue-ben@example.org.html">queue<span class="sr"> of ben@example.org</span></a>`) || !strings.Contains(string(list), `<a href="context-ada@example.org.html">corner<span class="sr"> of ada@example.org</span></a>`) {
 		t.Errorf("queue.html does not list the people:\n%s", list)
 	}
 	for _, f := range []string{"static/tableaud.css", "manifest.json", "task-9f31.html", "context-4e2b.html", "history-c07d.html"} {

@@ -10,7 +10,7 @@
 <caption>{{.Caption}}</caption>
 <thead><tr>{{range .Head}}<th scope="col">{{.}}</th>{{end}}</tr></thead>
 <tbody>
-{{range .Rows}}<tr>{{range .}}<td>{{if .Href}}<a{{if .ID}} class="id"{{end}} href="{{.Href}}">{{.Text}}</a>{{else}}{{.Text}}{{end}}</td>{{end}}</tr>
+{{range .Rows}}<tr>{{range .}}<td>{{if .Href}}<a{{if .ID}} class="id"{{end}} href="{{.Href}}">{{.Text}}{{with .Apart}}<span class="sr">{{.}}</span>{{end}}</a>{{else}}{{.Text}}{{end}}</td>{{end}}</tr>
 {{end}}</tbody>
 </table></div>
 {{end}}

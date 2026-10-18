@@ -217,20 +217,20 @@ func linked(snap *tablo.Snapshot, url string) (*tablo.Snapshot, error) {
 }
 
 // resolve returns the commit that ref names in the repository the snapshot
-// reads. For a subproject, which has no tablo.Repository of its own, tablo
-// resolves ref as the start of a history in the linked repository.
+// reads. For a subproject, tablo's Snapshot.Resolve resolves ref in the
+// linked project's own repository: the submodule's store, the parent's
+// repository for a directory link, or the clone that Git's configuration
+// names for an absolute URL. A ref it does not know is a *NotFoundError of
+// kind ref.
 func (t *Tablo) resolve(ctx context.Context, ld *loaded, ref string) (string, error) {
 	if !ld.sub {
 		return t.main.Resolve(ctx, ref)
 	}
-	env, err := ld.snap.View(ctx, tablo.History, tablo.Params{From: ref})
+	commit, err := ld.snap.Resolve(ctx, ref)
 	if err != nil {
 		return "", convert(err)
 	}
-	if env.Source.From == nil {
-		return "", &NotFoundError{Kind: "ref", Name: ref}
-	}
-	return env.Source.From.Commit, nil
+	return commit, nil
 }
 
 // paramsOf maps a request to tablo's parameters, field by field. The level is

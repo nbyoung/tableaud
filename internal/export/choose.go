@@ -20,9 +20,12 @@ var chooseText string
 var chooseTemplate = template.Must(template.New("choose.html").Parse(chooseText))
 
 // cell is one cell of a list: text, linked when the linker gives an address.
+// Apart is the hidden text after a link's text that tells it from the other
+// links of the same text on the page, as 5a2f decision 12 does for the audit:
+// " of 9f31" after "history", " of ada@example.org" after "queue".
 type cell struct {
-	Href, Text string
-	ID         bool // a task id, which the style marks
+	Href, Text, Apart string
+	ID                bool // a task id, which the style marks
 }
 
 // table is one table of a list.
@@ -69,7 +72,7 @@ func chooser(view string, ix source.Index, links web.Linker) (template.HTML, err
 		return rows
 	}
 	corner := func(email string) cell {
-		return cell{Href: href("context", "", email), Text: "corner"}
+		return cell{Href: href("context", "", email), Text: "corner", Apart: " of " + email}
 	}
 	const noViewer = "A static export has no viewer. "
 	switch view {
@@ -80,11 +83,11 @@ func chooser(view string, ix source.Index, links web.Linker) (template.HTML, err
 			row := []cell{
 				{Href: href("task", task.ID, ""), Text: task.ID, ID: true},
 				{Text: task.Title},
-				{Href: href("history", task.ID, ""), Text: "history"},
+				{Href: href("history", task.ID, ""), Text: "history", Apart: " of " + task.ID},
 				{},
 			}
 			if hasCorner(task, root) {
-				row[3] = cell{Href: href("context", task.ID, ""), Text: "corner"}
+				row[3] = cell{Href: href("context", task.ID, ""), Text: "corner", Apart: " of " + task.ID}
 			}
 			t.Rows = append(t.Rows, row)
 		}
@@ -93,7 +96,7 @@ func chooser(view string, ix source.Index, links web.Linker) (template.HTML, err
 		d.Note = noViewer + "This page lists every person in the project."
 		d.Tables = []table{{
 			Caption: "People", Head: []string{"Person", "Queue", "Corner"},
-			Rows: people(func(e string) cell { return cell{Href: href("queue", "", e), Text: "queue"} }, corner),
+			Rows: people(func(e string) cell { return cell{Href: href("queue", "", e), Text: "queue", Apart: " of " + e} }, corner),
 		}}
 	case "context":
 		d.Note = noViewer + "This page lists every person and every task with children."

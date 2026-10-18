@@ -92,7 +92,10 @@ func lowerFirst(s string) string {
 // language version and the trunk stand in tablo's envelope, not in its view;
 // they come from the page's project.
 func GateFrom(d *view.Gates, e Env) *GateView {
-	v := &GateView{Prov: e.Fold("prov", "prov-legend", "", "")}
+	v := &GateView{Prov: e.Fold("prov", "prov-legend", "", ""), Sources: map[string]Fold{}}
+	for _, id := range []string{"prov-gates", "prov-states", "prov-reasons", "prov-marks"} {
+		v.Sources[id] = e.Fold("prov", id, "", "")
+	}
 	if p := e.Page.Project; p != nil {
 		v.Version, v.Trunk = p.Version, p.Trunk
 	}

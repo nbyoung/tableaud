@@ -1,9 +1,12 @@
 package web_test
 
 import (
+	"context"
 	"fmt"
 	"io/fs"
 	"math"
+	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strconv"
@@ -12,6 +15,8 @@ import (
 
 	"github.com/nbyoung/tablo/view"
 
+	"github.com/nbyoung/tableaud/internal/export"
+	"github.com/nbyoung/tableaud/internal/source/sourcetest"
 	"github.com/nbyoung/tableaud/internal/web"
 )
 
@@ -540,6 +545,47 @@ func TestAdaptersSetTheRank(t *testing.T) {
 		cell := root.byID("state-" + state).find("td")[0]
 		if cell.hasClass("s2") != (class == "s2") || cell.hasClass("s3") != (class == "s3") {
 			t.Errorf("the legend row of %s has the class %q", state, cell.Attr["class"])
+		}
+	}
+}
+
+// TestListPagesLeadApart covers N3 over the three list pages of the export,
+// as 6160 decision 15 asks: over the fixture's source, each "corner", "queue"
+// and "history" link tells its focus in hidden text after its visible text,
+// so no two links of one text lead to two addresses, and each page passes
+// checkAccess.
+func TestListPagesLeadApart(t *testing.T) {
+	out := filepath.Join(t.TempDir(), "public")
+	if _, err := export.Run(context.Background(), sourcetest.New(), export.Options{Out: out, Ref: "main", Tableaud: "0.1.0", Tablo: "0.1.0"}); err != nil {
+		t.Fatal(err)
+	}
+	for _, name := range []string{"task.html", "queue.html", "context.html"} {
+		b, err := os.ReadFile(filepath.Join(out, name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		root := mustParse(t, string(b))
+		for _, bad := range checkAccess(root) {
+			t.Errorf("%s: %s", name, bad)
+		}
+		links := 0
+		for _, a := range root.find("main")[0].find("a") {
+			visible := ""
+			for _, c := range a.Children {
+				if c.Tag == "" {
+					visible += c.Text
+				}
+			}
+			if visible != "corner" && visible != "queue" && visible != "history" {
+				continue
+			}
+			links++
+			if sr := a.byClass("span", "sr"); len(sr) != 1 || !strings.HasPrefix(sr[0].text(true), " of ") {
+				t.Errorf("%s: the link %q to %s holds no hidden focus", name, a.text(true), a.Attr["href"])
+			}
+		}
+		if links < 2 {
+			t.Errorf("%s: %d links of one text", name, links)
 		}
 	}
 }

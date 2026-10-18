@@ -132,7 +132,7 @@
       "Snapshot": null
      },
      "Fold": {
-      "ID": "grid-n1",
+      "ID": "n-grid-437e",
       "Class": "detail",
       "Open": false,
       "Src": "",
@@ -140,7 +140,7 @@
      },
      "Prov": null,
      "ProvFold": {
-      "ID": "grid-p1",
+      "ID": "prov-grid-437e",
       "Class": "prov",
       "Open": false,
       "Src": "P/prov-437e",
@@ -215,7 +215,7 @@
       "Snapshot": null
      },
      "Fold": {
-      "ID": "grid-n2",
+      "ID": "n-grid-c2ad",
       "Class": "detail",
       "Open": false,
       "Src": "",
@@ -400,7 +400,7 @@
       }
      },
      "Fold": {
-      "ID": "grid-n3",
+      "ID": "n-grid-77b2",
       "Class": "detail",
       "Open": false,
       "Src": "",
@@ -408,7 +408,7 @@
      },
      "Prov": null,
      "ProvFold": {
-      "ID": "grid-p3",
+      "ID": "prov-grid-77b2",
       "Class": "prov",
       "Open": false,
       "Src": "P/prov-77b2",
@@ -556,7 +556,7 @@
        "Snapshot": null
       },
       "Fold": {
-       "ID": "wider-n1",
+       "ID": "n-wider-437e",
        "Class": "detail",
        "Open": false,
        "Src": "",
@@ -564,7 +564,7 @@
       },
       "Prov": null,
       "ProvFold": {
-       "ID": "wider-p1",
+       "ID": "prov-wider-437e",
        "Class": "prov",
        "Open": false,
        "Src": "P/prov-437e",
@@ -639,7 +639,7 @@
        "Snapshot": null
       },
       "Fold": {
-       "ID": "wider-n2",
+       "ID": "n-wider-c2ad",
        "Class": "detail",
        "Open": false,
        "Src": "",
@@ -824,7 +824,7 @@
        }
       },
       "Fold": {
-       "ID": "wider-n3",
+       "ID": "n-wider-77b2",
        "Class": "detail",
        "Open": false,
        "Src": "",
@@ -832,7 +832,7 @@
       },
       "Prov": null,
       "ProvFold": {
-       "ID": "wider-p3",
+       "ID": "prov-wider-77b2",
        "Class": "prov",
        "Open": false,
        "Src": "P/prov-77b2",
@@ -841,7 +841,8 @@
      }
     ],
     "Notes": true,
-    "Control": null
+    "Control": null,
+    "Apart": ", among the spine and siblings"
    }
   },
   "Blocks": [
@@ -922,7 +923,7 @@
       "Snapshot": null
      },
      "Fold": {
-      "ID": "grid-n1",
+      "ID": "n-grid-437e",
       "Class": "detail",
       "Open": false,
       "Src": "",
@@ -930,7 +931,7 @@
      },
      "Prov": null,
      "ProvFold": {
-      "ID": "grid-p1",
+      "ID": "prov-grid-437e",
       "Class": "prov",
       "Open": false,
       "Src": "P/prov-437e",
@@ -1017,7 +1018,7 @@
       "Snapshot": null
      },
      "Fold": {
-      "ID": "grid-n2",
+      "ID": "n-grid-c2ad",
       "Class": "detail",
       "Open": false,
       "Src": "",
@@ -1214,7 +1215,7 @@
       }
      },
      "Fold": {
-      "ID": "grid-n3",
+      "ID": "n-grid-77b2",
       "Class": "detail",
       "Open": false,
       "Src": "",
@@ -1222,7 +1223,7 @@
      },
      "Prov": null,
      "ProvFold": {
-      "ID": "grid-p3",
+      "ID": "prov-grid-77b2",
       "Class": "prov",
       "Open": false,
       "Src": "P/prov-77b2",

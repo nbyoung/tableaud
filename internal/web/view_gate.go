@@ -11,9 +11,19 @@ type GateView struct {
 	Version  string     // the language version, for the source of the marks
 	Files    []FileFact // gates.yaml, then version.yaml
 	Trunk    string
-	Prov     Fold      // the provenance of the whole legend
-	Commands []string  // the commands that reproduce the legend
-	Task     *GateTask // the task parameter's section; nil without it
+	Prov     Fold            // the provenance of the whole legend
+	Commands []string        // the commands that reproduce the legend
+	Task     *GateTask       // the task parameter's section; nil without it
+	Sources  map[string]Fold // each table's source by its fold's id: prov-gates, prov-states, prov-reasons, prov-marks
+}
+
+// Source returns the fold of a table's source by its id. A model that holds
+// none, as the page models of testdata/ hold none, draws it closed.
+func (v *GateView) Source(id string) Fold {
+	if f, ok := v.Sources[id]; ok {
+		return f
+	}
+	return Fold{ID: id, Class: "prov"}
 }
 
 // LegendRow is one gate, state, reason or mark.

@@ -437,9 +437,10 @@ func TestStatusColumnsForm(t *testing.T) {
 	}
 }
 
-// TestStatusContextualForms covers T7: the task form has no wider grid; the
-// person form marks its siblings; one block per row, in row order, each with a
-// link to its task; the two empty forms.
+// TestStatusContextualForms covers T7 as 44bf decision 12 (a) reads it: the
+// person form marks its siblings, and the task form, like the person form,
+// draws the wider grid with its siblings marked; one block per row, in row
+// order, each with a link to its task; the two empty forms.
 func TestStatusContextualForms(t *testing.T) {
 	f := statusFixtureNamed(t, "contextual")
 	m := f.Model.(*web.ContextualView)
@@ -513,17 +514,23 @@ func TestStatusContextualForms(t *testing.T) {
 		}
 	}
 
-	// The task form: a task, no wider grid, no sibling.
+	// The task form: a task, and the wider grid with its siblings marked.
 	c := clone(t, m)
-	c.Person, c.Wider = "", nil
+	c.Person = ""
 	c.Task = &web.TaskRef{ID: "4e2b", Title: "Sensor node", Href: "T/4e2b"}
 	doc := render(t, web.Document, pageOf(f.View, c))
 	croot := mustParse(t, doc)
 	if h := croot.byID("h-corner"); h == nil || strings.TrimSpace(h.text(true)) != "4e2b Sensor node and its children" {
 		t.Errorf("the task form's heading is %v", h)
 	}
-	if strings.Contains(doc, "Spine, siblings") || strings.Contains(doc, "sibling") || croot.byID("d-wider") != nil {
-		t.Error("the task form holds a wider grid")
+	if w := croot.byID("d-wider"); w == nil || strings.TrimSpace(w.find("summary")[0].text(true)) != "Spine, siblings and notes" {
+		t.Errorf("the task form's wider grid is %v", w)
+	}
+	for _, r := range c.Wider.Grid.Rows {
+		th := croot.byID(c.Wider.Grid.ID + "-" + r.Task.ID).find("th")[0]
+		if got := strings.Contains(th.text(true), "· sibling"); got != r.Sibling {
+			t.Errorf("task form, row %s: sibling mark %v, want %v", r.Task.ID, got, r.Sibling)
+		}
 	}
 	for _, bad := range check(croot) {
 		t.Errorf("task form: %s", bad)
@@ -1581,22 +1588,44 @@ func TestContextNextGateFromCells(t *testing.T) {
 
 // TestContextTaskFormDrawsItsOwnRows checks the task form over tablo's golden
 // data of the task form of 4e2b, to which the test adds the spine and the
-// siblings as tablo labels them at detail: the grid opens on 4e2b and draws
-// it with the rows beneath it, a block for each, and no wider grid.
+// siblings as tablo labels them at detail: the first grid opens on 4e2b and
+// draws it with the rows beneath it, a block for each; the wider grid opens on
+// the spine and the task, draws every row, marks the sibling, and tells its
+// controls apart in hidden text (44bf decision 12 a). Without the spine and
+// the siblings, as for the root, the form draws no wider grid.
 func TestContextTaskFormDrawsItsOwnRows(t *testing.T) {
 	var ctx view.Tableau
 	tabloGolden(t, "context-4e2b.glance", &ctx)
+	own := slices.Clone(ctx.Rows)
 	root := view.GridRow{ID: "a1c0", Title: "Weather station", Label: "spine"}
 	sibling := view.GridRow{ID: "7b2e", Title: "Gateway", Under: "a1c0", Label: "sibling"}
 	ctx.Rows = append(append([]view.GridRow{root}, ctx.Rows...), sibling)
 	p := at(t, "context", "task=4e2b")
 	p.Scripts = true
 	m := web.ContextualFrom(&ctx, web.EnvOf(p, web.Document))
-	if got := drawn(m.Grid); !slices.Equal(got, []string{"4e2b", "9f31", "c07d"}) || len(m.Blocks) != 3 || m.Wider != nil {
-		t.Errorf("the task form of 4e2b draws %q, %d blocks, wider %v", got, len(m.Blocks), m.Wider != nil)
+	if got := drawn(m.Grid); !slices.Equal(got, []string{"4e2b", "9f31", "c07d"}) || len(m.Blocks) != 3 {
+		t.Errorf("the task form of 4e2b draws %q, %d blocks", got, len(m.Blocks))
 	}
 	if m.Task == nil || m.Task.ID != "4e2b" || m.Grid.Rows[0].Collapse == nil {
 		t.Errorf("the task form names %+v, and its first row folds by %+v", m.Task, m.Grid.Rows[0].Collapse)
+	}
+	if m.Wider == nil {
+		t.Fatal("the task form draws no wider grid")
+	}
+	if got := drawn(m.Wider.Grid); !slices.Equal(got, []string{"a1c0", "4e2b", "9f31", "c07d", "7b2e"}) {
+		t.Errorf("the wider grid draws %q", got)
+	}
+	for _, r := range m.Wider.Grid.Rows {
+		if r.Sibling != (r.Task.ID == "7b2e") {
+			t.Errorf("row %s of the wider grid: sibling %v", r.Task.ID, r.Sibling)
+		}
+	}
+	if m.Wider.Fold.ID != "d-wider" || m.Wider.Fold.Class != "detail" || m.Wider.Grid.Apart == "" || m.Grid.Apart != "" {
+		t.Errorf("the wider fold %+v, its grid apart by %q, the first by %q", m.Wider.Fold, m.Wider.Grid.Apart, m.Grid.Apart)
+	}
+	ctx.Rows = own
+	if m := web.ContextualFrom(&ctx, web.EnvOf(p, web.Document)); m.Wider != nil {
+		t.Errorf("with no spine and no sibling the task form draws a wider grid of %q", drawn(m.Wider.Grid))
 	}
 }
 
