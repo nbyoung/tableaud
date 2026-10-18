@@ -256,6 +256,38 @@ func TestTabloAnswers(t *testing.T) {
 	}
 }
 
+// TestTabloResolve checks that a subproject's trunk resolves through tablo's
+// Snapshot.Resolve in the submodule's own store, at F3 where the superproject
+// pins F2, and that a ref the subproject does not know is a missing ref.
+func TestTabloResolve(t *testing.T) {
+	dir := entry(t, "weather-station")
+	b, err := os.ReadFile(filepath.Join(os.Getenv("TABLEAUX_CORPUS"), "weather-station.firmware.labels.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	labels := map[string]string{}
+	for _, line := range strings.Split(string(b), "\n") {
+		if l, sha, ok := strings.Cut(line, " "); ok {
+			labels[l] = sha
+		}
+	}
+	ctx := t.Context()
+	src, err := source.NewTablo(ctx, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ix, err := src.Index(ctx, "firmware", ""); err != nil || ix.Trunk != "main" || ix.TrunkCommit != labels["F3"] {
+		t.Errorf("index of a subproject: trunk %q at %q, %v, want main at F3 %s", ix.Trunk, ix.TrunkCommit, err, labels["F3"])
+	}
+	if c, err := src.ResolveIn(ctx, "firmware", "main"); err != nil || c != labels["F3"] {
+		t.Errorf("resolve main: %q, %v, want F3 %s", c, err, labels["F3"])
+	}
+	var nf *source.NotFoundError
+	if c, err := src.ResolveIn(ctx, "firmware", "no-such-ref"); !errors.As(err, &nf) || nf.Kind != "ref" || nf.Name != "no-such-ref" || c != "" {
+		t.Errorf("an unknown ref: %q, %v, want a missing ref", c, err)
+	}
+}
+
 // TestTabloInvalid checks that a project tablo cannot derive from answers a
 // view with the diagnostics, and Describe without error.
 func TestTabloInvalid(t *testing.T) {
