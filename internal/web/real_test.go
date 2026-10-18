@@ -333,11 +333,10 @@ func TestRealPagesKeepTheRules(t *testing.T) {
 
 // TestRealBundleKeepsTheRules exports the copied weather-station at main
 // through tablo's adapter: every page of the bundle passes check and
-// disclosure as a page with no scripts, at the observer's glance, and every
-// page of a view passes checkAccess. The three lists of focuses are the
-// export's own pages and no view's.
+// disclosure as a page with no scripts, at the observer's glance, and
+// checkAccess, the three lists of focuses among them, whose links of one text
+// tell their focus apart (6160 decision 15).
 func TestRealBundleKeepsTheRules(t *testing.T) {
-	lists := map[string]bool{"context.html": true, "queue.html": true, "task.html": true}
 	dir, _ := realEntry(t, "weather-station")
 	out := filepath.Join(t.TempDir(), "public")
 	if _, err := export.Run(context.Background(), realSource(t, dir), export.Options{Out: out, Ref: "main", Tableaud: "0.1.0", Tablo: "0.1.0"}); err != nil {
@@ -360,11 +359,7 @@ func TestRealBundleKeepsTheRules(t *testing.T) {
 		}
 		rel, _ := filepath.Rel(out, name)
 		root := mustParse(t, string(b))
-		bad := check(root)
-		if !lists[rel] {
-			bad = append(bad, checkAccess(root)...)
-		}
-		for _, b := range bad {
+		for _, b := range append(check(root), checkAccess(root)...) {
 			t.Errorf("%s: %s", rel, b)
 		}
 		for _, bad := range disclosure(nil, "/"+rel+"?level=glance", root, false) {
