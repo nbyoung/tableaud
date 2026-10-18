@@ -121,6 +121,8 @@ a policy:
   requirement, on `github.com/nbyoung/tabloio`, gives the exported `brief`
   package, so that the queue's brief and tabloio's are one text; it follows
   the same rule, a pseudo-version of tabloio's `main` until its first release.
+  tabloio has tagged `v0.1.0`, so `go.mod` requires that tag; `tablo` has no
+  tag yet, so its requirement stays a pseudo-version.
 - `go.mod` never carries a `replace`. Day-to-day work across the subprojects
   uses a personal `go.work` in the directory above the checkouts, which points
   at `./tablo` and the others and stays uncommitted, as the tooling plan's next
