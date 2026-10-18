@@ -74,9 +74,9 @@ func TableauFrom(d *view.Tableau, e Env) *TableauView {
 }
 
 // ContextualFrom builds the model of the contextual tableau from tablo's
-// view: the task form when tablo names a subject, else the person form, whose
-// first grid holds the person's own rows and whose wider grid adds the spine
-// and the siblings.
+// view: the task form when tablo names a subject, whose grid holds the task
+// and the rows beneath it, else the person form, whose first grid holds the
+// person's own rows and whose wider grid adds the spine and the siblings.
 func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	v := &ContextualView{}
 	var own []view.GridRow
@@ -84,7 +84,13 @@ func ContextualFrom(d *view.Tableau, e Env) *ContextualView {
 	if d.Subject != nil {
 		t := e.taskRef(*d.Subject)
 		v.Task = &t
-		own = d.Rows
+		// The task form draws the task and the rows beneath it; tablo may
+		// add the spine and the siblings, labelled, which it draws not.
+		for _, r := range d.Rows {
+			if r.Label == "" {
+				own = append(own, r)
+			}
+		}
 	} else {
 		v.Person = e.Page.Params.Person
 		if v.Person == "" {
@@ -194,6 +200,21 @@ func beneathOf(rows []view.GridRow, id string) int {
 	return n
 }
 
+// notDrawn returns the rows beneath the row of id that the grid does not
+// draw: those of its subtree beneath a closed row, and those tablo keeps out
+// of the view. A row that takes no control states this count, so a parent
+// whose rows all stand drawn, in the export, states none.
+func notDrawn(rows []view.GridRow, id string, u *Unfolding) int {
+	n := 0
+	for _, r := range subtree(rows, id) {
+		if r.ID != id && !u.Draws(r.ID) {
+			n++
+		}
+		n += r.Hidden
+	}
+	return n
+}
+
 // nextOf returns the next gate of a row and the marks of its junction there,
 // from the row's cells, which stand one per gate of the legend: the first
 // cell after the status's whose kind is marks and which is not historical.
@@ -281,6 +302,9 @@ func (e Env) grid(d *view.Tableau, id string, rows []view.GridRow, u *Unfolding,
 			Fold:   e.Fold("detail", "n-"+id+"-"+r.ID, "", ""),
 		}
 		row.Expand, row.Collapse = u.Controls(r.ID)
+		if row.Expand == nil && row.Collapse == nil {
+			row.Beneath = notDrawn(rows, r.ID, u) // db74, finding C3
+		}
 		for _, c := range d.Columns {
 			if len(c.Gates) == 0 {
 				continue

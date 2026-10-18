@@ -40,7 +40,9 @@ var acts = map[string]string{
 // AuditFrom builds the model of the audit from tablo's view. The adapter
 // groups the findings by rule and resolver, errors first, then warnings,
 // then information, each severity in tablo's order; anchors each group by
-// its rule, with "-2", "-3" for the rule's further resolvers; words the act
+// its rule, with "-2", "-3" for the rule's further resolvers, and names the
+// resolver in the hidden text of each glance row of such a rule, so that two
+// links with one title lead apart (design 5a2f, N3); words the act
 // of each finding; and names the focus of the groups the person the page is
 // seen by resolves. The three counts and the person with the most to resolve
 // are tablo's; the adapter links each count to the address with that
@@ -118,6 +120,12 @@ func AuditFrom(d *view.Audit, e Env) *AuditView {
 		kind := FindingKind{
 			Severity: fg.Severity, Rule: g.rule, Title: fg.Title, Href: "#" + g.anchor,
 			Count: len(g.findings), Resolver: fg.Resolver,
+		}
+		if perRule[g.rule] > 1 {
+			kind.Apart = ", with no resolver"
+			if fg.Resolver.Email != "" {
+				kind.Apart = ", resolved by " + fg.Resolver.Email
+			}
 		}
 		seenTask, seenCommit, seenCommand := map[string]bool{}, map[string]bool{}, map[string]bool{}
 		for _, f := range g.findings {

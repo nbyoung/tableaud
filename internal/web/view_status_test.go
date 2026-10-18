@@ -1579,6 +1579,27 @@ func TestContextNextGateFromCells(t *testing.T) {
 	}
 }
 
+// TestContextTaskFormDrawsItsOwnRows checks the task form over tablo's golden
+// data of the task form of 4e2b, to which the test adds the spine and the
+// siblings as tablo labels them at detail: the grid opens on 4e2b and draws
+// it with the rows beneath it, a block for each, and no wider grid.
+func TestContextTaskFormDrawsItsOwnRows(t *testing.T) {
+	var ctx view.Tableau
+	tabloGolden(t, "context-4e2b.glance", &ctx)
+	root := view.GridRow{ID: "a1c0", Title: "Weather station", Label: "spine"}
+	sibling := view.GridRow{ID: "7b2e", Title: "Gateway", Under: "a1c0", Label: "sibling"}
+	ctx.Rows = append(append([]view.GridRow{root}, ctx.Rows...), sibling)
+	p := at(t, "context", "task=4e2b")
+	p.Scripts = true
+	m := web.ContextualFrom(&ctx, web.EnvOf(p, web.Document))
+	if got := drawn(m.Grid); !slices.Equal(got, []string{"4e2b", "9f31", "c07d"}) || len(m.Blocks) != 3 || m.Wider != nil {
+		t.Errorf("the task form of 4e2b draws %q, %d blocks, wider %v", got, len(m.Blocks), m.Wider != nil)
+	}
+	if m.Task == nil || m.Task.ID != "4e2b" || m.Grid.Rows[0].Collapse == nil {
+		t.Errorf("the task form names %+v, and its first row folds by %+v", m.Task, m.Grid.Rows[0].Collapse)
+	}
+}
+
 // TestStatusCellRank covers T6 of design 5a2f on fixtures: a cell with Rank 0
 // or 1 writes no s2 or s3 class, a cell with Rank 2 writes s2 and a cell with
 // Rank 3 writes s3; the key under each tableau carries the sentence that says

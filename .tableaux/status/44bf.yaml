@@ -1,3 +1,3 @@
-gate: unit
+gate: integrate
 state: nominal
-note: T1 to T4, T6 to T12 and the DefaultUnfolded case of T5 pass on the seven fixtures through go test; the adapter cases of T5, the address arithmetic of T6 and T13 skip until tablo 886d; integrate needs the three adapters, their entries, the parts and those tests
+note: TableauFrom, ContextualFrom, BlockageFrom and QueueFrom, the routes /tableau, /context, /blockage and /queue, their export pages, the grid and the four templates stand; T1 to T13 pass with and without TABLEAUX_CORPUS, the adapter cases of T5 and the arithmetic of T6 on built trees and T13 on tablo's golden data, and as TestRealStatusViews through tablo's adapter with Ben's five empty kinds, each expand to its collapse and tabloio's brief, and every page of the four views passes the access and disclosure checks there at every level; the validate gate has a person check in a browser that a swap of main keeps the reader's place and focus and that the brief's textarea copies cleanly into an agent's prompt; nothing waits on another task
