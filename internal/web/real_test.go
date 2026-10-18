@@ -144,9 +144,9 @@ func stated(level string) web.Level {
 // closed, and falls back to its hx-get address with its own fragment; that
 // address answers an HTMX request with a fragment, and as a document with the
 // fold open; d asks each address once, and a nil d asks none. Where the address states a level, a fold that is not lazy
-// arrives open exactly where ByLevel opens its class, but for the folds of
-// unfolded and for the wider grid of a contextual tableau whose address
-// states the open rows, which opens for every viewer. With scripts, the frame
+// arrives open exactly where ByLevel opens its class, but for the wider grid
+// of a contextual tableau whose address states the open rows, which opens for
+// every viewer. With scripts, the frame
 // holds the four links of the level control, the one the address states
 // current, none with an hx- attribute; without, it holds none.
 func disclosure(d *daemon, target string, root *Node, scripts bool) []string {
@@ -213,7 +213,7 @@ func disclosure(d *daemon, target string, root *Node, scripts bool) []string {
 			}
 			continue
 		}
-		if level != "" && !unfolded[id] && (!rows || id != "d-wider") {
+		if level != "" && (!rows || id != "d-wider") {
 			if want := web.ByLevel(stated(level)).Opens(web.View{}, class, id); open != want {
 				fail("at %s the %s fold %s arrives open %v, want %v", level, class, id, open, want)
 			}
@@ -249,11 +249,6 @@ func disclosure(d *daemon, target string, root *Node, scripts bool) []string {
 	}
 	return bad
 }
-
-// unfolded names the folds that no level opens: the four provenances of the
-// gate definition's tables, which its template draws with no fold, as the
-// draft of design 438a does.
-var unfolded = map[string]bool{"prov-gates": true, "prov-states": true, "prov-reasons": true, "prov-marks": true}
 
 // realAddresses are the pages TestRealPagesKeepTheRules asks of the daemon:
 // every view, the task definition of each kind of task, the filtered tree and
@@ -728,6 +723,36 @@ func TestRealTemporalViews(t *testing.T) {
 		}
 		if strings.Contains(root.text(true), "No finding: files and history agree") {
 			t.Errorf("%s: the audit reads clean", c.entry)
+		}
+	}
+}
+
+// TestRealGateSourcesFold covers 438a decision 20 through the real source:
+// over the copied weather-station at main, the four sources of the gate
+// definition's tables are prov folds that arrive closed at glance and at
+// detail and open at provenance, for the owner and for an observer, and each
+// page passes disclosure.
+func TestRealGateSourcesFold(t *testing.T) {
+	dir, _ := realEntry(t, "weather-station")
+	src := realSource(t, dir)
+	for _, viewer := range []string{"ada@example.org", ""} {
+		d := newDaemon(t, src, viewer)
+		for _, level := range []string{"glance", "detail", "provenance"} {
+			target := "/gates?level=" + level
+			root := d.page(target)
+			for _, b := range disclosure(&d, target, root, true) {
+				t.Errorf("for %q: %s", viewer, b)
+			}
+			for _, id := range []string{"prov-gates", "prov-states", "prov-reasons", "prov-marks"} {
+				f := root.byID(id)
+				if f == nil || f.Tag != "details" || !f.hasClass("prov") {
+					t.Errorf("%s for %q: %s is %v", target, viewer, id, f)
+					continue
+				}
+				if _, open := f.Attr["open"]; open != (level == "provenance") {
+					t.Errorf("%s for %q: %s arrives open %v", target, viewer, id, open)
+				}
+			}
 		}
 	}
 }

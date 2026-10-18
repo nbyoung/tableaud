@@ -12,7 +12,7 @@
 {{end}}</tbody>
 </table>
 </div>
-<details class="prov" id="prov-gates"><summary id="prov-gates-s">Source of the gates</summary>{{template "source" (index .Files 0)}}</details>{{else}}<p class="empty">The project states no gate at this ref.</p>{{end}}
+{{template "fold" (.Source "prov-gates")}}<summary id="prov-gates-s">Source of the gates</summary>{{template "source" (index .Files 0)}}</details>{{else}}<p class="empty">The project states no gate at this ref.</p>{{end}}
 </section>
 
 <section id="states" aria-labelledby="states-h">
@@ -26,7 +26,7 @@
 {{end}}</tbody>
 </table>
 </div>
-<details class="prov" id="prov-states"><summary id="prov-states-s">Source of the states</summary>{{template "source" (index .Files 0)}}</details>{{else}}<p class="empty">The project states no state at this ref.</p>{{end}}
+{{template "fold" (.Source "prov-states")}}<summary id="prov-states-s">Source of the states</summary>{{template "source" (index .Files 0)}}</details>{{else}}<p class="empty">The project states no state at this ref.</p>{{end}}
 </section>
 
 <section id="reasons" aria-labelledby="reasons-h">
@@ -40,7 +40,7 @@
 {{end}}</tbody>
 </table>
 </div>
-<details class="prov" id="prov-reasons"><summary id="prov-reasons-s">Source of the reasons</summary>{{template "source" (index .Files 0)}}</details>{{else}}<p class="empty">The project states no reason at this ref.</p>{{end}}
+{{template "fold" (.Source "prov-reasons")}}<summary id="prov-reasons-s">Source of the reasons</summary>{{template "source" (index .Files 0)}}</details>{{else}}<p class="empty">The project states no reason at this ref.</p>{{end}}
 </section>
 
 <section id="junction-marks" aria-labelledby="marks-h">
@@ -54,7 +54,7 @@
 {{end}}</tbody>
 </table>
 </div>
-<details class="prov" id="prov-marks"><summary id="prov-marks-s">Source of the junction marks</summary><p><code>README.md</code>, Junctions, at language {{.Version}}; no project file states the marks.</p></details>
+{{template "fold" (.Source "prov-marks")}}<summary id="prov-marks-s">Source of the junction marks</summary><p><code>README.md</code>, Junctions, at language {{.Version}}; no project file states the marks.</p></details>
 </section>
 
 <section id="provenance" aria-labelledby="prov-h">
