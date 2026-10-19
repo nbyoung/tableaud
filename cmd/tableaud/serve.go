@@ -192,6 +192,9 @@ func serveUntil(ctx context.Context, ln net.Listener, h http.Handler, stderr io.
 	if err := hs.Shutdown(sctx); err != nil {
 		_ = hs.Close()
 	}
-	<-failed
+	// After Shutdown or Close, Serve returns http.ErrServerClosed.
+	if err := <-failed; !errors.Is(err, http.ErrServerClosed) {
+		_, _ = fmt.Fprintln(stderr, "tableaud:", err)
+	}
 	return 0
 }
