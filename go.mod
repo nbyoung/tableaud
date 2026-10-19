@@ -3,8 +3,8 @@ module github.com/nbyoung/tableaud
 go 1.27
 
 require (
-	github.com/nbyoung/tablo v0.0.0-20261018015924-afc54200e15f
-	github.com/nbyoung/tabloio v0.1.0
+	github.com/nbyoung/tablo v0.1.0
+	github.com/nbyoung/tabloio v0.1.1
 )
 
 require (
