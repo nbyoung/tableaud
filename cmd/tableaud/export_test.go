@@ -151,7 +151,7 @@ func TestExportCommand(t *testing.T) {
 }
 
 // TestTabloVersion checks that the binary reports the version of tablo the
-// module requires: a pseudo-version of tablo's main until its first release.
+// module requires.
 func TestTabloVersion(t *testing.T) {
 	if got := tabloVersion(); !strings.HasPrefix(got, "v0.") {
 		t.Errorf("tablo version %q", got)
