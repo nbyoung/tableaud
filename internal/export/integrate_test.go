@@ -160,18 +160,24 @@ func TestRealBundle(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		pages := 0
+		pages, assets := 0, 0
 		for _, p := range files(t, o.Out) {
-			if !strings.HasPrefix(p, "static/") {
+			if strings.HasPrefix(p, "static/") {
+				assets++
+			} else {
 				pages++
 			}
 		}
 		if pages != 93 || res.Project.Short() != "ccb3947" {
 			t.Errorf("%d files beside the assets at %s, want 93 at ccb3947", pages, res.Project.Short())
 		}
+		noun := "assets"
+		if assets == 1 {
+			noun = "asset"
+		}
 		raw, gz := bundleSize(t, o.Out)
-		t.Logf("the Tableaux tooling plan at %s: %d files, %d bytes, %d compressed; the design estimates 93 files, 3.2 MB and 0.4 MB compressed",
-			res.Project.Short(), res.Files, raw, gz)
+		t.Logf("the Tableaux tooling plan at %s: %d pages and %d %s, %d bytes, %d compressed; the design estimates 93 files, 3.2 MB and 0.4 MB compressed",
+			res.Project.Short(), pages, assets, noun, raw, gz)
 	})
 }
 
