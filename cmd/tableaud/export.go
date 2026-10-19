@@ -24,9 +24,9 @@ const exportUsage = `usage: tableaud export [-C DIR] --out DIR [--ref REF]
   --ref REF   the commit to export, any name Git resolves to a commit (default HEAD)
 `
 
-// tabloVersion returns the version of tablo the binary links: a release, or the
-// pseudo-version of tablo's main until tablo tags its first release. It is
-// "unreleased" for a binary built without module information.
+// tabloVersion returns the version of tablo the binary links: the one the
+// module requires. It is "unreleased" for a binary built without module
+// information.
 func tabloVersion() string {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		for _, d := range info.Deps {
