@@ -88,8 +88,9 @@ gofmt -l . && go vet ./...       # what CI checks before the tests
 
 CI (`.github/workflows/ci.yml`) runs on every push to `main` and every pull
 request: a `gofmt` check, `go vet`, `golangci-lint` through its official
-action with the standard linters, and `go test ./...`. A merge to `main`
-therefore always passes those four.
+action with the standard linters, and `go test ./...`; the job `corpus` runs
+the tests again against the tableaux corpus (see [Layout](#layout)). A merge to
+`main` therefore always passes all five.
 
 ## Release
 
