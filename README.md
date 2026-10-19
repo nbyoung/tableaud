@@ -50,7 +50,10 @@ shape with the other three subprojects. The daemon and the export read the
 repository through the adapter over `tablo`'s library in
 `internal/source/tablo.go`. The tests read the weather-station fixture of
 `internal/source/sourcetest`, and those that find the built corpus read its
-entry through the adapter.
+entry through the adapter. CI's job `corpus` clones the tableaux repository at
+the commit `.github/corpus.lock.yaml` names, builds its corpus with
+`.github/corpus.sh`, and runs every test with `TABLEAUX_CORPUS` and
+`TABLEAUX_DIR` pointing there.
 
 ```
 cmd/tableaud/            # the command: main.go dispatches version, serve and export; serve.go and export.go parse the options
@@ -85,8 +88,9 @@ gofmt -l . && go vet ./...       # what CI checks before the tests
 
 CI (`.github/workflows/ci.yml`) runs on every push to `main` and every pull
 request: a `gofmt` check, `go vet`, `golangci-lint` through its official
-action with the standard linters, and `go test ./...`. A merge to `main`
-therefore always passes those four.
+action with the standard linters, and `go test ./...`; the job `corpus` runs
+the tests again against the tableaux corpus (see [Layout](#layout)). A merge to
+`main` therefore always passes all five.
 
 ## Release
 

@@ -37,3 +37,41 @@ jobs:
       - uses: golangci/golangci-lint-action@v8
         with:
           version: latest
+
+  corpus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - name: Fetch the tableaux repository at the locked commit and build its corpus
+        run: sh .github/corpus.sh fetch "$RUNNER_TEMP/tableaux"
+      - name: Run the tests against the corpus
+        shell: bash
+        env:
+          TABLEAUX_CORPUS: ${{ runner.temp }}/tableaux/corpus/build
+          TABLEAUX_DIR: ${{ runner.temp }}/tableaux
+        run: |
+          go test -count=1 -json ./... | tee "$RUNNER_TEMP/test.json" |
+            jq -rj 'select(.Action == "output") | .Output'
+      - name: List the tests that skip
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/test.json" ]; then
+            {
+              echo "## Tests that skip with the corpus"
+              echo
+              jq -rs '
+                (map(select(.Action == "output" and .Test != null))
+                  | group_by([.Package, .Test])
+                  | map({key: (.[0].Package + " " + .[0].Test), value: (map(.Output) | add)})
+                  | from_entries) as $out
+                | map(select(.Action == "skip" and .Test != null))
+                | if length == 0 then "No test skips."
+                  else .[] | "- `\(.Package | ltrimstr("github.com/nbyoung/tableaud/"))` \(.Test): "
+                    + ($out[.Package + " " + .Test] | [scan("_test\\.go:[0-9]+: (.*)")[0]] | join("; "))
+                  end
+              ' "$RUNNER_TEMP/test.json"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

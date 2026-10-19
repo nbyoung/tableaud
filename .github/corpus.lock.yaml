@@ -1,0 +1,7 @@
+# corpus.lock.yaml: the tableaux commit that the corpus job builds and tests against.
+# A person moves it by hand, in a commit of its own, when a test needs a newer
+# umbrella: commit is the umbrella's commit, tooling the commit its tag
+# corpus/tooling names there.
+repository: https://github.com/nbyoung/tableaux
+commit: 25bf4657a0d5b7274f9084bad7769bf4c0783ffa
+tooling: 50a373b2857a36e4ef1a754605433943d6bfe324
