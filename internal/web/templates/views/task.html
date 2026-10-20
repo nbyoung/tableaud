@@ -148,7 +148,7 @@
 <caption>The Model trailer of each commit at a junction, against the model the junction states</caption>
 <thead><tr><th scope="col">Commit</th><th scope="col">Junction</th><th scope="col">The junction states</th><th scope="col"><code>Model:</code> trailer</th><th scope="col">Reading</th></tr></thead>
 <tbody>
-{{range .Rows}}<tr><th scope="row"><code>{{.Commit.Hash}}</code></th><td>{{template "sym" .Gate}}</td><td><code>{{.Stated}}</code></td><td>{{if .Trailer}}<code>{{.Trailer}}</code>{{else}}none{{end}}</td><td>{{.Reading}}</td></tr>
+{{range .Rows}}<tr><th scope="row"><code>{{.Commit.Hash}}</code></th><td>{{template "sym" .Gate}}</td><td><code>{{.Stated}}</code></td><td>{{if .Trailer}}<code>{{.Trailer}}</code>{{else}}none{{end}}</td><td>{{.Reading}}{{with .CoAuthor}}; co-author {{.}}{{end}}</td></tr>
 {{end}}</tbody>
 </table>
 </div>

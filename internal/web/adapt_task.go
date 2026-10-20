@@ -128,7 +128,7 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 		for _, m := range d.Models {
 			v.Junctions.Models.Rows = append(v.Junctions.Models.Rows, ModelRow{
 				Commit: Commit{Hash: short(m.Commit), Full: m.Commit}, Gate: e.Legend.Gate(m.Gate),
-				Stated: m.Stated, Trailer: m.Trailer, Reading: m.Reading,
+				Stated: m.Stated, Trailer: m.Trailer, Reading: m.Reading, CoAuthor: m.CoAuthor,
 			})
 		}
 		v.Events.Total = d.EventCount

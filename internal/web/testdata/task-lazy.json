@@ -649,7 +649,8 @@
       },
       "Stated": "claude-fable",
       "Trailer": "claude-fable-5-1",
-      "Reading": "agrees"
+      "Reading": "agrees",
+      "CoAuthor": ""
      }
     ]
    }

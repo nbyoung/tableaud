@@ -171,11 +171,12 @@ type Models struct {
 
 // ModelRow is one commit at a junction.
 type ModelRow struct {
-	Commit  Commit
-	Gate    Sym
-	Stated  string
-	Trailer string // "" for none
-	Reading string // "agrees", "differs", "missing" or "exempt"
+	Commit   Commit
+	Gate     Sym
+	Stated   string
+	Trailer  string // "" for none
+	Reading  string // "agrees", "differs", "missing" or "exempt"
+	CoAuthor string // the agent a person's commit names in a Co-Authored-By: trailer; "" for none
 }
 
 // Events is the newest events of the task.

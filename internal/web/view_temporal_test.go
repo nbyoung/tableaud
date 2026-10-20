@@ -712,6 +712,44 @@ func TestHistoryAdapterLinesAndEffects(t *testing.T) {
 	}
 }
 
+// TestHistoryCoAuthor checks that a history line names the agent a
+// person's commit co-authors (tablo cdb0 decision 3) as the fact Co-author,
+// after the model and before the committer, and that a line with no
+// co-author draws no such fact.
+func TestHistoryCoAuthor(t *testing.T) {
+	d := &view.History{
+		Events: 2, Commits: 2, Days: []view.Day{{Date: "2026-10-01", Events: 2, Commits: 2}},
+		Lines: []view.Line{
+			historyLine("2026-10-01", "1111111aa", "1000", "", "status"),
+			historyLine("2026-10-01", "2222222bb", "2000", "", "status"),
+		},
+	}
+	d.Lines[0].Model, d.Lines[0].CoAuthor, d.Lines[0].Committer = "claude-fable-5-1", "bot@x.org", "pat@x.org"
+	m := web.HistoryFrom(d, historyEnv(t, web.Detail))
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("history"), m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	for anchor, want := range map[string]string{
+		"e-1111111-1000": "Status after|Model|Co-author bot@x.org|Committer",
+		"e-2222222-2000": "Status after|Model",
+	} {
+		dl := root.byID(anchor).find("dl")[0]
+		dds := dl.find("dd")
+		var facts []string
+		for i, dt := range dl.find("dt") {
+			fact := dt.text(true)
+			if fact == "Co-author" {
+				fact += " " + dds[i].text(true)
+			}
+			facts = append(facts, fact)
+		}
+		if got := strings.Join(facts, "|"); got != want {
+			t.Errorf("%s: the facts read %q, want %q", anchor, got, want)
+		}
+	}
+}
+
 // longHistory returns tablo's history of n events, one line each, ten to a
 // day.
 func longHistory(n int) *view.History {

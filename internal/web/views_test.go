@@ -772,3 +772,33 @@ func TestDefaultReviewers(t *testing.T) {
 		t.Errorf("with no assignee the defaults are %q and %q", a, b)
 	}
 }
+
+// TestModelCheckCoAuthor checks that the task definition's model checks
+// name the agent a person's commit co-authors (tablo cdb0 decision 3), in
+// tabloio's words after the reading, and nothing where the commit names
+// none.
+func TestModelCheckCoAuthor(t *testing.T) {
+	d := &view.Task{
+		Task: view.TaskRef{ID: "b2c9", Title: "Leaf"}, Assignee: "pat@x.org", Status: view.Status{Kind: "recorded", Gate: "design"}, Authorised: true,
+		TaskDetail: &view.TaskDetail{},
+		TaskProvenance: &view.TaskProvenance{Models: []view.ModelCheck{
+			{Commit: "1111111aaaa", Gate: "design", Stated: "claude-fable", Trailer: "claude-fable-5-1", Reading: "agrees"},
+			{Commit: "2222222bbbb", Gate: "design", Stated: "claude-fable", Trailer: "claude-fable-5-1", Reading: "agrees", CoAuthor: "bot@x.org"},
+		}},
+	}
+	v, _ := web.Lookup("task")
+	p := pageOf(v, nil)
+	p.Params.Level = "provenance"
+	m := web.TaskFrom(d, web.EnvOf(p, web.Document))
+	if a, b := m.Junctions.Models.Rows[0].CoAuthor, m.Junctions.Models.Rows[1].CoAuthor; a != "" || b != "bot@x.org" {
+		t.Errorf("the co-authors are %q and %q", a, b)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+	var readings []string
+	for _, tr := range root.byID("prov-models").find("tbody")[0].find("tr") {
+		readings = append(readings, tr.find("td")[3].text(true))
+	}
+	if want := []string{"agrees", "agrees; co-author bot@x.org"}; !slices.Equal(readings, want) {
+		t.Errorf("the readings are %q, want %q", readings, want)
+	}
+}

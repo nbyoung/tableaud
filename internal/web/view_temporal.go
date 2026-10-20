@@ -45,6 +45,7 @@ type Event struct {
 	Effect    string
 	Model     string // the Model: trailer; "" for none
 	Stated    string // the model the junction states
+	CoAuthor  string // the agent a person's commit names in a Co-Authored-By: trailer; "" for none
 	Committer string // where it differs from the author
 	Sub       *SubEvents
 	Prov      Fold
