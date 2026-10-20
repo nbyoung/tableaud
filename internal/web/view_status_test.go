@@ -1544,6 +1544,70 @@ func TestQueueBriefFromTabloio(t *testing.T) {
 	}
 }
 
+// TestQueueBriefAtLanguage04 checks the brief at the language 0.4.0 the way
+// TestQueueBriefFromTabloio checks it, over tabloio's own envelopes of b2c9:
+// at release the agent's junction states no reviewer and no model, so the
+// nearest person, olive, the assignee of the root, reviews and the brief
+// says that the junction states no model; at design an ancestor's entry
+// waives review, so the brief names no reviewer. Each text equals tabloio's
+// golden brief byte for byte.
+func TestQueueBriefAtLanguage04(t *testing.T) {
+	const mod, env = "github.com/nbyoung/tabloio", "TABLOIO_DIR"
+	for _, c := range []struct {
+		name, gate string
+		has        []string
+	}{
+		{"nearest-b2c9-release", "release", []string{
+			"Reviewer     olive@example.org   (the nearest person, the assignee of Base, e4a1)",
+			"The junction states no model: an agent records the model it runs in a",
+		}},
+		{"waived-b2c9-design", "design", []string{
+			"Reviewer     none              (Base, e4a1)",
+			"reviews this gate, so the commit that records the status passes it.",
+		}},
+	} {
+		var envelope struct {
+			Source struct{ Ref, Commit, Date string }
+			Params struct{ Person string }
+			Data   json.RawMessage
+		}
+		if err := json.Unmarshal(moduleFile(t, mod, env, "brief/testdata/"+c.name+".json"), &envelope); err != nil {
+			t.Fatal(err)
+		}
+		var q view.Queue
+		dec := json.NewDecoder(bytes.NewReader(envelope.Data))
+		dec.DisallowUnknownFields()
+		if err := dec.Decode(&q); err != nil {
+			t.Fatalf("tabloio's envelope %s: %v", c.name, err)
+		}
+		if q.QueueProvenance == nil || q.Brief == nil || len(q.Items) != 0 {
+			t.Fatalf("%s: the data holds %d items and the brief %v", c.name, len(q.Items), q.QueueProvenance)
+		}
+		q.Items = []view.QueueItem{{Kind: "ready", Task: q.Brief.Task.TaskRef, Gate: c.gate, ItemDetail: &view.ItemDetail{}}}
+		v, _ := web.Lookup("queue")
+		p := pageOf(v, nil)
+		p.Project = &source.Project{Ref: envelope.Source.Ref, Commit: envelope.Source.Commit, Date: envelope.Source.Date}
+		p.Params.Person, p.Params.Brief, p.Params.Level = envelope.Params.Person, "b2c9:"+c.gate, "provenance"
+		p.Data = &q
+		m := web.QueueFrom(&q, web.EnvOf(p, web.Document))
+		body := m.Kinds[2].Items[0].Shown[0].Body
+		want := string(moduleFile(t, mod, env, "brief/testdata/"+c.name+".txt"))
+		if body == nil || body.Brief == nil || body.Brief.Text != want {
+			t.Errorf("%s: the brief is %+v, want %.200q", c.name, body, want)
+			continue
+		}
+		for _, h := range c.has {
+			if !strings.Contains(want, h) {
+				t.Errorf("%s: tabloio's brief lacks %q", c.name, h)
+			}
+		}
+		root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+		if area := root.byID("brief-b2c9"); area == nil || area.Tag != "textarea" || area.text(false) != want {
+			t.Errorf("%s: the textarea reads %v", c.name, area)
+		}
+	}
+}
+
 // TestContextNextGateFromCells checks that a row block reads its next gate
 // from the row's cells at every level: over tablo's golden data of Ben's
 // contextual tableau at detail, which carries no provenance, the block of
