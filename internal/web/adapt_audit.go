@@ -23,7 +23,9 @@ func init() {
 	}
 }
 
-// acts words each of tablo's ten acts as the action of a group.
+// acts words each of tablo's twelve acts as the action of a group; a span
+// between backticks draws as code. The words of state_commit and
+// raise_language are tabloio's.
 var acts = map[string]string{
 	"authorise":      "Authorise",
 	"review":         "Review",
@@ -34,6 +36,8 @@ var acts = map[string]string{
 	"move_pin":       "Move the pin",
 	"checkout":       "Check out the submodule",
 	"await":          "Await the requirement",
+	"state_commit":   "State the `commit` the requirement lacks",
+	"raise_language": "Raise the subproject's language",
 	"none":           "None: the plan allows it",
 }
 

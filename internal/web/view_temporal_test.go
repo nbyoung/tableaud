@@ -870,6 +870,43 @@ func TestAuditAdapterGroups(t *testing.T) {
 	}
 }
 
+// TestAuditNewActs checks the two acts of tablo's cdb0 decision 4 in
+// tabloio's words: R14's state_commit, whose commit draws as code, and
+// J19's raise_language, in a group's summary and in its rows alike.
+func TestAuditNewActs(t *testing.T) {
+	d := &view.Audit{Information: 1, Warnings: 1, Findings: []view.Finding{
+		{Key: "J19", Rule: "J19", Severity: "warning", Kind: "A subproject lags", Act: "raise_language", Resolver: "ada@x", Tasks: []view.TaskRef{{ID: "2000", Title: "T 2000"}}},
+		{Key: "R14", Rule: "R14", Severity: "information", Kind: "An unpinned requirement", Act: "state_commit", Resolver: "ada@x", Tasks: []view.TaskRef{{ID: "1000", Title: "T 1000"}}},
+	}}
+	p := at(t, "audit", "level=detail")
+	m := web.AuditFrom(d, web.EnvOf(p, web.Document)) // without scripts every group arrives inline
+	var got []string
+	for _, g := range m.Groups {
+		got = append(got, g.Rule+" "+g.Action)
+	}
+	if want := []string{"J19 Raise the subproject's language", "R14 State the `commit` the requirement lacks"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("the groups are %q, want %q", got, want)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("audit"), m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	for _, g := range m.Groups {
+		n := root.byID(g.Fold.ID)
+		want := strings.ReplaceAll(g.Action, "`", "")
+		if s := n.find("summary")[0].text(true); !strings.Contains(s, want) {
+			t.Errorf("%s: the summary reads %q, want it to hold %q", g.Rule, s, want)
+		}
+		if td := n.find("tbody")[0].find("td"); td[3].text(true) != want {
+			t.Errorf("%s: the row's action reads %q, want %q", g.Rule, td[3].text(true), want)
+		}
+		codes := n.find("code")
+		if (g.Rule == "R14") != (len(codes) > 0 && codes[0].text(true) == "commit") {
+			t.Errorf("%s: the action draws the code %v", g.Rule, codes)
+		}
+	}
+}
+
 // TestAuditRowsOfOneRuleLeadApart checks the glance rows of one rule and
 // several resolvers: each link names its resolver in hidden text after the
 // title, or says that the group has none, so that the page passes N3 of
@@ -1004,7 +1041,8 @@ func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
 	if e := historyEvents(cm)[0]; e.Effect != "the task stands authorised by a change on the trunk" || pin.Effect != "the reviewer accepts the work at the gate" {
 		t.Errorf("the effects read %q and %q", e.Effect, pin.Effect)
 	}
-	if got := doc.byID("prov-list").text(true); !strings.Contains(got, "-- .tableaux/tasks/c07d.yaml .tableaux/status/c07d.yaml firmware") {
-		t.Errorf("the list's provenance reads %.400q", got)
+	if got := doc.byID("prov-list").text(true); !strings.Contains(got, "-- .tableaux/tasks/c07d.yaml .tableaux/status/c07d.yaml firmware") ||
+		!strings.Contains(got, "git log --format='%H %as %ae %s' --first-parent --merges main -- .tableaux/tasks/c07d.yaml") {
+		t.Errorf("the list's provenance reads %.600q", got)
 	}
 }
