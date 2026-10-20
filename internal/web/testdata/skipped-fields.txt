@@ -142,9 +142,11 @@ history File.Change
 history Gate.Criteria
 history Gate.Name
 history History.Subject
+history LineDetail.CoAuthor
 history LineDetail.SubjectAfter
 history LineDetail.Unchanged
 history Mark.Junction
+history ModelCheck.CoAuthor
 history ModelCheck.Commit
 history ModelCheck.Gate
 history ModelCheck.Reading
@@ -231,6 +233,7 @@ task Gate.Criteria
 task Gate.Name
 task Junction.Acts
 task Mark.Junction
+task ModelCheck.CoAuthor
 task Origin.Kind
 task Reason.Reserved
 task Reason.Synopsis

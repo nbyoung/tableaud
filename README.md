@@ -124,8 +124,9 @@ a policy:
   requirement moves to that release's tag when the module tags it. A second
   requirement, on `github.com/nbyoung/tabloio`, gives the exported `brief`
   package, so that the queue's brief and tabloio's are one text; it follows
-  the same rule. tabloio has tagged `v0.1.1` and `tablo` `v0.1.0`, so
-  `go.mod` requires those tags.
+  the same rule. tabloio has tagged `v0.1.1` and `tablo` `v0.1.0`, before
+  the language 0.4.0, so `go.mod` requires pseudo-versions of their `main`,
+  and each requirement moves to its module's next tag.
 - `go.mod` never carries a `replace`. Day-to-day work across the subprojects
   uses a personal `go.work` in the directory above the checkouts, which points
   at `./tablo` and the others and stays uncommitted, as the tooling plan's next

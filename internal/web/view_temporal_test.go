@@ -885,9 +885,10 @@ func historyLines(m *web.HistoryView) []string {
 // tablo's own filter gives them, and nests c07d's two lines taken from the
 // firmware under its pin; the history of c07d at provenance names the
 // subproject's task by id and title and holds each line's commit and the
-// view's two commands. TestAuditAdapterGroups shows 3c5d under Authorise for
-// ada@example.org. tablo's golden data holds no history of the range ..W13
-// and no audit of review-by-non-reviewer, model-mismatch, unknown-trailer or
+// view's three commands, the third over the trunk's merges.
+// TestAuditAdapterGroups shows 3c5d under Authorise for ada@example.org.
+// tablo's golden data holds no history of the range ..W13 and no audit of
+// review-by-non-reviewer, model-mismatch, unknown-trailer or
 // status-complete-early, so those stand untested here.
 func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
 	var root view.History
@@ -952,7 +953,7 @@ func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
 	tabloGolden(t, "history-c07d.provenance", &c07d)
 	doc = adapted(t, "history", "provenance", &c07d, nil)
 	cm := web.HistoryFrom(&c07d, web.EnvOf(pageOf(viewNamed("history"), nil), web.Document))
-	if got := historyLines(cm); !reflect.DeepEqual(got, []string{"e-22a758b-c07d", "e-97e4231-c07d"}) || len(cm.Commands) != 2 {
+	if got := historyLines(cm); !reflect.DeepEqual(got, []string{"e-22a758b-c07d", "e-97e4231-c07d"}) || len(cm.Commands) != 3 {
 		t.Fatalf("c07d draws %q and %d commands", got, len(cm.Commands))
 	}
 	pin := historyEvents(cm)[1]
