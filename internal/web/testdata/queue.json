@@ -75,6 +75,7 @@
          },
          "Reviewer": "noreply@anthropic.com",
          "ReviewerBy": null,
+         "ByDefault": "the assignee",
          "Self": true,
          "References": null,
          "Requires": [

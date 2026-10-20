@@ -1677,3 +1677,59 @@ func TestStatusCellRank(t *testing.T) {
 		}
 	}
 }
+
+// TestQueueDefaultReviewer checks how the queue words an item's reviewer
+// that no entry states (tablo cdb0 decision 2), by the reviewer's supplier at
+// the item's gate: the assignee, the nearest person with the ancestor whose
+// assignee the person is, and, where the item names no supplier, a reviewer
+// by default; a reviewer an entry states names that entry's task, a waived
+// junction has none, and a contributor who reviews its own work says so.
+func TestQueueDefaultReviewer(t *testing.T) {
+	const bot, olive = "bot@x.org", "olive@x.org"
+	item := func(id, reviewer string, byDefault bool, sources ...view.Supplier) view.QueueItem {
+		return view.QueueItem{Kind: "ready", Task: view.TaskRef{ID: id, Title: "T " + id}, Gate: "design", ItemDetail: &view.ItemDetail{
+			Junction: &view.Junction{Gate: "design", Kind: "plain", Contributor: bot, Reviewer: reviewer, ReviewerByDefault: byDefault},
+			Sources:  sources,
+		}}
+	}
+	reviewer := func(gate, value string, s view.Stated) view.Supplier {
+		return view.Supplier{Gate: gate, Field: "reviewer", Value: value, Stated: s}
+	}
+	q := &view.Queue{Items: []view.QueueItem{
+		item("a001", bot, true, reviewer("design", bot, view.Stated{By: "assignee", Key: "assignee"})),
+		item("a002", olive, true, reviewer("unit", olive, view.Stated{By: "assignee", Key: "assignee"}),
+			reviewer("design", olive, view.Stated{By: "e4a1", Key: "assignee", File: ".tableaux/tasks/e4a1.yaml", Line: 3})),
+		item("a003", olive, true),
+		item("a004", olive, false, reviewer("design", olive, view.Stated{By: "e4a1", Key: "junctions.design.reviewer", File: ".tableaux/tasks/e4a1.yaml", Line: 9})),
+		item("a005", "", false, reviewer("design", "false", view.Stated{By: "e4a1", Key: "junctions.design.reviewer", File: ".tableaux/tasks/e4a1.yaml", Line: 9})),
+	}}
+	v, _ := web.Lookup("queue")
+	p := pageOf(v, nil)
+	p.Params.Person, p.Params.Level, p.Scripts = bot, "detail", false // without scripts every detail arrives inline
+	m := web.QueueFrom(q, web.EnvOf(p, web.Document))
+	root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	want := map[string]string{
+		"a001": bot + ", the assignee; the contributor reviews its own work",
+		"a002": olive + ", the nearest person, the assignee of e4a1",
+		"a003": olive + ", by default",
+		"a004": olive + ", from e4a1",
+		"a005": "None",
+	}
+	for _, r := range m.Kinds[2].Items {
+		for _, it := range r.Shown {
+			dl := root.byID(it.Fold.ID).find("dl")[0]
+			var got string
+			for i, dt := range dl.find("dt") {
+				if dt.text(true) == "Reviewer" {
+					got = dl.find("dd")[i].text(true)
+				}
+			}
+			if got != want[it.Task.ID] {
+				t.Errorf("%s: the reviewer reads %q, want %q", it.Task.ID, got, want[it.Task.ID])
+			}
+		}
+	}
+}

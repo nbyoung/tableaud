@@ -116,7 +116,7 @@ type Junction struct {
 	Contributor *Person
 	Model       string
 	Reviewer    *Person
-	ByAssignee  bool      // the reviewer is the assignee, by default
+	ByDefault   string    // who supplies a default reviewer: "the assignee", "the nearest person" or "by default"; "" where an entry states it
 	Subproject  *Snapshot // a recursive junction
 	Refs        []Reference
 	Stands      string // "passed", "passed, reviewed", "next", "later" or "does not apply"
@@ -145,6 +145,7 @@ type SourceRow struct {
 	Mine    bool
 	By      *TaskRef // nil for the plain default
 	Default string   // why no entry supplies it
+	Nearest *TaskRef // the ancestor whose assignee reviews as the nearest person; nil otherwise
 }
 
 // Reviews lists the reviewed junctions the status passes.

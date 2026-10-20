@@ -237,8 +237,9 @@ type ItemBody struct {
 	Model        string
 	ContribBy    *TaskRef
 	Reviewer     string
-	ReviewerBy   *TaskRef
-	Self         bool // the contributor reviews its own work
+	ReviewerBy   *TaskRef // the task whose entry states the reviewer, or the ancestor whose assignee reviews as the nearest person
+	ByDefault    string   // who supplies a default reviewer: "the assignee", "the nearest person" or "by default"; "" where an entry states it
+	Self         bool     // the contributor reviews its own work
 	References   []Reference
 	Requires     []Edge
 	Unblocks     []Edge

@@ -200,7 +200,8 @@
           "Title": "Tableaux tooling",
           "Href": "T/437e"
          },
-         "Default": ""
+         "Default": "",
+         "Nearest": null
         },
         {
          "Gate": {
@@ -212,7 +213,8 @@
          "Value": "none",
          "Mine": false,
          "By": null,
-         "Default": "a person contributes"
+         "Default": "a person contributes",
+         "Nearest": null
         }
        ]
       },

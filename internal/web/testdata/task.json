@@ -412,7 +412,7 @@
       "Email": "noreply@anthropic.com",
       "Mine": false
      },
-     "ByAssignee": true,
+     "ByDefault": "the assignee",
      "Subproject": null,
      "Refs": null,
      "Stands": "passed"
@@ -433,7 +433,7 @@
      "Contributor": null,
      "Model": "",
      "Reviewer": null,
-     "ByAssignee": false,
+     "ByDefault": "",
      "Subproject": null,
      "Refs": null,
      "Stands": "does not apply"
@@ -464,7 +464,7 @@
       "Email": "nbyoung@nbyoung.com",
       "Mine": true
      },
-     "ByAssignee": false,
+     "ByDefault": "",
      "Subproject": null,
      "Refs": null,
      "Stands": "passed, reviewed"
@@ -485,7 +485,7 @@
      "Contributor": null,
      "Model": "",
      "Reviewer": null,
-     "ByAssignee": false,
+     "ByDefault": "",
      "Subproject": {
       "Mark": {
        "Glyph": "",
@@ -570,7 +570,8 @@
        "Title": "Method",
        "Href": "T/bc63"
       },
-      "Default": ""
+      "Default": "",
+      "Nearest": null
      },
      {
       "Gate": {
@@ -582,7 +583,8 @@
       "Value": "nbyoung@nbyoung.com",
       "Mine": true,
       "By": null,
-      "Default": "an agent with no stated reviewer takes the assignee"
+      "Default": "an agent with no stated reviewer takes the assignee",
+      "Nearest": null
      }
     ]
    },

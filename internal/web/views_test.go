@@ -702,3 +702,73 @@ func TestGateStateRank(t *testing.T) {
 		}
 	}
 }
+
+// TestDefaultReviewers checks how the task definition words a reviewer no
+// entry states (tablo cdb0 decision 2), over a task built in memory whose
+// assignee is the agent bot: at design the assignee reviews by default, at
+// unit the nearest person, olive, the assignee of the root e4a1, and at
+// release an entry waives review, so the row draws no reviewer and the
+// supplier's value is false. A task view with no assignee cannot tell the
+// two defaults apart, and its reviewers stand by default.
+func TestDefaultReviewers(t *testing.T) {
+	const bot, olive = "bot@x.org", "olive@x.org"
+	d := &view.Task{
+		Task: view.TaskRef{ID: "b2c9", Title: "Leaf"}, Assignee: bot, Status: view.Status{Kind: "recorded", Gate: "defined"}, Authorised: true,
+		TaskDetail: &view.TaskDetail{
+			Path: []view.TaskRef{{ID: "e4a1", Title: "Base"}, {ID: "c5f0", Title: "Agents"}, {ID: "b2c9", Title: "Leaf"}},
+			Junctions: []view.Junction{
+				{Gate: "design", Kind: "plain", Contributor: bot, Reviewer: bot, ReviewerByDefault: true},
+				{Gate: "unit", Kind: "plain", Contributor: bot, Reviewer: olive, ReviewerByDefault: true},
+				{Gate: "release", Kind: "plain", Contributor: bot},
+			},
+		},
+		TaskProvenance: &view.TaskProvenance{Sources: []view.Supplier{
+			{Gate: "design", Field: "reviewer", Value: bot, Stated: view.Stated{By: "assignee", Key: "assignee"}},
+			{Gate: "unit", Field: "reviewer", Value: olive, Stated: view.Stated{By: "e4a1", Key: "assignee", File: ".tableaux/tasks/e4a1.yaml", Line: 3}},
+			{Gate: "release", Field: "reviewer", Value: "false", Stated: view.Stated{By: "c5f0", Key: "junctions.release.reviewer", File: ".tableaux/tasks/c5f0.yaml", Line: 7}},
+		}},
+	}
+	v, _ := web.Lookup("task")
+	p := pageOf(v, nil)
+	p.Params.Level = "provenance"
+	m := web.TaskFrom(d, web.EnvOf(p, web.Document))
+	var by []string
+	for _, r := range m.Junctions.Rows {
+		by = append(by, r.Gate.Name+" "+r.ByDefault)
+	}
+	if want := []string{"design the assignee", "unit the nearest person", "release "}; !slices.Equal(by, want) {
+		t.Errorf("the defaults are %q, want %q", by, want)
+	}
+	if r := m.Junctions.Rows[2]; r.Reviewer != nil {
+		t.Errorf("the waived junction draws the reviewer %+v", r.Reviewer)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	var cells []string
+	for _, tr := range root.byID("d-junctions").find("tbody")[0].find("tr") {
+		cells = append(cells, tr.find("td")[3].text(true))
+	}
+	if want := []string{"the assignee, " + bot, "the nearest person, " + olive, ""}; !slices.Equal(cells, want) {
+		t.Errorf("the reviewer cells read %q, want %q", cells, want)
+	}
+	var sources []string
+	for _, tr := range root.byID("prov-sources").find("tbody")[0].find("tr") {
+		td := tr.find("td")
+		sources = append(sources, td[1].text(true)+": "+td[2].text(true))
+	}
+	if want := []string{
+		bot + ": No entry; the assignee",
+		olive + ": No entry; the nearest person, the assignee of e4a1 Base",
+		"false: c5f0 Agents",
+	}; !slices.Equal(sources, want) {
+		t.Errorf("the sources read %q, want %q", sources, want)
+	}
+
+	d.Assignee = ""
+	m = web.TaskFrom(d, web.EnvOf(p, web.Document))
+	if a, b := m.Junctions.Rows[0].ByDefault, m.Junctions.Rows[1].ByDefault; a != "by default" || b != "by default" {
+		t.Errorf("with no assignee the defaults are %q and %q", a, b)
+	}
+}

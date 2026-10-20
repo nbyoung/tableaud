@@ -119,14 +119,14 @@
 {{define "part/sources"}}<p>A junction resolves field by field: from the task's own entry, then from its ancestors' entries nearest first, then from the plain default. The tool looks in this order:</p>
 <ol>
 {{range .Chain}}<li>{{template "task" .Task}}, <code>{{.File}}</code>: {{if .States}}states {{range $i, $g := .States}}{{if $i}}, {{end}}{{$g.Name}}{{end}}{{else}}states no junction{{end}}.</li>
-{{end}}<li>The plain default: the assignee does the work, and nobody reviews it.</li>
+{{end}}<li>The plain default: the assignee does the work, and nobody reviews it but the nearest person where the assignee is an agent.</li>
 </ol>
 <div class="scroll">
 <table>
 <caption>Each resolved field and the task whose entry supplies it</caption>
 <thead><tr><th scope="col">Gate</th><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Supplied by</th></tr></thead>
 <tbody>
-{{range .Rows}}<tr>{{if .Span}}<th scope="row" rowspan="{{.Span}}">{{template "sym" .Gate}}</th>{{end}}<td>{{.Field}}</td><td>{{if .Mine}}<strong class="mine">{{.Value}}</strong>{{else}}{{.Value}}{{end}}</td><td>{{with .By}}{{template "task" .}}{{else}}No entry; {{.Default}}{{end}}</td></tr>
+{{range .Rows}}<tr>{{if .Span}}<th scope="row" rowspan="{{.Span}}">{{template "sym" .Gate}}</th>{{end}}<td>{{.Field}}</td><td>{{if .Mine}}<strong class="mine">{{.Value}}</strong>{{else}}{{.Value}}{{end}}</td><td>{{with .By}}{{template "task" .}}{{else}}No entry; {{.Default}}{{with .Nearest}}, the assignee of {{template "task" .}}{{end}}{{end}}</td></tr>
 {{end}}</tbody>
 </table>
 </div>{{end}}
