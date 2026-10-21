@@ -14,10 +14,10 @@ references:
 junctions:
   defined:        { contributor: noreply@anthropic.com, model: claude-haiku }
   mockup:         { contributor: noreply@anthropic.com, model: claude-opus, reviewer: nbyoung@nbyoung.com }
-  function:       { contributor: noreply@anthropic.com, model: claude-sonnet }
+  function:       { contributor: noreply@anthropic.com, model: claude-sonnet, reviewer: false }
   design:         { contributor: noreply@anthropic.com, model: claude-opus, reviewer: nbyoung@nbyoung.com, references: [ { url: docs/gates/design.md, text: What the design gate asks for } ] }
-  implementation: { contributor: noreply@anthropic.com, model: claude-sonnet, references: [ { url: docs/gates/implementation.md, text: What the implementation gate asks for } ] }
-  unit:           { contributor: noreply@anthropic.com, model: claude-sonnet, references: [ { url: docs/gates/unit.md, text: What the unit gate asks for } ] }
-  integrate:      { contributor: noreply@anthropic.com, model: claude-sonnet }
+  implementation: { contributor: noreply@anthropic.com, model: claude-sonnet, reviewer: false, references: [ { url: docs/gates/implementation.md, text: What the implementation gate asks for } ] }
+  unit:           { contributor: noreply@anthropic.com, model: claude-sonnet, reviewer: false, references: [ { url: docs/gates/unit.md, text: What the unit gate asks for } ] }
+  integrate:      { contributor: noreply@anthropic.com, model: claude-sonnet, reviewer: false }
   validate:       { contributor: noreply@anthropic.com, model: claude-sonnet, reviewer: nbyoung@nbyoung.com }
   release:        { contributor: nbyoung@nbyoung.com }
