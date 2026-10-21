@@ -356,6 +356,11 @@
       "kind": "A requirement its commit alone leaves unmet"
     },
     {
+      "key": "R14",
+      "rule": "R14",
+      "kind": "An unpinned requirement"
+    },
+    {
       "key": "J8",
       "rule": "J8",
       "kind": "A subproject the tool cannot read"
@@ -391,6 +396,11 @@
       "kind": "A commit off the submodule's pin"
     },
     {
+      "key": "J19",
+      "rule": "J19",
+      "kind": "A subproject whose language lags"
+    },
+    {
       "key": "H1",
       "rule": "H1",
       "kind": "A trailer that names nothing"
@@ -419,6 +429,16 @@
       "key": "H6",
       "rule": "H6",
       "kind": "No model trailer"
+    },
+    {
+      "key": "H7",
+      "rule": "H7",
+      "kind": "An agent's work under a person's identity"
+    },
+    {
+      "key": "H8",
+      "rule": "H8",
+      "kind": "A reaffirmation that confirms nothing"
     },
     {
       "key": "stale",
