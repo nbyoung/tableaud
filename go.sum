@@ -1,9 +1,9 @@
 github.com/dlclark/regexp2 v1.11.0 h1:G/nrcoOa7ZXlpoa/91N3X7mM3r8eIlMBBJZvsz/mxKI=
 github.com/dlclark/regexp2 v1.11.0/go.mod h1:DHkYz0B9wPfa6wondMfaivmHpzrQ3v9q8cnmRbL6yW8=
-github.com/nbyoung/tablo v0.1.1-0.20261020192233-fd3ecc37057b h1:OnAkVtDd/YgIkolM4ZdVptBo4uCNACkU80/4OvgBfKk=
-github.com/nbyoung/tablo v0.1.1-0.20261020192233-fd3ecc37057b/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
-github.com/nbyoung/tabloio v0.1.2-0.20261020214003-de05dc277ff3 h1:Zc6p3KSw11k0u98CozRYstuLCo1yMZU7CI9+a3IXBtY=
-github.com/nbyoung/tabloio v0.1.2-0.20261020214003-de05dc277ff3/go.mod h1:0uTrh4VRUbPSdJelpBNndKbGOJmgGgTckOiCVARQC7A=
+github.com/nbyoung/tablo v0.2.0 h1:9AcVchb766ralYYvvvEgsIUni4mwLyz4SIxJ8G6eu40=
+github.com/nbyoung/tablo v0.2.0/go.mod h1:o8EfV1Ce9PIxbaT55xdINRFiBDCHf3X2cqFmQw2HhRk=
+github.com/nbyoung/tabloio v0.2.0 h1:X8y+B2PWAga62pCL/b1TlZ0/Mc1CMPY1/lJWsPDh2QM=
+github.com/nbyoung/tabloio v0.2.0/go.mod h1:t3DtPa7KqQ6GL6b5P5yw/U2npI4HR+Jb3etJfhDau3w=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 h1:1EYB5IzjZawrrnELUi78f9fPu57HuXjmddZPjrls/28=
 github.com/santhosh-tekuri/jsonschema/v6 v6.0.3/go.mod h1:JXeL+ps8p7/KNMjDQk3TCwPpBy0wYklyWTfbkIzdIFU=
 golang.org/x/text v0.42.0 h1:JbOZXgfeCPU9gacVtYliJqOhD+zhrEqK4LfdpmlUZqI=
