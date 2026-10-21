@@ -1744,10 +1744,11 @@ func TestStatusCellRank(t *testing.T) {
 
 // TestQueueDefaultReviewer checks how the queue words an item's reviewer
 // that no entry states (tablo cdb0 decision 2), by the reviewer's supplier at
-// the item's gate: the assignee, the nearest person with the ancestor whose
-// assignee the person is, and, where the item names no supplier, a reviewer
-// by default; a reviewer an entry states names that entry's task, a waived
-// junction has none, and a contributor who reviews its own work says so.
+// the item's gate: the nearest person with the ancestor whose assignee the
+// person is, and else the assignee, also where the item names no supplier,
+// as tabloio's queue reads it; a reviewer an entry states names that entry's
+// task, a waived junction has none, and a contributor who reviews its own
+// work says so.
 func TestQueueDefaultReviewer(t *testing.T) {
 	const bot, olive = "bot@x.org", "olive@x.org"
 	item := func(id, reviewer string, byDefault bool, sources ...view.Supplier) view.QueueItem {
@@ -1778,7 +1779,7 @@ func TestQueueDefaultReviewer(t *testing.T) {
 	want := map[string]string{
 		"a001": bot + ", the assignee; the contributor reviews its own work",
 		"a002": olive + ", the nearest person, the assignee of e4a1",
-		"a003": olive + ", by default",
+		"a003": olive + ", the assignee",
 		"a004": olive + ", from e4a1",
 		"a005": "None",
 	}
