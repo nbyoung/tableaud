@@ -69,7 +69,7 @@
 <caption>The entry that supplies each field</caption>
 <thead><tr><th scope="col">Field</th><th scope="col">Value</th><th scope="col">Supplied by</th></tr></thead>
 <tbody>
-{{range .From}}<tr><th scope="row">{{.Field}}</th><td>{{.Value}}</td><td>{{with .By}}{{template "task" .}}{{else}}No entry; {{.Default}}{{end}}</td></tr>
+{{range .From}}<tr><th scope="row">{{.Field}}</th><td>{{.Value}}</td><td>{{with .By}}{{template "task" .}}{{else}}No entry; {{.Default}}{{with .Nearest}}, the assignee of {{template "task" .}}{{end}}{{end}}</td></tr>
 {{end}}</tbody>
 </table>
 </div>

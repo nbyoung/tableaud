@@ -140,7 +140,7 @@ func AuthorityFrom(d *view.Delegation, e Env) *AuthorityView {
 			b.ChildCount = len(c.Children)
 			b.Below = authorities(c.Authorities, e, ref)
 			for _, j := range c.Defaults {
-				b.Defaults = append(b.Defaults, e.junctionRow(j, nil))
+				b.Defaults = append(b.Defaults, e.junctionRow(j, nil, c.Assignee))
 			}
 		}
 		b.Prov = AuthProv{Fold: e.Fold("prov", "prov-"+r.ID, "deciding", r.ID)}

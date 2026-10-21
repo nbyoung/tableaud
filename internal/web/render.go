@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/fs"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -67,6 +68,22 @@ var Funcs = template.FuncMap{
 	"depth": func(d int) string {
 		return "d" + strconv.Itoa(min(max(d, 0), 8))
 	},
+	"coded": coded,
+}
+
+// coded returns a phrase as markup, each span between backticks in a code
+// element and every part escaped: "State the `commit` the requirement lacks"
+// draws commit as code.
+func coded(s string) template.HTML {
+	var b strings.Builder
+	for i, part := range strings.Split(s, "`") {
+		if i%2 == 1 {
+			b.WriteString("<code>" + template.HTMLEscapeString(part) + "</code>")
+		} else {
+			b.WriteString(template.HTMLEscapeString(part))
+		}
+	}
+	return template.HTML(b.String()) // every part is escaped above
 }
 
 // jsonIndent writes v as JSON indented by two spaces, for the placeholders.

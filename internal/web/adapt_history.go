@@ -234,7 +234,7 @@ func (e Env) historyEvent(l view.Line, taken []view.Line) Event {
 			ev.After = &s
 		}
 		ev.Effect = effects[dt.Effect]
-		ev.Model, ev.Committer = dt.Model, dt.Committer
+		ev.Model, ev.CoAuthor, ev.Committer = dt.Model, dt.CoAuthor, dt.Committer
 		if dt.Check != nil {
 			ev.Stated = dt.Check.Stated
 		}

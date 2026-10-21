@@ -388,6 +388,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "79e0237eea866c2951968e2e401552dde5b6f9b8",
         "subject": "Plan the firmware",
@@ -473,6 +474,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
         "subject": "Plan the weather station",
@@ -570,6 +572,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
         "subject": "Plan the weather station",
@@ -667,6 +670,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "68d9021206ec627755e2ead99b6be3f2c06ae815",
         "subject": "Plan the weather station",
@@ -764,6 +768,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "22a758bec2a079fd908bba970db5eb51ecccd0c6",
         "subject": "Define the node firmware task",
@@ -835,6 +840,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "cf5b16964dba7f8f1c8842a8202878fd572ad835",
         "subject": "Record the node image design",
@@ -918,6 +924,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "91aa7747f22ef4bb66becb6eab5d5f1f9c28836d",
         "subject": "Propose the sensor board task",
@@ -1001,6 +1008,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "f9e8746736beb13aeab99f2cd2ff7e315596e616",
         "subject": "Merge the sensor board task",
@@ -1087,6 +1095,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "06c66797486ffeba2831d49b1b9d65f5f99e1b17",
         "subject": "Propose the dashboard task",
@@ -1170,6 +1179,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "74bc0b87ba05bcb97443b8299db14fcf15fe5074",
         "subject": "Accept the dashboard task",
@@ -1255,6 +1265,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "63a1f88f84354726d5e1b431df5e11a518854cdb",
         "subject": "Record the sensor board mockup",
@@ -1343,6 +1354,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
         "subject": "Record the dashboard definition",
@@ -1426,6 +1438,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "85adb9bd07783927046f987a17471c42eee97b87",
         "subject": "Accept the sensor board mockup",
@@ -1511,6 +1524,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "a2393fb3090844dd83d44a39739ad486e1fcecd2",
         "subject": "Record the sensor board function prototype",
@@ -1632,6 +1646,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "97e423122790a250e4e067d7d33bbf88622b00d5",
         "subject": "Pin the firmware at its design",
@@ -1721,6 +1736,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "1b8cfb16a248f50eeefb76e0994234693ff4f4a6",
         "subject": "Revise the dashboard scope",
@@ -1804,6 +1820,7 @@
       "model": "",
       "check": null,
       "committer": "",
+      "co_author": "",
       "commit": {
         "hash": "edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
         "subject": "Weekly review: no change",
@@ -1834,6 +1851,10 @@
     },
     {
       "text": "git log --format='%H %as %ae %s' -E --grep='^(Authorised|Reaffirmed): ([0-9a-f]{4})$' --grep='^Reviewed: ([0-9a-f]{4}) ' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a",
+      "comment": ""
+    },
+    {
+      "text": "git log --format='%H %as %ae %s' --first-parent --merges main -- .tableaux/tasks",
       "comment": ""
     }
   ]

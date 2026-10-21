@@ -258,9 +258,15 @@ func positionSources(positions []view.Position, kind, gate string, rows []view.J
 		}
 		seen[k] = true
 		row := SourceRow{Field: field, Value: value, Mine: value != "" && value == e.Person}
+		if id := nearestOf(field, s); id != "" {
+			t := e.taskRef(view.TaskRef{ID: id})
+			row.Default, row.Nearest = reviewerDefaults["nearest"], &t
+			out = append(out, row)
+			return
+		}
 		switch s.By {
 		case "assignee":
-			row.Default = "the assignee"
+			row.Default = reviewerDefaults["assignee"]
 		case "default", "":
 			row.Default = "the plain default"
 		case "own":

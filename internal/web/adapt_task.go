@@ -128,7 +128,7 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 		for _, m := range d.Models {
 			v.Junctions.Models.Rows = append(v.Junctions.Models.Rows, ModelRow{
 				Commit: Commit{Hash: short(m.Commit), Full: m.Commit}, Gate: e.Legend.Gate(m.Gate),
-				Stated: m.Stated, Trailer: m.Trailer, Reading: m.Reading,
+				Stated: m.Stated, Trailer: m.Trailer, Reading: m.Reading, CoAuthor: m.CoAuthor,
 			})
 		}
 		v.Events.Total = d.EventCount
@@ -319,7 +319,7 @@ func (e Env) junctions(d *view.Task) ([]Junction, []Sym) {
 	var rows []Junction
 	used := map[string]bool{}
 	for _, j := range d.Junctions {
-		row := e.junctionRow(j, d.TaskDetail)
+		row := e.junctionRow(j, d.TaskDetail, d.Assignee)
 		row.Here = j.Stands == "here"
 		row.Stands = stands(j)
 		for _, m := range j.Marks {
@@ -339,9 +339,21 @@ func (e Env) junctions(d *view.Task) ([]Junction, []Sym) {
 // junctionRow returns a resolved junction with its marks, its people and its
 // references; where it stands is the caller's. A recursive junction reads
 // the gate of its subproject task from the detail, where the status reads the
-// same task.
-func (e Env) junctionRow(j view.Junction, detail *view.TaskDetail) Junction {
-	row := Junction{Gate: e.Legend.Gate(j.Gate), Exempt: j.Kind == "not_applicable", Model: j.Model, ByAssignee: j.ReviewerByDefault}
+// same task. A default reviewer is the assignee where it equals assignee, the
+// assignee of the task whose junction it is, and else the nearest person;
+// with no assignee the row cannot tell, and the reviewer stands by default.
+func (e Env) junctionRow(j view.Junction, detail *view.TaskDetail, assignee string) Junction {
+	row := Junction{Gate: e.Legend.Gate(j.Gate), Exempt: j.Kind == "not_applicable", Model: j.Model}
+	if j.ReviewerByDefault && j.Reviewer != "" {
+		switch {
+		case assignee == "":
+			row.ByDefault = reviewerDefaults[""]
+		case j.Reviewer == assignee:
+			row.ByDefault = reviewerDefaults["assignee"]
+		default:
+			row.ByDefault = reviewerDefaults["nearest"]
+		}
+	}
 	for _, m := range j.Marks {
 		row.Marks = append(row.Marks, e.Legend.Mark(m))
 	}
@@ -358,6 +370,32 @@ func (e Env) junctionRow(j view.Junction, detail *view.TaskDetail) Junction {
 	}
 	row.Refs = e.references(j.References, nil)
 	return row
+}
+
+// reviewerDefaults words the default that supplies a junction's reviewer
+// where no entry states one (tablo cdb0 decision 2), in tabloio's words: the
+// task's assignee, or, at an agent's junction from the language 0.4.0, the
+// nearest person among the authorities. Where a page cannot tell the two
+// apart, the reviewer stands by default.
+var reviewerDefaults = map[string]string{
+	"assignee": "the assignee",
+	"nearest":  "the nearest person",
+	"":         "by default",
+}
+
+// nearestOf returns the ancestor whose assignee reviews as the nearest
+// person, where a supplier states the reviewer so: tablo states it by the
+// ancestor's id at its key assignee (cdb0 decision 2). It returns "" for
+// every other supplier.
+func nearestOf(field string, s view.Stated) string {
+	if field != "reviewer" || s.Key != "assignee" {
+		return ""
+	}
+	switch s.By {
+	case "", "assignee", "default", "own":
+		return ""
+	}
+	return s.By
 }
 
 // stands words where a junction stands.
@@ -409,24 +447,26 @@ func sourceChain(d *view.Task, e Env, ref func(string) TaskRef) []SourceStep {
 }
 
 // sourceRows returns one row per supplier, by gate then field; Span groups
-// the rows of one gate on its first row.
+// the rows of one gate on its first row. A reviewer the nearest person
+// supplies names the ancestor whose assignee it is.
 func sourceRows(ss []view.Supplier, e Env, ref func(string) TaskRef) []SourceRow {
 	var out []SourceRow
 	first := -1
 	for i, s := range ss {
 		row := SourceRow{Gate: e.Legend.Gate(s.Gate), Field: s.Field, Value: s.Value, Mine: s.Value != "" && s.Value == e.Person}
-		switch s.By {
-		case "assignee":
-			if s.Field == "reviewer" {
-				row.Default = "an agent with no stated reviewer takes the assignee"
-			} else {
-				row.Default = "the assignee"
+		if id := nearestOf(s.Field, s.Stated); id != "" {
+			t := ref(id)
+			row.Default, row.Nearest = reviewerDefaults["nearest"], &t
+		} else {
+			switch s.By {
+			case "assignee":
+				row.Default = reviewerDefaults["assignee"]
+			case "default", "":
+				row.Default = "the plain default"
+			default:
+				t := ref(s.By)
+				row.By = &t
 			}
-		case "default", "":
-			row.Default = "the plain default"
-		default:
-			t := ref(s.By)
-			row.By = &t
 		}
 		if i == 0 || ss[i-1].Gate != s.Gate {
 			first = len(out)

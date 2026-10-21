@@ -20,7 +20,6 @@ assignment Reason.Synopsis
 assignment State.Synopsis
 assignment Stated.Col
 assignment Stated.File
-assignment Stated.Key
 assignment Stated.Line
 assignment Status.Derived
 assignment Status.Uncommitted
@@ -37,7 +36,6 @@ audit Reason.Reserved
 audit Reason.Synopsis
 audit Silence.Key
 audit State.Synopsis
-authority Chain.Assignee
 authority Chain.Sources
 authority Commit.AuthorTime
 authority Commit.Files
@@ -145,6 +143,7 @@ history History.Subject
 history LineDetail.SubjectAfter
 history LineDetail.Unchanged
 history Mark.Junction
+history ModelCheck.CoAuthor
 history ModelCheck.Commit
 history ModelCheck.Gate
 history ModelCheck.Reading
@@ -172,7 +171,6 @@ queue Junction.From
 queue Junction.Gate
 queue Junction.Kind
 queue Junction.Reviewed
-queue Junction.ReviewerByDefault
 queue Junction.Stands
 queue Junction.Subproject
 queue Mark.Junction
@@ -185,12 +183,10 @@ queue Requirement.Met
 queue State.Synopsis
 queue Stated.Col
 queue Stated.File
-queue Stated.Key
 queue Stated.Line
 queue Status.Derived
 queue Status.Uncommitted
 queue Status.Why
-queue Supplier.Gate
 queue Supplier.Value
 tableau Commit.AuthorTime
 tableau Commit.Files
@@ -243,7 +239,6 @@ task Snapshot.Children
 task State.Synopsis
 task Stated.Col
 task Stated.File
-task Stated.Key
 task Stated.Line
 task Status.Derived
 task Status.Uncommitted

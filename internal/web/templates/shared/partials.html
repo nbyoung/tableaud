@@ -47,7 +47,7 @@
 {{end}}</ul>{{end}}
 
 {{/* junction-row: one row of a junction table: gate, marks, contributor, model, reviewer. */}}
-{{define "junction-cells"}}<th scope="row">{{template "sym" .Gate}}</th><td class="cell">{{template "syms" .Marks}}</td>{{if .Subproject}}<td colspan="3">Subproject <code>{{.Subproject.URL}}</code>, task {{template "task" .Subproject.Task}}</td>{{else}}<td>{{with .Contributor}}{{template "person" .}}{{end}}</td><td>{{with .Model}}<code>{{.}}</code>{{end}}</td><td>{{with .Reviewer}}{{if $.ByAssignee}}the assignee, {{end}}{{template "person" .}}{{end}}</td>{{end}}{{end}}
+{{define "junction-cells"}}<th scope="row">{{template "sym" .Gate}}</th><td class="cell">{{template "syms" .Marks}}</td>{{if .Subproject}}<td colspan="3">Subproject <code>{{.Subproject.URL}}</code>, task {{template "task" .Subproject.Task}}</td>{{else}}<td>{{with .Contributor}}{{template "person" .}}{{end}}</td><td>{{with .Model}}<code>{{.}}</code>{{end}}</td><td>{{with .Reviewer}}{{with $.ByDefault}}{{.}}, {{end}}{{template "person" .}}{{end}}</td>{{end}}{{end}}
 
 {{/* event-row: one event as a table row of five cells. */}}
 {{define "event-row"}}<tr><td>{{.Date}}</td><th scope="row"><code>{{.Hash}}</code></th><td>{{template "person" .By}}</td><td>{{.Event}}</td><td>{{with .Status}}{{template "status" .}}{{if .Note}}: {{.Note}}{{end}}{{end}}{{with .Gate}}{{template "sym" .}}{{end}}{{with .Pin}}<code>{{.URL}}</code> {{if .Old}}from <code>{{.Old}}</code> {{end}}to <code>{{.New}}</code>{{end}}{{with .Sub}}{{if or $.Status $.Gate $.Pin}}; {{end}}in the subproject <code>{{$.Project}}</code>, task {{template "task" .}}{{end}}</td></tr>{{end}}

@@ -116,7 +116,7 @@ type Junction struct {
 	Contributor *Person
 	Model       string
 	Reviewer    *Person
-	ByAssignee  bool      // the reviewer is the assignee, by default
+	ByDefault   string    // who supplies a default reviewer: "the assignee", "the nearest person" or "by default"; "" where an entry states it
 	Subproject  *Snapshot // a recursive junction
 	Refs        []Reference
 	Stands      string // "passed", "passed, reviewed", "next", "later" or "does not apply"
@@ -145,6 +145,7 @@ type SourceRow struct {
 	Mine    bool
 	By      *TaskRef // nil for the plain default
 	Default string   // why no entry supplies it
+	Nearest *TaskRef // the ancestor whose assignee reviews as the nearest person; nil otherwise
 }
 
 // Reviews lists the reviewed junctions the status passes.
@@ -170,11 +171,12 @@ type Models struct {
 
 // ModelRow is one commit at a junction.
 type ModelRow struct {
-	Commit  Commit
-	Gate    Sym
-	Stated  string
-	Trailer string // "" for none
-	Reading string // "agrees", "differs", "missing" or "exempt"
+	Commit   Commit
+	Gate     Sym
+	Stated   string
+	Trailer  string // "" for none
+	Reading  string // "agrees", "differs", "missing" or "exempt"
+	CoAuthor string // the agent a person's commit names in a Co-Authored-By: trailer; "" for none
 }
 
 // Events is the newest events of the task.

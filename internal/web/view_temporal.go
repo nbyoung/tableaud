@@ -45,6 +45,7 @@ type Event struct {
 	Effect    string
 	Model     string // the Model: trailer; "" for none
 	Stated    string // the model the junction states
+	CoAuthor  string // the agent a person's commit names in a Co-Authored-By: trailer; "" for none
 	Committer string // where it differs from the author
 	Sub       *SubEvents
 	Prov      Fold
@@ -129,7 +130,7 @@ type FindingKind struct {
 type FindingGroup struct {
 	Anchor   string
 	Severity string
-	Action   string // "Review", "Authorise", "Reaffirm", "Record the hand-off", "Clear the hand-off", "Revise the file", "Move the pin", "Check out the submodule"
+	Action   string // "Review", "Authorise", "Reaffirm", "Record the hand-off", "Clear the hand-off", "Revise the file", "Move the pin", "Check out the submodule", ...; a span between backticks draws as code
 	Rule     string
 	Title    string
 	Resolver Person

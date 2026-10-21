@@ -712,6 +712,44 @@ func TestHistoryAdapterLinesAndEffects(t *testing.T) {
 	}
 }
 
+// TestHistoryCoAuthor checks that a history line names the agent a
+// person's commit co-authors (tablo cdb0 decision 3) as the fact Co-author,
+// after the model and before the committer, and that a line with no
+// co-author draws no such fact.
+func TestHistoryCoAuthor(t *testing.T) {
+	d := &view.History{
+		Events: 2, Commits: 2, Days: []view.Day{{Date: "2026-10-01", Events: 2, Commits: 2}},
+		Lines: []view.Line{
+			historyLine("2026-10-01", "1111111aa", "1000", "", "status"),
+			historyLine("2026-10-01", "2222222bb", "2000", "", "status"),
+		},
+	}
+	d.Lines[0].Model, d.Lines[0].CoAuthor, d.Lines[0].Committer = "claude-fable-5-1", "bot@x.org", "pat@x.org"
+	m := web.HistoryFrom(d, historyEnv(t, web.Detail))
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("history"), m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	for anchor, want := range map[string]string{
+		"e-1111111-1000": "Status after|Model|Co-author bot@x.org|Committer",
+		"e-2222222-2000": "Status after|Model",
+	} {
+		dl := root.byID(anchor).find("dl")[0]
+		dds := dl.find("dd")
+		var facts []string
+		for i, dt := range dl.find("dt") {
+			fact := dt.text(true)
+			if fact == "Co-author" {
+				fact += " " + dds[i].text(true)
+			}
+			facts = append(facts, fact)
+		}
+		if got := strings.Join(facts, "|"); got != want {
+			t.Errorf("%s: the facts read %q, want %q", anchor, got, want)
+		}
+	}
+}
+
 // longHistory returns tablo's history of n events, one line each, ten to a
 // day.
 func longHistory(n int) *view.History {
@@ -832,6 +870,43 @@ func TestAuditAdapterGroups(t *testing.T) {
 	}
 }
 
+// TestAuditNewActs checks the two acts of tablo's cdb0 decision 4 in
+// tabloio's words: R14's state_commit, whose commit draws as code, and
+// J19's raise_language, in a group's summary and in its rows alike.
+func TestAuditNewActs(t *testing.T) {
+	d := &view.Audit{Information: 1, Warnings: 1, Findings: []view.Finding{
+		{Key: "J19", Rule: "J19", Severity: "warning", Kind: "A subproject lags", Act: "raise_language", Resolver: "ada@x", Tasks: []view.TaskRef{{ID: "2000", Title: "T 2000"}}},
+		{Key: "R14", Rule: "R14", Severity: "information", Kind: "An unpinned requirement", Act: "state_commit", Resolver: "ada@x", Tasks: []view.TaskRef{{ID: "1000", Title: "T 1000"}}},
+	}}
+	p := at(t, "audit", "level=detail")
+	m := web.AuditFrom(d, web.EnvOf(p, web.Document)) // without scripts every group arrives inline
+	var got []string
+	for _, g := range m.Groups {
+		got = append(got, g.Rule+" "+g.Action)
+	}
+	if want := []string{"J19 Raise the subproject's language", "R14 State the `commit` the requirement lacks"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("the groups are %q, want %q", got, want)
+	}
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("audit"), m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	for _, g := range m.Groups {
+		n := root.byID(g.Fold.ID)
+		want := strings.ReplaceAll(g.Action, "`", "")
+		if s := n.find("summary")[0].text(true); !strings.Contains(s, want) {
+			t.Errorf("%s: the summary reads %q, want it to hold %q", g.Rule, s, want)
+		}
+		if td := n.find("tbody")[0].find("td"); td[3].text(true) != want {
+			t.Errorf("%s: the row's action reads %q, want %q", g.Rule, td[3].text(true), want)
+		}
+		codes := n.find("code")
+		if (g.Rule == "R14") != (len(codes) > 0 && codes[0].text(true) == "commit") {
+			t.Errorf("%s: the action draws the code %v", g.Rule, codes)
+		}
+	}
+}
+
 // TestAuditRowsOfOneRuleLeadApart checks the glance rows of one rule and
 // several resolvers: each link names its resolver in hidden text after the
 // title, or says that the group has none, so that the page passes N3 of
@@ -885,9 +960,10 @@ func historyLines(m *web.HistoryView) []string {
 // tablo's own filter gives them, and nests c07d's two lines taken from the
 // firmware under its pin; the history of c07d at provenance names the
 // subproject's task by id and title and holds each line's commit and the
-// view's two commands. TestAuditAdapterGroups shows 3c5d under Authorise for
-// ada@example.org. tablo's golden data holds no history of the range ..W13
-// and no audit of review-by-non-reviewer, model-mismatch, unknown-trailer or
+// view's three commands, the third over the trunk's merges.
+// TestAuditAdapterGroups shows 3c5d under Authorise for ada@example.org.
+// tablo's golden data holds no history of the range ..W13 and no audit of
+// review-by-non-reviewer, model-mismatch, unknown-trailer or
 // status-complete-early, so those stand untested here.
 func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
 	var root view.History
@@ -952,7 +1028,7 @@ func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
 	tabloGolden(t, "history-c07d.provenance", &c07d)
 	doc = adapted(t, "history", "provenance", &c07d, nil)
 	cm := web.HistoryFrom(&c07d, web.EnvOf(pageOf(viewNamed("history"), nil), web.Document))
-	if got := historyLines(cm); !reflect.DeepEqual(got, []string{"e-22a758b-c07d", "e-97e4231-c07d"}) || len(cm.Commands) != 2 {
+	if got := historyLines(cm); !reflect.DeepEqual(got, []string{"e-22a758b-c07d", "e-97e4231-c07d"}) || len(cm.Commands) != 3 {
 		t.Fatalf("c07d draws %q and %d commands", got, len(cm.Commands))
 	}
 	pin := historyEvents(cm)[1]
@@ -965,7 +1041,8 @@ func TestTemporalAdaptersAgreeWithTablo(t *testing.T) {
 	if e := historyEvents(cm)[0]; e.Effect != "the task stands authorised by a change on the trunk" || pin.Effect != "the reviewer accepts the work at the gate" {
 		t.Errorf("the effects read %q and %q", e.Effect, pin.Effect)
 	}
-	if got := doc.byID("prov-list").text(true); !strings.Contains(got, "-- .tableaux/tasks/c07d.yaml .tableaux/status/c07d.yaml firmware") {
-		t.Errorf("the list's provenance reads %.400q", got)
+	if got := doc.byID("prov-list").text(true); !strings.Contains(got, "-- .tableaux/tasks/c07d.yaml .tableaux/status/c07d.yaml firmware") ||
+		!strings.Contains(got, "git log --format='%H %as %ae %s' --first-parent --merges main -- .tableaux/tasks/c07d.yaml") {
+		t.Errorf("the list's provenance reads %.600q", got)
 	}
 }

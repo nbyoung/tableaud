@@ -103,6 +103,7 @@
       "Effect": "the hand-off",
       "Model": "claude-fable-5-1",
       "Stated": "claude-fable",
+      "CoAuthor": "",
       "Committer": "nbyoung@nbyoung.com",
       "Sub": null,
       "Prov": {
@@ -183,6 +184,7 @@
       "Effect": "",
       "Model": "",
       "Stated": "",
+      "CoAuthor": "",
       "Committer": "",
       "Sub": {
        "Project": "subprojects/tabloio",
@@ -273,6 +275,7 @@
       "Effect": "",
       "Model": "",
       "Stated": "",
+      "CoAuthor": "",
       "Committer": "",
       "Sub": {
        "Project": "subprojects/tablo",

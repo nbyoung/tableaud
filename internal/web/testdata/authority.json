@@ -89,7 +89,7 @@
        "Email": "nbyoung@nbyoung.com",
        "Mine": false
       },
-      "ByAssignee": false,
+      "ByDefault": "",
       "Subproject": null,
       "Refs": null,
       "Stands": ""

@@ -198,10 +198,27 @@ func (e Env) queueItem(it view.QueueItem, mine bool, person string, criteria, na
 			b.ReviewerBy = &t
 		}
 	}
+	if j := it.Junction; j != nil && j.ReviewerByDefault && j.Reviewer != "" {
+		b.ByDefault = queueDefault(it)
+	}
 	b.References = append(b.References, e.references(it.TaskReferences, nil)...)
 	b.Requires = e.edges(it.Requires, false)
 	b.Unblocks = e.edges(it.Unblocks, false)
 	return q
+}
+
+// queueDefault words who supplies an item's default reviewer, by the
+// reviewer's supplier at the item's gate, as tabloio's queue tells it: the
+// nearest person where the supplier is the ancestor whose assignee reviews,
+// else the assignee, since tablo states the nearest person as a supplier
+// from 0.4.0 and an item that names none takes the assignee.
+func queueDefault(it view.QueueItem) string {
+	for _, s := range it.Sources {
+		if s.Gate == it.Gate && nearestOf(s.Field, s.Stated) != "" {
+			return reviewerDefaults["nearest"]
+		}
+	}
+	return reviewerDefaults["assignee"]
 }
 
 // ref returns the ref a command names: the address's, else the project's.

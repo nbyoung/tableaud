@@ -18,6 +18,7 @@ import (
 
 	"github.com/nbyoung/tableaud/internal/serve"
 	"github.com/nbyoung/tableaud/internal/source"
+	"github.com/nbyoung/tablo"
 	"github.com/nbyoung/tablo/view"
 )
 
@@ -369,5 +370,64 @@ func TestTabloByURL(t *testing.T) {
 	}
 	if _, _, err := src.Describe(ctx, "https://example.org/other.git", "", ""); !errors.As(err, &nf) || nf.Kind != "project" {
 		t.Errorf("another url: %v, want a missing project", err)
+	}
+}
+
+// TestTabloNoTrunk checks that a link with the problem "no trunk" (tablo
+// cdb0 decision 8) answers as a missing project, the 404 of decision 11, as
+// "no clone" does: on the built requires-unpinned entry, whose requirement
+// names the library by URL with no commit, the library reads where Git's
+// configuration names its clone, and once the clone holds no branch its
+// version.yaml names, tablo's link has the problem no trunk and the adapter
+// answers a missing project. The adapter words no link's problem apart.
+func TestTabloNoTrunk(t *testing.T) {
+	dir := entry(t, "requires-unpinned")
+	lib := entry(t, "requires-unpinned.lib")
+	t.Setenv("XDG_CACHE_HOME", t.TempDir()) // no clone in the cache stands in
+	const url = "https://example.org/lib.git"
+	ctx := t.Context()
+	f, err := os.OpenFile(filepath.Join(dir, ".git", "config"), os.O_APPEND|os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := fmt.Fprintf(f, "[tableaux %q]\n\tpath = %s\n", url, lib); err != nil {
+		t.Fatal(err)
+	}
+	if err := f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	src, err := source.NewTablo(ctx, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p, _, err := src.Describe(ctx, url, "", ""); err != nil || p.Root != "5a00" {
+		t.Fatalf("the library reads %+v, %v", p, err)
+	}
+
+	if out, err := exec.Command("git", "-C", lib, "branch", "-m", "elsewhere").CombinedOutput(); err != nil {
+		t.Fatalf("rename the library's branch: %v: %s", err, out)
+	}
+	r, err := tablo.Open(ctx, dir, tablo.Options{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	snap, err := r.Load(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var le *tablo.LinkError
+	if _, err := snap.Linked(url, ""); !errors.As(err, &le) || le.Problem != "no trunk" {
+		t.Fatalf("tablo links the library with %v, want the problem no trunk", err)
+	}
+	src, err = source.NewTablo(ctx, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var nf *source.NotFoundError
+	if _, _, err := src.Describe(ctx, url, "", ""); !errors.As(err, &nf) || nf.Kind != "project" || nf.Name != url {
+		t.Errorf("no trunk: %v, want a missing project", err)
+	}
+	if _, err := src.View(ctx, source.Request{Project: url, View: "gates", Window: -1}); !errors.As(err, &nf) || nf.Kind != "project" {
+		t.Errorf("a view with no trunk: %v, want a missing project", err)
 	}
 }

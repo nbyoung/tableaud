@@ -18,7 +18,8 @@
 {{with .After}}{{if .Note}}<dt>Note</dt><dd>{{.Note}}</dd>
 {{end}}{{end}}{{if .Effect}}<dt>Effect</dt><dd>{{.Effect}}</dd>
 {{end}}<dt>Model</dt><dd>{{if .Model}}<code>{{.Model}}</code>{{else}}none recorded{{end}}{{if .Stated}}; the junction states <code>{{.Stated}}</code>{{end}}</dd>
-{{if .Committer}}<dt>Committer</dt><dd>{{.Committer}}, who differs from the author</dd>
+{{if .CoAuthor}}<dt>Co-author</dt><dd>{{.CoAuthor}}</dd>
+{{end}}{{if .Committer}}<dt>Committer</dt><dd>{{.Committer}}, who differs from the author</dd>
 {{end}}</dl>
 {{with .Sub}}{{if .Events}}{{template "fold" .Fold}}<summary id="{{.Fold.ID}}-s">Subproject events: {{.Events}} {{plural .Events "event" "events"}} in {{.Commits}} {{plural .Commits "commit" "commits"}} of <code>{{.Project}}</code>{{if .Old}} between <code>{{.Old}}</code> and{{else}} up to{{end}} <code>{{.New}}</code></summary>{{if .Fold.Src}}{{template "lazy" .Fold}}{{else}}{{template "part/sub" .}}{{end}}</details>
 {{else}}<p class="fold">Subproject events: no event in <code>{{.Project}}</code>{{if .Old}} between <code>{{.Old}}</code> and{{else}} up to{{end}} <code>{{.New}}</code></p>

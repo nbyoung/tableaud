@@ -1104,3 +1104,63 @@ func TestAmendedStructuralFacts(t *testing.T) {
 		t.Error("below provenance the page holds the fold of the commands")
 	}
 }
+
+// TestStructuralDefaultReviewers checks how the structural pages word a
+// reviewer no entry states (tablo cdb0 decision 2). On the authority page a
+// parent's junction defaults tell the default by the parent's assignee: the
+// root's own assignee olive reviews as the assignee, and under the agent bot
+// olive reviews as the nearest person. On the assignment page a position
+// whose reviewer the nearest person supplies names the ancestor whose
+// assignee olive is, and one the assignee supplies says so.
+func TestStructuralDefaultReviewers(t *testing.T) {
+	const bot, olive = "bot@x.org", "olive@x.org"
+	d := &view.Delegation{
+		Rows: []view.DelegationRow{
+			{TaskRef: view.TaskRef{ID: "e4a1", Title: "Base"}, Depth: 0, Assignee: olive, Parent: true},
+			{TaskRef: view.TaskRef{ID: "c5f0", Title: "Agents"}, Depth: 1, Assignee: bot, Parent: true, Delegated: true},
+			{TaskRef: view.TaskRef{ID: "b2c9", Title: "Leaf"}, Depth: 2, Assignee: bot},
+		},
+		DelegationDetail: &view.DelegationDetail{Authorities: []view.Authority{}, Parents: []view.Chain{
+			{TaskRef: view.TaskRef{ID: "e4a1"}, Assignee: olive, Children: []string{"c5f0"},
+				Defaults: []view.Junction{{Gate: "design", Kind: "plain", Contributor: olive, Reviewer: olive, ReviewerByDefault: true}}},
+			{TaskRef: view.TaskRef{ID: "c5f0"}, Assignee: bot, Children: []string{"b2c9"},
+				Defaults: []view.Junction{{Gate: "design", Kind: "plain", Contributor: bot, Reviewer: olive, ReviewerByDefault: true}}},
+		}},
+	}
+	m := authorityFrom(t, d, "level=detail")
+	root := mustParse(t, render(t, web.Document, pageOf(viewNamed("authority"), m)))
+	for id, want := range map[string]string{"e4a1": "the assignee, " + olive, "c5f0": "the nearest person, " + olive} {
+		n := root.byID("t-" + id)
+		if n == nil || len(n.find("table")) == 0 {
+			t.Errorf("%s: no table of defaults", id)
+			continue
+		}
+		if got := n.find("table")[0].find("tbody")[0].find("tr")[0].find("td")[3].text(true); got != want {
+			t.Errorf("%s: the default reviewer reads %q, want %q", id, got, want)
+		}
+	}
+
+	a := assignment(bot)
+	a.Sections[0].SectionProvenance = &view.SectionProvenance{Positions: []view.Position{
+		{Kind: "contributes", Gate: "design", Tasks: []string{"a"}, Reviewer: olive, From: view.Stated{By: "assignee", Key: "assignee"},
+			ReviewerFrom: view.Stated{By: "e4a1", Key: "assignee", File: ".tableaux/tasks/e4a1.yaml", Line: 3}},
+		{Kind: "contributes", Gate: "unit", Tasks: []string{"a"}, From: view.Stated{By: "assignee", Key: "assignee"},
+			ReviewerFrom: view.Stated{By: "assignee", Key: "assignee"}},
+	}}
+	a.Sections[0].Contributes[0].Reviewer, a.Sections[0].Contributes[1].Reviewer, a.Sections[0].Contributes[2].Reviewer = olive, olive, bot
+	p := at(t, "assignment", "level=provenance")
+	p.Project, p.Link = &fixtureProject, fixtureLinker{} // without scripts every fold arrives inline
+	am := web.AssignmentFrom(a, web.EnvOf(p, web.Document))
+	doc := mustParse(t, render(t, web.Document, pageOf(viewNamed("assignment"), am)))
+	for i, want := range []string{"No entry; the nearest person, the assignee of e4a1", "No entry; the assignee"} {
+		g := am.Sections[0].Contributes.Groups[i]
+		prov := doc.byID(g.Prov.ID)
+		if prov == nil {
+			t.Fatalf("%s: no provenance %s", g.Gate.Name, g.Prov.ID)
+		}
+		rows := prov.find("tbody")[0].find("tr")
+		if got := rows[len(rows)-1].find("td")[1].text(true); got != want {
+			t.Errorf("%s: the reviewer's supplier reads %q, want %q", g.Gate.Name, got, want)
+		}
+	}
+}

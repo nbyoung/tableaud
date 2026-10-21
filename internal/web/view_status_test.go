@@ -1544,6 +1544,70 @@ func TestQueueBriefFromTabloio(t *testing.T) {
 	}
 }
 
+// TestQueueBriefAtLanguage04 checks the brief at the language 0.4.0 the way
+// TestQueueBriefFromTabloio checks it, over tabloio's own envelopes of b2c9:
+// at release the agent's junction states no reviewer and no model, so the
+// nearest person, olive, the assignee of the root, reviews and the brief
+// says that the junction states no model; at design an ancestor's entry
+// waives review, so the brief names no reviewer. Each text equals tabloio's
+// golden brief byte for byte.
+func TestQueueBriefAtLanguage04(t *testing.T) {
+	const mod, env = "github.com/nbyoung/tabloio", "TABLOIO_DIR"
+	for _, c := range []struct {
+		name, gate string
+		has        []string
+	}{
+		{"nearest-b2c9-release", "release", []string{
+			"Reviewer     olive@example.org   (the nearest person, the assignee of Base, e4a1)",
+			"The junction states no model: an agent records the model it runs in a",
+		}},
+		{"waived-b2c9-design", "design", []string{
+			"Reviewer     none              (Base, e4a1)",
+			"reviews this gate, so the commit that records the status passes it.",
+		}},
+	} {
+		var envelope struct {
+			Source struct{ Ref, Commit, Date string }
+			Params struct{ Person string }
+			Data   json.RawMessage
+		}
+		if err := json.Unmarshal(moduleFile(t, mod, env, "brief/testdata/"+c.name+".json"), &envelope); err != nil {
+			t.Fatal(err)
+		}
+		var q view.Queue
+		dec := json.NewDecoder(bytes.NewReader(envelope.Data))
+		dec.DisallowUnknownFields()
+		if err := dec.Decode(&q); err != nil {
+			t.Fatalf("tabloio's envelope %s: %v", c.name, err)
+		}
+		if q.QueueProvenance == nil || q.Brief == nil || len(q.Items) != 0 {
+			t.Fatalf("%s: the data holds %d items and the brief %v", c.name, len(q.Items), q.QueueProvenance)
+		}
+		q.Items = []view.QueueItem{{Kind: "ready", Task: q.Brief.Task.TaskRef, Gate: c.gate, ItemDetail: &view.ItemDetail{}}}
+		v, _ := web.Lookup("queue")
+		p := pageOf(v, nil)
+		p.Project = &source.Project{Ref: envelope.Source.Ref, Commit: envelope.Source.Commit, Date: envelope.Source.Date}
+		p.Params.Person, p.Params.Brief, p.Params.Level = envelope.Params.Person, "b2c9:"+c.gate, "provenance"
+		p.Data = &q
+		m := web.QueueFrom(&q, web.EnvOf(p, web.Document))
+		body := m.Kinds[2].Items[0].Shown[0].Body
+		want := string(moduleFile(t, mod, env, "brief/testdata/"+c.name+".txt"))
+		if body == nil || body.Brief == nil || body.Brief.Text != want {
+			t.Errorf("%s: the brief is %+v, want %.200q", c.name, body, want)
+			continue
+		}
+		for _, h := range c.has {
+			if !strings.Contains(want, h) {
+				t.Errorf("%s: tabloio's brief lacks %q", c.name, h)
+			}
+		}
+		root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+		if area := root.byID("brief-b2c9"); area == nil || area.Tag != "textarea" || area.text(false) != want {
+			t.Errorf("%s: the textarea reads %v", c.name, area)
+		}
+	}
+}
+
 // TestContextNextGateFromCells checks that a row block reads its next gate
 // from the row's cells at every level: over tablo's golden data of Ben's
 // contextual tableau at detail, which carries no provenance, the block of
@@ -1674,6 +1738,63 @@ func TestStatusCellRank(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("%s: the key lacks the sentence on the line under a state", name)
+		}
+	}
+}
+
+// TestQueueDefaultReviewer checks how the queue words an item's reviewer
+// that no entry states (tablo cdb0 decision 2), by the reviewer's supplier at
+// the item's gate: the nearest person with the ancestor whose assignee the
+// person is, and else the assignee, also where the item names no supplier,
+// as tabloio's queue reads it; a reviewer an entry states names that entry's
+// task, a waived junction has none, and a contributor who reviews its own
+// work says so.
+func TestQueueDefaultReviewer(t *testing.T) {
+	const bot, olive = "bot@x.org", "olive@x.org"
+	item := func(id, reviewer string, byDefault bool, sources ...view.Supplier) view.QueueItem {
+		return view.QueueItem{Kind: "ready", Task: view.TaskRef{ID: id, Title: "T " + id}, Gate: "design", ItemDetail: &view.ItemDetail{
+			Junction: &view.Junction{Gate: "design", Kind: "plain", Contributor: bot, Reviewer: reviewer, ReviewerByDefault: byDefault},
+			Sources:  sources,
+		}}
+	}
+	reviewer := func(gate, value string, s view.Stated) view.Supplier {
+		return view.Supplier{Gate: gate, Field: "reviewer", Value: value, Stated: s}
+	}
+	q := &view.Queue{Items: []view.QueueItem{
+		item("a001", bot, true, reviewer("design", bot, view.Stated{By: "assignee", Key: "assignee"})),
+		item("a002", olive, true, reviewer("unit", olive, view.Stated{By: "assignee", Key: "assignee"}),
+			reviewer("design", olive, view.Stated{By: "e4a1", Key: "assignee", File: ".tableaux/tasks/e4a1.yaml", Line: 3})),
+		item("a003", olive, true),
+		item("a004", olive, false, reviewer("design", olive, view.Stated{By: "e4a1", Key: "junctions.design.reviewer", File: ".tableaux/tasks/e4a1.yaml", Line: 9})),
+		item("a005", "", false, reviewer("design", "false", view.Stated{By: "e4a1", Key: "junctions.design.reviewer", File: ".tableaux/tasks/e4a1.yaml", Line: 9})),
+	}}
+	v, _ := web.Lookup("queue")
+	p := pageOf(v, nil)
+	p.Params.Person, p.Params.Level, p.Scripts = bot, "detail", false // without scripts every detail arrives inline
+	m := web.QueueFrom(q, web.EnvOf(p, web.Document))
+	root := mustParse(t, render(t, web.Document, pageOf(v, m)))
+	for _, b := range check(root) {
+		t.Error(b)
+	}
+	want := map[string]string{
+		"a001": bot + ", the assignee; the contributor reviews its own work",
+		"a002": olive + ", the nearest person, the assignee of e4a1",
+		"a003": olive + ", the assignee",
+		"a004": olive + ", from e4a1",
+		"a005": "None",
+	}
+	for _, r := range m.Kinds[2].Items {
+		for _, it := range r.Shown {
+			dl := root.byID(it.Fold.ID).find("dl")[0]
+			var got string
+			for i, dt := range dl.find("dt") {
+				if dt.text(true) == "Reviewer" {
+					got = dl.find("dd")[i].text(true)
+				}
+			}
+			if got != want[it.Task.ID] {
+				t.Errorf("%s: the reviewer reads %q, want %q", it.Task.ID, got, want[it.Task.ID])
+			}
 		}
 	}
 }
