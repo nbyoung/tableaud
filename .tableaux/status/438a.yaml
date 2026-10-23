@@ -1,3 +1,4 @@
 gate: integrate
 state: nominal
-note: GateFrom and TaskFrom, the routes /gates and /task, their export pages and the partials stand; T1 to T15 pass with and without TABLEAUX_CORPUS, T15 on tablo's golden data and as TestRealTaskDefinitions through tablo's adapter, and every page of both views passes the access and disclosure checks there at every level (TestRealPagesKeepTheRules, TestRealBundleKeepsTheRules); the validate gate has a person check in a browser that a lazy fold fetches its body once on opening and that a boosted link swaps main; nothing waits on another task
+reason: review
+note: validate awaits the owner's review; the suites pass and the gate and task views answer 200 at arrival and three levels for nine viewer settings with their lazy fragments (18 distinct of the task view and none of the gate view on the tooling plan) answering 200 with no frame, and every page keeps the access and disclosure rules; the owner checks in a browser that a lazy fold fetches its body once on opening and that a boosted link swaps main
