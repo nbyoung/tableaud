@@ -1,3 +1,4 @@
 gate: integrate
 state: nominal
-note: T1 to T17 pass; T15 exports the copied weather-station through tablo's adapter as the 32 golden files and the style sheet, and the tooling plan at ccb3947 as 93 and the sheet; T16 reads every source line; T14 runs on the real entry; validate needs a browser on the bundle from the file system and under a path prefix; the adapter's own git waits for tablo's owed snapshot and date calls (49ce decision 19)
+reason: review
+note: validate awaits the owner's review; the suites pass and the export of the tooling plan writes 94 files (92 pages, the style sheet and the manifest, 4.4 MB) whose sha256 sums match, with 5448 relative links all resolving from file and under a path prefix, 136 fragment links all naming an id that exists, no link into the inside of a closed details and five onto a closed details itself, no script and no hx- attribute; the adapter runs no git of its own, so that wait has ended; the owner opens the bundle from file and from a path in a browser, checks the fragment links and checks with a screen reader and a phone through the accessibility checks

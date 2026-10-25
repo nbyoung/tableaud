@@ -1,3 +1,4 @@
 gate: integrate
 state: nominal
-note: checkAccess, TestSheetAccess, the rank and the frame stand over every adapter; T1 to T11 pass with and without TABLEAUX_CORPUS, T11 as TestAdaptersSetTheRank on tablo's golden data and as TestRealAdaptersSetTheRank through tablo's adapter, and every page of the ten views passes checkAccess there for three viewers at every level, and so does every page of a view in the export (TestRealPagesKeepTheRules, TestRealBundleKeepsTheRules); the validate gate has a person run V1 to V11 of design/5a2f/validate.md in a browser, with two screen readers and on a phone; nothing waits on another task
+reason: review
+note: validate awaits the owner's review; the suites pass and checkAccess, run by a scratch test over the 92 pages of the export and the 30 daemon pages of the tooling plan, finds nothing, with one h1, the skip link first, a name on every control and a word beside every state symbol but the two spans of a hidden column header; the owner runs V1 to V11 of the validate file in a browser on the daemon and the export, with two screen readers and on a phone
