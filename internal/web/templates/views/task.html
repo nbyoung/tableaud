@@ -92,7 +92,7 @@
 
 {{define "requires-row"}}<tr><th scope="row">{{template "task" .Task}}{{if .Project}} in <code>{{.Project}}</code> at <code>{{.ReadAt}}</code>{{end}}</th><td>{{.From.Name}} → {{.To.Name}}</td><td>{{.Text}}</td><td>{{with .Status}}{{template "status" .}}{{end}}</td><td>{{.Condition}}</td></tr>{{end}}
 
-{{define "part/status"}}{{if .Commit}}{{if .ReadThere}}<p>The status is read from the subproject <code>{{.Snapshot.URL}}</code>, task {{template "task" .Snapshot.Task}}, and its deciding commit there is the commit below.</p>{{else}}<p>The status file is <code>{{.File}}</code>. Its deciding commit is {{if .Reaffirmed}}the newest commit that carries <code>Reaffirmed:</code> for the task{{else}}the newest commit that changes the file{{end}}.</p>{{end}}
+{{define "part/status"}}{{if .Commit}}{{if .ReadThere}}<p>The status is read from the subproject <code>{{.Snapshot.URL}}</code>, task {{template "task" .Snapshot.Task}}, and its deciding commit there is the commit below.</p>{{else if .From}}<p>A parent has no status file. Its status rolls up from {{template "task" .From}}, and its deciding commit is that of the status at the end of the chain:</p>{{else}}<p>The status file is <code>{{.File}}</code>. Its deciding commit is {{if .Reaffirmed}}the newest commit that carries <code>Reaffirmed:</code> for the task{{else}}the newest commit that changes the file{{end}}.</p>{{end}}
 <dl class="fields">
 {{template "commit" .Commit}}</dl>
 {{else}}<p>The task has no status file of its own: {{if .File}}no commit records one{{else}}its status derives from its children{{end}}.</p>

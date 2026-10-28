@@ -57,21 +57,22 @@
     if (changed) { keep(list.join(',')); } // boxes left as the page drew them make no choice
   }, true);
 
-  // Job 2. A swap of #page, by the live poll or by a control, keeps each fold
-  // the viewer opened or closed: every <details> with an id keeps its state.
+  // Job 2. A swap of #page keeps each fold the viewer opened or closed. htmx fires
+  // beforeSwap even for a 304, with no afterSwap: note only a swap that will happen.
   var folds = null;
+  function page(event) { return event.detail.target && event.detail.target.id === 'page'; }
   document.addEventListener('htmx:beforeSwap', function (event) {
-    if (!event.detail.target || event.detail.target.id !== 'page') { return; }
+    folds = null;
+    if (!page(event) || !event.detail.shouldSwap) { return; }
     folds = {};
     var before = document.querySelectorAll('#page details[id]');
     for (var i = 0; i < before.length; i++) { folds[before[i].id] = before[i].open; }
   });
-  document.addEventListener('htmx:afterSwap', function () {
-    if (!folds) { return; }
+  document.addEventListener('htmx:afterSwap', function (event) {
+    if (!folds || !page(event)) { return; }
     var after = document.querySelectorAll('#page details[id]');
     for (var i = 0; i < after.length; i++) {
-      var was = folds[after[i].id];
-      if (was !== undefined && was !== after[i].open) { after[i].open = was; }
+      if (folds[after[i].id] !== undefined) { after[i].open = folds[after[i].id]; }
     }
     folds = null;
   });
