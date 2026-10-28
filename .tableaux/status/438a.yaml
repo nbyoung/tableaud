@@ -1,4 +1,3 @@
-gate: integrate
+gate: validate
 state: nominal
-reason: review
-note: validate awaits the owner's review; the suites pass and the gate and task views answer 200 at arrival and three levels for nine viewer settings with their lazy fragments (18 distinct of the task view and none of the gate view on the tooling plan) answering 200 with no frame, and every page keeps the access and disclosure rules; the owner checks in a browser that a lazy fold fetches its body once on opening and that a boosted link swaps main
+note: The owner reviewed the validate in 1fff1df and every check the owner ran passes. The lazy fold check 438a.1 first failed because a fold closed after its first fetch, and it passes on 90cb731, the repair of the folds a refresh keeps, with decision 23 of 49ce and decision 23 of this design for the parent's status. The boosted-link check ran as 49ce.5 and passes. Field tests 1, 2, 4 and 7 stand.
