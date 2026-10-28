@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -418,5 +419,77 @@ func TestSubmitStoresOnlyAChoice(t *testing.T) {
 	const want = `[["set","tableaud.columns.tableau","a"],["set","tableaud.columns.tableau","a,b"],["remove","tableaud.columns.tableau"],["remove","tableaud.columns.tableau"]]`
 	if string(out) != want {
 		t.Errorf("the store saw %s, want %s", out, want)
+	}
+}
+
+// foldsScript runs tableaud.js against a fake document and location and
+// prints, for each case of Job 2, the open state of the folds as JSON.
+const foldsScript = `
+const listeners = {};
+const folds = ['a', 'b'].map(id => ({ id, open: false }));
+global.document = {
+  addEventListener: (type, fn) => { listeners[type] = fn; },
+  querySelectorAll: () => folds,
+};
+global.location = { pathname: '/task', search: '', hash: '' };
+require(process.argv[2]);
+const page = { id: 'page' }, body = { id: '' };
+const fire = (type, target, shouldSwap) => listeners[type]({ detail: { target, shouldSwap } });
+const state = () => folds.map(f => f.open);
+const out = {};
+
+// A 304 poll swaps nothing; the fold opened after it stays open when its part arrives.
+fire('htmx:beforeSwap', page, false);
+folds[0].open = true;
+fire('htmx:beforeSwap', body, true);
+fire('htmx:afterSwap', body, true);
+out.poll304 = state();
+
+// A 200 poll swaps #page: the folds keep the state they had before the swap.
+folds[0].open = true; folds[1].open = false;
+fire('htmx:beforeSwap', page, true);
+folds[0].open = false; folds[1].open = true; // the new page draws the other states
+fire('htmx:afterSwap', page, true);
+out.poll200 = state();
+
+// A part's swap with no poll before it changes no fold.
+folds[0].open = false; folds[1].open = true;
+fire('htmx:beforeSwap', body, true);
+folds[0].open = true;
+fire('htmx:afterSwap', body, true);
+out.part = state();
+process.stdout.write(JSON.stringify(out));
+`
+
+// TestFoldRecord covers Job 2 of the script under node: a refresh that swaps
+// nothing leaves no record for the next swap to put back (49ce decision 23).
+func TestFoldRecord(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Skip("node is not installed; the script's syntax stands unproven until CI runs this test")
+	}
+	dir := t.TempDir()
+	runner := filepath.Join(dir, "run.js")
+	if err := os.WriteFile(runner, []byte(foldsScript), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	script, _ := filepath.Abs("static/tableaud.js")
+	out, err := exec.Command(node, runner, script).CombinedOutput()
+	if err != nil {
+		t.Fatalf("node: %v\n%s", err, out)
+	}
+	var got map[string][]bool
+	if err := json.Unmarshal(out, &got); err != nil {
+		t.Fatalf("node printed %q: %v", out, err)
+	}
+	want := map[string][]bool{
+		"poll304": {true, false}, // the fold the viewer opened stays open
+		"poll200": {true, false}, // the states before the swap come back
+		"part":    {true, true},  // a part's swap puts nothing back
+	}
+	for name, w := range want {
+		if !slices.Equal(got[name], w) {
+			t.Errorf("%s: folds open %v, want %v", name, got[name], w)
+		}
 	}
 }
