@@ -1,4 +1,3 @@
-gate: integrate
+gate: validate
 state: nominal
-reason: review
-note: validate awaits the owner's review; the suites pass and the four status views answer 200 at arrival and three levels for nine viewer settings with their row and item fragments answering 200 with no frame, and the text of the brief's textarea equals tabloio's brief byte for byte for all four items of the owner's queue; the owner checks in a browser that a swap of main keeps the reader's place and focus and that the brief's textarea copies cleanly into an agent's prompt
+note: The owner reviewed the validate in 1fff1df and every check the owner ran passes. The check 44bf.1 passed on its own, without the keyboard walk of 5a2f V2 that the owner waived, and 44bf.2 passes. Field tests 1, 2, 5 and 7 stand, with the brief equal to tabloio's byte for byte for four items.
