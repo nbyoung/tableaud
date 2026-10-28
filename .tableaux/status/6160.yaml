@@ -1,4 +1,3 @@
-gate: integrate
+gate: validate
 state: nominal
-reason: review
-note: validate awaits the owner's review; the suites pass and the export of the tooling plan writes 94 files (92 pages, the style sheet and the manifest, 4.4 MB) whose sha256 sums match, with 5448 relative links all resolving from file and under a path prefix, 136 fragment links all naming an id that exists, no link into the inside of a closed details and five onto a closed details itself, no script and no hx- attribute; the adapter runs no git of its own, so that wait has ended; the owner opens the bundle from file and from a path in a browser, checks the fragment links and checks with a screen reader and a phone through the accessibility checks
+note: The owner reviewed the validate in 1fff1df and 6160.1 to 6160.4 pass, the bundle from file and under a path and the fragment links of 6160.3 and 6160.4, with no detail beyond that passing reported. The owner waived the screen-reader and phone check 6160.5, which is 5a2f V6, V9 and V10, and it did not run. Field tests 1, 4, 6, 7 and 8 stand, with 94 files and every link resolved.
