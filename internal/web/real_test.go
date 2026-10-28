@@ -462,6 +462,9 @@ func TestRealTaskDefinitions(t *testing.T) {
 	if got := glance(pages["/task?task=a1c0"]); !strings.Contains(got, "rolled up from 3c5d Dashboard") {
 		t.Errorf("a1c0: the status line lacks the roll-up: %q", got)
 	}
+	if code, body := d.get("/task?task=a1c0&part=status", true); code != http.StatusOK || !strings.Contains(body, "A parent has no status file. Its status rolls up from") || strings.Contains(body, "The status file is") {
+		t.Errorf("a1c0: the status fold of the roll-up answers %d: %.300s", code, body)
+	}
 	if p := pages["/task?task=3c5d"].byClass("p", "empty"); len(p) == 0 || !strings.Contains(p[0].text(true), "Proposed: no authority has accepted this task.") {
 		t.Error("3c5d: no proposed note at glance")
 	}

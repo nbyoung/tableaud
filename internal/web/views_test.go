@@ -802,3 +802,23 @@ func TestModelCheckCoAuthor(t *testing.T) {
 		t.Errorf("the readings are %q, want %q", readings, want)
 	}
 }
+
+// TestRollupStatusProvenance covers the status fold of a parent: it names no
+// status file, but the child the status rolls up from and the commit of the
+// status at the end of the chain (438a decision 23). A recorded status keeps
+// the file's sentence.
+func TestRollupStatusProvenance(t *testing.T) {
+	part := func(name string) string {
+		p := fixtureNamed(t, name).page()
+		p.Params.Part, p.Params.Key = "status", ""
+		return strings.Join(strings.Fields(mustParse(t, "<div>"+render(t, web.Part, p)+"</div>").text(true)), " ")
+	}
+	got := part("task-rollup")
+	const want = "A parent has no status file. Its status rolls up from 3c5d Dashboard, and its deciding commit is that of the status at the end of the chain:"
+	if !strings.HasPrefix(got, want) || strings.Contains(got, "The status file is") || !strings.Contains(got, "55f57c1") {
+		t.Errorf("the roll-up's status fold reads %q", got)
+	}
+	if got := part("task"); !strings.Contains(got, "The status file is .tableaux/status/e9c6.yaml.") || strings.Contains(got, "A parent has") {
+		t.Errorf("a recorded status reads %q", got)
+	}
+}

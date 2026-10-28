@@ -61,6 +61,8 @@ func TaskFrom(d *view.Task, e Env) *TaskView {
 	}
 	if d.Status.Kind != "rollup" {
 		v.StatusProv.File = ".tableaux/status/" + id + ".yaml"
+	} else {
+		v.StatusProv.From = v.Status.From
 	}
 	v.About = About{
 		Fold: e.Fold("detail", "d-about", "", ""), File: taskFile,

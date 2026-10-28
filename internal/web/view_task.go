@@ -24,6 +24,7 @@ type TaskView struct {
 type StatusProv struct {
 	Fold       Fold
 	File       string    // ".tableaux/status/e9c6.yaml"; "" for a parent
+	From       *TaskRef  // a roll-up: the child the status comes from
 	Commit     *Commit   // the deciding commit; nil for a roll-up
 	OwnCommit  *Commit   // a snapshot: the deciding commit of the task's own file
 	ReadThere  bool      // the status is a snapshot: Commit is the deciding commit in the subproject Snapshot names

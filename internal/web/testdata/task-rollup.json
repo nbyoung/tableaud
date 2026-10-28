@@ -1,0 +1,717 @@
+{
+ "View": "task",
+ "Body": {
+  "Task": {
+   "ID": "a1c0",
+   "Title": "Weather station",
+   "Href": "T/a1c0"
+  },
+  "Assignee": {
+   "Email": "ada@example.org",
+   "Mine": false
+  },
+  "Parent": null,
+  "Order": 0,
+  "Status": {
+   "Gate": {
+    "Glyph": "\ud83d\udcdd",
+    "Name": "defined"
+   },
+   "State": {
+    "Glyph": "\ud83d\udfe2",
+    "Name": "nominal"
+   },
+   "Reason": null,
+   "Note": "",
+   "Date": "2026-09-17",
+   "Recorder": "",
+   "From": {
+    "ID": "3c5d",
+    "Title": "Dashboard",
+    "Href": "T/3c5d"
+   },
+   "Snapshot": null
+  },
+  "Proposed": false,
+  "StatusProv": {
+   "Fold": {
+    "ID": "prov-status",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "File": "",
+   "Commit": {
+    "Hash": "55f57c1",
+    "Full": "55f57c1ea69a0e16894408dfbd32a50d3dbdb0a9",
+    "Subject": "Record the dashboard definition",
+    "Date": "2026-09-22",
+    "Author": "Dan Reyes <dan@example.org>",
+    "Committer": "Dan Reyes <dan@example.org>",
+    "Trailers": []
+   },
+   "OwnCommit": null,
+   "ReadThere": false,
+   "Reaffirmed": false,
+   "Snapshot": null,
+   "Commands": [
+    "git log --format='%H %as %ae %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/tasks/a1c0.yaml .tableaux/status/a1c0.yaml"
+   ],
+   "From": {
+    "ID": "3c5d",
+    "Title": "Dashboard",
+    "Href": "T/3c5d"
+   }
+  },
+  "About": {
+   "Fold": {
+    "ID": "d-about",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Description": "VIEWS.md defines each view.",
+   "References": [
+    {
+     "Text": "Proposed views",
+     "URL": "PLAN.md#views",
+     "By": null
+    }
+   ],
+   "File": ".tableaux/tasks/a1c0.yaml",
+   "FileFold": {
+    "ID": "prov-file",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   }
+  },
+  "Place": {
+   "Fold": {
+    "ID": "d-place",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Path": [
+    {
+     "ID": "a1c0",
+     "Title": "Weather station",
+     "Href": "T/a1c0"
+    }
+   ],
+   "Siblings": 0,
+   "Children": null,
+   "Authorities": [
+    {
+     "Person": {
+      "Email": "nbyoung@nbyoung.com",
+      "Mine": true
+     },
+     "By": [
+      {
+       "ID": "2034",
+       "Title": "Views",
+       "Href": "T/2034"
+      },
+      {
+       "ID": "437e",
+       "Title": "Tableaux tooling",
+       "Href": "T/437e"
+      }
+     ]
+    }
+   ],
+   "Authorised": true,
+   "Prov": {
+    "Fold": {
+     "ID": "prov-authorisation",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Commit": {
+     "Hash": "879b447",
+     "Full": "879b4470000",
+     "Subject": "Advance the abstract views task",
+     "Date": "2026-10-02",
+     "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+     "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+     "Trailers": [
+      "Model: claude-opus-5-5"
+     ]
+    },
+    "Way": "a change on the trunk",
+    "By": "author and committer",
+    "Commands": null
+   }
+  },
+  "Requires": {
+   "Fold": {
+    "ID": "d-requires",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Total": 1,
+   "Rows": [
+    {
+     "Shown": [
+      {
+       "Task": {
+        "ID": "c2ad",
+        "Title": "Roles",
+        "Href": "T/c2ad"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "Text": "The role names",
+       "Status": {
+        "Gate": {
+         "Glyph": "\ud83e\uddf1",
+         "Name": "implementation"
+        },
+        "State": {
+         "Glyph": "\ud83d\udfe2",
+         "Name": "nominal"
+        },
+        "Reason": null,
+        "Note": "",
+        "Date": "",
+        "Recorder": "",
+        "From": null,
+        "Snapshot": null
+       },
+       "Condition": "met"
+      }
+     ],
+     "Rest": null,
+     "Fold": {
+      "ID": "",
+      "Class": "",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Alike": ""
+    }
+   ],
+   "Prov": {
+    "ID": "prov-requires",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "Files": [
+    ".tableaux/tasks/e9c6.yaml"
+   ],
+   "Commands": null
+  },
+  "Dependents": {
+   "Fold": {
+    "ID": "d-dependents",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Total": 5,
+   "Rows": [
+    {
+     "Shown": [
+      {
+       "Task": {
+        "ID": "99f0",
+        "Title": "Gate definition view in Markdown",
+        "Href": "T/99f0"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "\ud83d\udccc",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      },
+      {
+       "Task": {
+        "ID": "05a9",
+        "Title": "x",
+        "Href": "T/05a9"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "\ud83d\udccc",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      },
+      {
+       "Task": {
+        "ID": "a9ce",
+        "Title": "y",
+        "Href": "T/a9ce"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "\ud83d\udccc",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      }
+     ],
+     "Rest": [
+      {
+       "Task": {
+        "ID": "bb7c",
+        "Title": "z",
+        "Href": "T/bb7c"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "\ud83d\udccc",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      },
+      {
+       "Task": {
+        "ID": "c74a",
+        "Title": "w",
+        "Href": "T/c74a"
+       },
+       "Project": "",
+       "ReadAt": "",
+       "From": {
+        "Glyph": "\ud83d\udcd0",
+        "Name": "design"
+       },
+       "To": {
+        "Glyph": "\ud83d\udccc",
+        "Name": "mockup"
+       },
+       "Text": "The abstract definition of the view",
+       "Status": null,
+       "Condition": "met"
+      }
+     ],
+     "Fold": {
+      "ID": "fold-dependents",
+      "Class": "fold",
+      "Open": false,
+      "Src": "",
+      "Alt": ""
+     },
+     "Alike": "with the same edge, text and condition"
+    }
+   ],
+   "Prov": {
+    "ID": "prov-dependents",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "Files": null,
+   "Commands": null
+  },
+  "Junctions": {
+   "Fold": {
+    "ID": "d-junctions",
+    "Class": "detail",
+    "Open": true,
+    "Src": "",
+    "Alt": ""
+   },
+   "Rows": [
+    {
+     "Gate": {
+      "Glyph": "\ud83d\udcdd",
+      "Name": "defined"
+     },
+     "Marks": [
+      {
+       "Glyph": "\ud83e\udd16",
+       "Name": "an agent contributes"
+      }
+     ],
+     "Exempt": false,
+     "Here": false,
+     "Contributor": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "Model": "claude-haiku",
+     "Reviewer": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "ByDefault": "the assignee",
+     "Subproject": null,
+     "Refs": null,
+     "Stands": "passed"
+    },
+    {
+     "Gate": {
+      "Glyph": "\ud83d\udccc",
+      "Name": "mockup"
+     },
+     "Marks": [
+      {
+       "Glyph": "\u2014",
+       "Name": "the gate does not apply"
+      }
+     ],
+     "Exempt": true,
+     "Here": false,
+     "Contributor": null,
+     "Model": "",
+     "Reviewer": null,
+     "ByDefault": "",
+     "Subproject": null,
+     "Refs": null,
+     "Stands": "does not apply"
+    },
+    {
+     "Gate": {
+      "Glyph": "\ud83d\udcd0",
+      "Name": "design"
+     },
+     "Marks": [
+      {
+       "Glyph": "\ud83e\udd16",
+       "Name": "an agent contributes"
+      },
+      {
+       "Glyph": "\ud83d\udc40",
+       "Name": "a reviewer accepts"
+      }
+     ],
+     "Exempt": false,
+     "Here": true,
+     "Contributor": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "Model": "claude-fable",
+     "Reviewer": {
+      "Email": "nbyoung@nbyoung.com",
+      "Mine": true
+     },
+     "ByDefault": "",
+     "Subproject": null,
+     "Refs": null,
+     "Stands": "passed, reviewed"
+    },
+    {
+     "Gate": {
+      "Glyph": "\ud83e\uddf1",
+      "Name": "implementation"
+     },
+     "Marks": [
+      {
+       "Glyph": "\ud83e\ude86",
+       "Name": "a subproject does the work"
+      }
+     ],
+     "Exempt": false,
+     "Here": false,
+     "Contributor": null,
+     "Model": "",
+     "Reviewer": null,
+     "ByDefault": "",
+     "Subproject": {
+      "Mark": {
+       "Glyph": "",
+       "Name": ""
+      },
+      "URL": "subprojects/tableaud",
+      "Task": {
+       "ID": "8608",
+       "Title": "tableaud",
+       "Href": "T/8608"
+      },
+      "Pin": "e6ec4ec",
+      "Form": "",
+      "Gate": {
+       "Glyph": "\ud83d\udd27",
+       "Name": "function"
+      }
+     },
+     "Refs": null,
+     "Stands": "next"
+    }
+   ],
+   "Key": [
+    {
+     "Glyph": "\ud83e\udd16",
+     "Name": "an agent contributes"
+    },
+    {
+     "Glyph": "\ud83d\udc40",
+     "Name": "a reviewer accepts"
+    },
+    {
+     "Glyph": "\u2014",
+     "Name": "the gate does not apply"
+    }
+   ],
+   "Sources": {
+    "Fold": {
+     "ID": "prov-sources",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Chain": [
+     {
+      "Task": {
+       "ID": "e9c6",
+       "Title": "Abstract views",
+       "Href": "T/e9c6"
+      },
+      "File": ".tableaux/tasks/e9c6.yaml",
+      "States": [
+       {
+        "Glyph": "\ud83d\udccc",
+        "Name": "mockup"
+       }
+      ]
+     },
+     {
+      "Task": {
+       "ID": "2034",
+       "Title": "Views",
+       "Href": "T/2034"
+      },
+      "File": ".tableaux/tasks/2034.yaml",
+      "States": null
+     }
+    ],
+    "Rows": [
+     {
+      "Gate": {
+       "Glyph": "\ud83d\udcd0",
+       "Name": "design"
+      },
+      "Span": 2,
+      "Field": "contributor",
+      "Value": "noreply@anthropic.com",
+      "Mine": false,
+      "By": {
+       "ID": "bc63",
+       "Title": "Method",
+       "Href": "T/bc63"
+      },
+      "Default": "",
+      "Nearest": null
+     },
+     {
+      "Gate": {
+       "Glyph": "\ud83d\udcd0",
+       "Name": "design"
+      },
+      "Span": 0,
+      "Field": "reviewer",
+      "Value": "nbyoung@nbyoung.com",
+      "Mine": true,
+      "By": null,
+      "Default": "an agent with no stated reviewer takes the assignee",
+      "Nearest": null
+     }
+    ]
+   },
+   "Reviews": {
+    "Fold": {
+     "ID": "prov-reviews",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": [
+     {
+      "Gate": {
+       "Glyph": "\ud83d\udcd0",
+       "Name": "design"
+      },
+      "Reviewer": {
+       "Email": "nbyoung@nbyoung.com",
+       "Mine": true
+      },
+      "Commit": {
+       "Hash": "879b447",
+       "Full": "879b4470000",
+       "Subject": "Advance the abstract views task",
+       "Date": "2026-10-02",
+       "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+       "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+       "Trailers": [
+        "Model: claude-opus-5-5"
+       ]
+      },
+      "ByAuth": false
+     }
+    ],
+    "Commands": null
+   },
+   "Models": {
+    "Fold": {
+     "ID": "prov-models",
+     "Class": "prov",
+     "Open": false,
+     "Src": "",
+     "Alt": ""
+    },
+    "Rows": [
+     {
+      "Commit": {
+       "Hash": "879b447",
+       "Full": "879b4470000",
+       "Subject": "Advance the abstract views task",
+       "Date": "2026-10-02",
+       "Author": "Claude Opus 5.5 <noreply@anthropic.com>",
+       "Committer": "Claude Opus 5.5 <noreply@anthropic.com>",
+       "Trailers": [
+        "Model: claude-opus-5-5"
+       ]
+      },
+      "Gate": {
+       "Glyph": "\ud83d\udcd0",
+       "Name": "design"
+      },
+      "Stated": "claude-fable",
+      "Trailer": "claude-fable-5-1",
+      "Reading": "agrees",
+      "CoAuthor": ""
+     }
+    ]
+   }
+  },
+  "Events": {
+   "Fold": {
+    "ID": "prov-events",
+    "Class": "prov",
+    "Open": false,
+    "Src": "",
+    "Alt": ""
+   },
+   "History": "V/history?task=e9c6",
+   "Total": 7,
+   "Rows": [
+    {
+     "Date": "2026-09-30",
+     "Hash": "879b447",
+     "By": {
+      "Email": "noreply@anthropic.com",
+      "Mine": false
+     },
+     "Event": "status",
+     "Status": {
+      "Gate": {
+       "Glyph": "\ud83d\udcd0",
+       "Name": "design"
+      },
+      "State": {
+       "Glyph": "\ud83d\udfe2",
+       "Name": "nominal"
+      },
+      "Reason": {
+       "Glyph": "\ud83d\udc53",
+       "Name": "review"
+      },
+      "Note": "awaits",
+      "Date": "",
+      "Recorder": "",
+      "From": null,
+      "Snapshot": null
+     },
+     "Gate": null,
+     "Pin": null,
+     "Project": "",
+     "Sub": null
+    },
+    {
+     "Date": "2026-09-30",
+     "Hash": "0704a09",
+     "By": {
+      "Email": "nbyoung@nbyoung.com",
+      "Mine": true
+     },
+     "Event": "reviewed",
+     "Status": null,
+     "Gate": {
+      "Glyph": "\ud83d\udcd0",
+      "Name": "design"
+     },
+     "Pin": null,
+     "Project": "",
+     "Sub": null
+    },
+    {
+     "Date": "2026-09-29",
+     "Hash": "3cdae52",
+     "By": {
+      "Email": "nbyoung@nbyoung.com",
+      "Mine": true
+     },
+     "Event": "pin",
+     "Status": null,
+     "Gate": null,
+     "Pin": {
+      "URL": "subprojects/tableaud",
+      "Old": "cffbfa6",
+      "New": "e6ec4ec"
+     },
+     "Project": "",
+     "Sub": null
+    }
+   ],
+   "Earlier": 5,
+   "Commands": null
+  }
+ }
+}
