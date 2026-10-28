@@ -1,4 +1,3 @@
-gate: integrate
+gate: validate
 state: nominal
-reason: review
-note: validate awaits the owner's review; the suites pass and checkAccess, run by a scratch test over the 92 pages of the export and the 30 daemon pages of the tooling plan, finds nothing, with one h1, the skip link first, a name on every control and a word beside every state symbol but the two spans of a hidden column header; the owner runs V1 to V11 of the validate file in a browser on the daemon and the export, with two screen readers and on a phone
+note: The owner reviewed the validate in 1fff1df under decision 14 of this design, which waives V1 to V11 of validate.md, so those checks and every check that points to them did not run. Field test 7 covers the markup, with check, checkAccess and disclosure finding nothing over 92 exported pages and 30 daemon pages, and field tests 1 and 9 stand.
