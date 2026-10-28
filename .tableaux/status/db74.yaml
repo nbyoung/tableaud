@@ -1,4 +1,3 @@
-gate: integrate
+gate: validate
 state: nominal
-reason: review
-note: validate awaits the owner's review; the suites pass, every one of the 1068 lazy folds on 120 daemon pages has a fallback link that answers 200 with that fold open, each of the 144 boosted controls (120 links and 24 forms) is also a link with an href or a form with an action, and the export holds no script and no hx- attribute with every one of its 3640 folds a details with a summary; the owner checks in a browser that the redirect on load shows no default window first, that a boosted fold link swaps the page and pushes its address, that the form's submit sends its hidden fields, that defaultChecked reads as A10 states and that a page works with scripts off
+note: The owner reviewed the validate in 1fff1df and every check the owner ran passes, the redirect on load, the form's hidden fields, defaultChecked, the page with scripts off and the boosted fold link. Field tests 1 and 4 stand, so every lazy fold has a working fallback link and the export holds no script.
