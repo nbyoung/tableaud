@@ -56,7 +56,7 @@
    "Reaffirmed": false,
    "Snapshot": null,
    "Commands": [
-    "git log --format='%H %as %ae %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/tasks/a1c0.yaml .tableaux/status/a1c0.yaml"
+    "git log --format='%H %as %ae %s' edb30d2baa5ea3c7e3fb8eef8ac6cce6e145221a -- .tableaux/tasks/a1c0.yaml .tableaux/status/a1c0.yaml .tableaux/status/3c5d.yaml"
    ],
    "From": {
     "ID": "3c5d",
